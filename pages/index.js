@@ -130,7 +130,11 @@ export default function Home() {
 
       <div className="social-buttons">
         <a className="social-btn" onClick={openDeposit}>Deposit</a>
-      </div>
+        <a href="https://www.facebook.com/people/Shawn-Sweeps/61581214871852/" class="social-btn" target="_blank">Facebook Page</a>
+        <a href="https://www.facebook.com/shawn.shawn.927528" class="social-btn" target="_blank">Facebook Profile</a>
+        <a href="https://t.me/shawnsweeps" class="social-btn" target="_blank">Telegram</a>
+        <a href="https://api.whatsapp.com/send/?phone=%2B13463028043&text&type=phone_number&app_absent=0" class="social-btn" target="_blank">WhatsApp</a>
+        </div>
 
       <section id="games"></section>
     </>
