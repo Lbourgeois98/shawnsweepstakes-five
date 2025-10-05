@@ -69,7 +69,6 @@ export default function Home() {
 
     const gamesEl = document.getElementById("games");
     if (gamesEl) {
-      // Clear existing if re-run
       gamesEl.innerHTML = "";
       games.forEach((g) => {
         const card = document.createElement("div");
@@ -80,7 +79,7 @@ export default function Home() {
     }
   }, []);
 
-  // === deposit flow ===
+  // === Deposit Flow ===
   const handleDeposit = async () => {
     if (!playerName || !username || !gameName || !depositAmount) {
       alert("Please fill out all fields.");
@@ -96,23 +95,30 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           extra: {
+            // Required fields for Wert
+            commodity: "USDC",
+            network: "polygon",
+            commodity_amount: depositAmount,
+
+            // Your custom data (will appear in Wert dashboard + webhook)
             partner_data: {
               playerName,
               username,
               gameName,
               depositAmount,
             },
+
+            // Optional: multiple wallet networks
             wallets: [
               { name: "TT", network: "amoy", address: "0x0118E8e2FCb391bCeb110F62b5B7B963477C1E0d" },
               { name: "ETH", network: "sepolia", address: "0x0118E8e2FCb391bCeb110F62b5B7B963477C1E0d" }
-            ]
-          }
-        })
+            ],
+          },
+        }),
       });
 
       const data = await response.json();
 
-      // Wert return keys vary; accept multiple possible names
       const sessionId =
         data.session_id ||
         data.sessionId ||
@@ -137,8 +143,8 @@ export default function Home() {
           loaded: () => console.log("Wert widget loaded"),
           "payment-status": (evt) => {
             console.log("Wert payment-status event:", evt);
-          }
-        }
+          },
+        },
       });
 
       widget.open();
