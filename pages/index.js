@@ -129,12 +129,13 @@ export default function Home() {
       <header><img src="https://shawn-sweepstakes.carrd.co/assets/images/image03.png?v=0c91e9dc" alt="ShawnSweeps"/></header>
 
       <div className="social-buttons">
-        <a className="social-btn" onClick={openDeposit}>Deposit</a>
-        <a href="https://www.facebook.com/people/Shawn-Sweeps/61581214871852/" class="social-btn" target="_blank">Facebook Page</a>
-        <a href="https://www.facebook.com/shawn.shawn.927528" class="social-btn" target="_blank">Facebook Profile</a>
-        <a href="https://t.me/shawnsweeps" class="social-btn" target="_blank">Telegram</a>
-        <a href="https://api.whatsapp.com/send/?phone=%2B13463028043&text&type=phone_number&app_absent=0" class="social-btn" target="_blank">WhatsApp</a>
-        </div>
+  <a className="social-btn" onClick={() => openDeposit()}>Deposit</a>
+  <a href="https://www.facebook.com/people/Shawn-Sweeps/61581214871852/" className="social-btn" target="_blank" rel="noopener noreferrer">Facebook Page</a>
+  <a href="https://www.facebook.com/shawn.shawn.927528" className="social-btn" target="_blank" rel="noopener noreferrer">Facebook Profile</a>
+  <a href="https://t.me/shawnsweeps" className="social-btn" target="_blank" rel="noopener noreferrer">Telegram</a>
+  <a href="https://api.whatsapp.com/send/?phone=%2B13463028043&text&type=phone_number&app_absent=0" className="social-btn" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+</div>
+
 
       <section id="games"></section>
     </>
