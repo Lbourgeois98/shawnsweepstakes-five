@@ -1,13 +1,26 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
+
+const WertWidget = dynamic(
+  () => import("@wert-io/widget-initializer").then((mod) => mod.default),
+  { ssr: false }
+);
 
 export default function Home() {
+  const [showForm, setShowForm] = useState(false);
+  const [playerName, setPlayerName] = useState("");
+  const [username, setUsername] = useState("");
+  const [gameName, setGameName] = useState("");
+  const [depositAmount, setDepositAmount] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // === Load games dynamically ===
   useEffect(() => {
-    // === Games data ===
     const games = [
-      { id: "megaspinsweeps", name: "Mega Spin Sweeps", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/85307f95.jpg?v=0c91e9dc", gameUrl: "http://www.megaspinsweeps.com/index.html" },
-      { id: "vblink777", name: "VBLink777", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/753a32c3.jpg?v=0c91e9dc", gameUrl: "https://www.vblink777.club/" },
-      { id: "goldentreasure", name: "Golden Treasure", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/7c9b03e5.jpg?v=0c91e9dc", gameUrl: "https://www.goldentreasure.mobi/" },
+      { name: "Mega Spin Sweeps", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/85307f95.jpg?v=0c91e9dc", gameUrl: "http://www.megaspinsweeps.com/index.html" },
+      { name: "VBLink777", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/753a32c3.jpg?v=0c91e9dc", gameUrl: "https://www.vblink777.club/" },
+      { name: "Golden Treasure", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/7c9b03e5.jpg?v=0c91e9dc", gameUrl: "https://www.goldentreasure.mobi/" },
       { id: "orionstars", name: "Orion Stars", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/417aedb1.png?v=0c91e9dc", gameUrl: "http://start.orionstars.vip:8580/index.html" },
       { id: "firekirin", name: "Fire Kirin", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/189aadee.jpg?v=0c91e9dc", gameUrl: "http://start.firekirin.xyz:8580/index.html" },
       { id: "rivermonster", name: "River Monster", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/253c9f08.jpg?v=0c91e9dc", gameUrl: "https://rm777.net/" },
@@ -58,7 +71,7 @@ export default function Home() {
 
     const gamesEl = document.getElementById("games");
     if (gamesEl) {
-      games.forEach(g => {
+      games.forEach((g) => {
         const card = document.createElement("div");
         card.className = "game-card";
         card.innerHTML = `<a href="${g.gameUrl}" target="_blank"><img src="${g.imageUrl}" alt="${g.name}"/></a>`;
@@ -67,39 +80,47 @@ export default function Home() {
     }
   }, []);
 
-  const openDeposit = async () => {
+  // === Handle Wert deposit ===
+  const handleDeposit = async () => {
+    if (!playerName || !username || !gameName || !depositAmount) {
+      alert("Please fill in all fields before continuing.");
+      return;
+    }
+
     try {
+      setLoading(true);
+
       const res = await fetch("/api/create-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          extra: {
-            wallets: [
-              { name: "TT", network: "amoy", address: "0x0118E8e2FCb391bCeb110F62b5B7B963477C1E0d" },
-              { name: "ETH", network: "sepolia", address: "0x0118E8e2FCb391bCeb110F62b5B7B963477C1E0d" }
-            ]
-          }
-        })
+          playerName,
+          username,
+          gameName,
+          depositAmount,
+        }),
       });
-      const data = await res.json();
-      if (!data.sessionId) return alert("Failed to create Wert session");
 
-      const WertWidget = (await import("@wert-io/widget-initializer")).default;
+      const data = await res.json();
+      if (!data.session_id) {
+        alert("Failed to create Wert session.");
+        setLoading(false);
+        return;
+      }
+
       const widget = new WertWidget({
         partner_id: process.env.NEXT_PUBLIC_WERT_PARTNER_ID,
-        session_id: data.sessionId,
-        origin: "https://sandbox.wert.io",
-        extra: JSON.stringify({
-          wallets: [
-            { name: "TT", network: "amoy", address: "0x0118E8e2FCb391bCeb110F62b5B7B963477C1E0d" },
-            { name: "ETH", network: "sepolia", address: "0x0118E8e2FCb391bCeb110F62b5B7B963477C1E0d" }
-          ]
-        })
+        origin: "https://sandbox.wert.io", // Use https://wert.io in production
+        session_id: data.session_id,
       });
+
       widget.open();
+      setShowForm(false);
+      setLoading(false);
     } catch (err) {
-      console.error(err);
-      alert("Error opening Wert widget");
+      console.error("Error opening Wert widget:", err);
+      alert("Error launching Wert widget.");
+      setLoading(false);
     }
   };
 
@@ -121,23 +142,113 @@ export default function Home() {
         .game-card { position: relative; width: 100%; padding-bottom: 100%; border-radius: 50%; overflow: hidden; box-shadow: 0 6px 15px rgba(0,0,0,0.5); transition: all 0.3s; }
         .game-card img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
         .game-card:hover { transform: scale(1.1); box-shadow: 0 0 25px rgba(250,10,10,0.6); }
+
+        /* Popup form */
+        .popup {
+          position: fixed;
+          top: 0; left: 0; width: 100%; height: 100%;
+          background: rgba(0,0,0,0.7);
+          display: flex; align-items: center; justify-content: center;
+          z-index: 9999;
+        }
+        .form-box {
+          background: #111;
+          border: 2px solid rgba(255,255,0,0.4);
+          border-radius: 12px;
+          padding: 25px;
+          width: 90%; max-width: 400px;
+          box-shadow: 0 0 20px rgba(255,255,0,0.2);
+          text-align: center;
+        }
+        .form-box input {
+          width: 100%;
+          margin-bottom: 12px;
+          padding: 12px 15px;
+          border-radius: 8px;
+          border: none;
+          font-size: 16px;
+          color: black;
+        }
+        .form-box button {
+          width: 100%;
+          padding: 12px;
+          background: linear-gradient(90deg, #facc15, #fcd34d);
+          border: none;
+          border-radius: 8px;
+          color: black;
+          font-weight: bold;
+          font-size: 16px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+        .form-box button:hover {
+          background: linear-gradient(90deg, #fde047, #facc15);
+          transform: scale(1.03);
+        }
+        .close-btn {
+          margin-top: 10px;
+          background: transparent;
+          border: none;
+          color: #aaa;
+          cursor: pointer;
+        }
       `}</style>
 
       <video id="bg-video" src="https://shawn-sweepstakes.carrd.co/assets/videos/bg.mp4?v=0c91e9dc" autoPlay loop muted playsInline></video>
       <div className="video-overlay"></div>
 
-      <header><img src="https://shawn-sweepstakes.carrd.co/assets/images/image03.png?v=0c91e9dc" alt="ShawnSweeps"/></header>
+      <header>
+        <img
+          src="https://shawn-sweepstakes.carrd.co/assets/images/image03.png?v=0c91e9dc"
+          alt="ShawnSweeps"
+        />
+      </header>
 
       <div className="social-buttons">
-  <a className="social-btn" onClick={() => openDeposit()}>Deposit</a>
-  <a href="https://www.facebook.com/people/Shawn-Sweeps/61581214871852/" className="social-btn" target="_blank" rel="noopener noreferrer">Facebook Page</a>
-  <a href="https://www.facebook.com/shawn.shawn.927528" className="social-btn" target="_blank" rel="noopener noreferrer">Facebook Profile</a>
-  <a href="https://t.me/shawnsweeps" className="social-btn" target="_blank" rel="noopener noreferrer">Telegram</a>
-  <a href="https://api.whatsapp.com/send/?phone=%2B13463028043&text&type=phone_number&app_absent=0" className="social-btn" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-</div>
-
+        <a className="social-btn" onClick={() => setShowForm(true)}>Deposit</a>
+        <a href="https://www.facebook.com/people/Shawn-Sweeps/61581214871852/" className="social-btn" target="_blank" rel="noopener noreferrer">Facebook Page</a>
+        <a href="https://www.facebook.com/shawn.shawn.927528" className="social-btn" target="_blank" rel="noopener noreferrer">Facebook Profile</a>
+        <a href="https://t.me/shawnsweeps" className="social-btn" target="_blank" rel="noopener noreferrer">Telegram</a>
+        <a href="https://api.whatsapp.com/send/?phone=%2B13463028043&text&type=phone_number&app_absent=0" className="social-btn" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+      </div>
 
       <section id="games"></section>
+
+      {showForm && (
+        <div className="popup">
+          <div className="form-box">
+            <h2>Deposit to Shawn Sweeps</h2>
+            <input
+              type="text"
+              placeholder="Player Name"
+              value={playerName}
+              onChange={(e) => setPlayerName(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Game Name"
+              value={gameName}
+              onChange={(e) => setGameName(e.target.value)}
+            />
+            <input
+              type="number"
+              placeholder="Deposit Amount (USD)"
+              value={depositAmount}
+              onChange={(e) => setDepositAmount(e.target.value)}
+            />
+            <button onClick={handleDeposit} disabled={loading}>
+              {loading ? "Loading..." : "Submit Deposit"}
+            </button>
+            <button className="close-btn" onClick={() => setShowForm(false)}>Cancel</button>
+          </div>
+        </div>
+      )}
     </>
   );
 }
