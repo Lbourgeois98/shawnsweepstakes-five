@@ -1,6 +1,6 @@
-// pages/api/create-session.js
 export default async function handler(req, res) {
-  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
+  if (req.method !== "POST")
+    return res.status(405).json({ error: "Method not allowed" });
 
   const apiKey = process.env.WERT_API_KEY;
 
@@ -13,14 +13,14 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         flow_type: "simple",
-        extra: req.body.extra,
+        extra: req.body.extra, // contains playerName, username, gameName, depositAmount
       }),
     });
 
     const data = await r.json();
     res.status(r.status).json(data);
   } catch (err) {
-    console.error(err);
+    console.error("create-session error:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 }
