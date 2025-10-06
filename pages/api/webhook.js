@@ -1,19 +1,41 @@
-export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
+// app/api/wert-webhook/route.js
+import { NextResponse } from "next/server";
 
+export async function POST(req) {
   try {
-    const event = req.body;
+    const body = await req.json();
 
-    console.log("✅ Wert webhook received:", event);
+    console.log("🔔 Wert webhook received:", body);
 
-    // You can store this in your DB, send an email, etc.
-    // Example: event.payload.partner_data contains your playerName, username, gameName, depositAmount
+    const event = body.event || body.event_name;
+    const data = body.data || body;
 
-    res.status(200).json({ success: true });
+    switch (event) {
+      case "order_complete":
+        console.log("✅ Order complete!");
+        console.log(`User: ${data.user_id}, Amount: ${data["commodity amount"]} ${data.commodity}`);
+        // 👉 You can now mark this deposit as "successful" in your DB
+        break;
+
+      case "order_failed":
+        console.log("❌ Order failed:", data);
+        break;
+
+      case "order_canceled":
+        console.log("🚫 Order canceled:", data);
+        break;
+
+      case "transfer_started":
+        console.log("💸 Transfer started (funds sent, waiting for confirmation):", data);
+        break;
+
+      default:
+        console.log("ℹ️ Unhandled event:", event);
+    }
+
+    return NextResponse.json({ received: true });
   } catch (err) {
-    console.error("Webhook error:", err);
-    res.status(500).json({ error: "Webhook processing failed" });
+    console.error("❌ Error handling Wert webhook:", err);
+    return NextResponse.json({ error: "Bad Request" }, { status: 400 });
   }
 }
