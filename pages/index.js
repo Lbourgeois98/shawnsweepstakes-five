@@ -10,7 +10,6 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // === Games data ===
     const games = [
       { id: "megaspinsweeps", name: "Mega Spin Sweeps", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/85307f95.jpg?v=0c91e9dc", gameUrl: "http://www.megaspinsweeps.com/index.html" },
       { id: "vblink777", name: "VBLink777", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/753a32c3.jpg?v=0c91e9dc", gameUrl: "https://www.vblink777.club/" },
@@ -66,6 +65,7 @@ export default function Home() {
       { id: "nova", name: "Nova", imageUrl: "https://sweepshub.us/IMG_2683.jpeg", gameUrl: "https://novaplay.cc/" },
       { id: "funstation", name: "FunStation", imageUrl: "https://sweepshub.us/IMG_2663.jpeg", gameUrl: "https://www.funstation.site/" }
     ];
+  
 
     const gamesEl = document.getElementById("games");
     if (gamesEl) {
@@ -79,7 +79,6 @@ export default function Home() {
     }
   }, []);
 
-  // === Deposit Flow ===
   const handleDeposit = async () => {
     if (!playerName || !username || !gameName || !depositAmount) {
       alert("Please fill out all fields.");
@@ -89,29 +88,23 @@ export default function Home() {
     setLoading(true);
 
     try {
-      // Send into your create-session endpoint under `extra`
       const response = await fetch("/api/create-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           extra: {
-            // Required fields for Wert
             commodity: "USDC",
             network: "polygon",
             commodity_amount: depositAmount,
-
-            // Your custom data (will appear in Wert dashboard + webhook)
             partner_data: {
               playerName,
               username,
               gameName,
               depositAmount,
             },
-
-            // Optional: multiple wallet networks
             wallets: [
               { name: "TT", network: "amoy", address: "0x0118E8e2FCb391bCeb110F62b5B7B963477C1E0d" },
-              { name: "ETH", network: "sepolia", address: "0x0118E8e2FCb391bCeb110F62b5B7B963477C1E0d" }
+              { name: "ETH", network: "sepolia", address: "0x0118E8e2FCb391bCeb110F62b5B7B963477C1E0d" },
             ],
           },
         }),
@@ -133,17 +126,14 @@ export default function Home() {
         return;
       }
 
-      // load widget dynamically, then open
       const WertWidget = (await import("@wert-io/widget-initializer")).default;
       const widget = new WertWidget({
         partner_id: process.env.NEXT_PUBLIC_WERT_PARTNER_ID,
         session_id: sessionId,
-        origin: "https://sandbox.wert.io", // switch to https://wert.io for production
+        origin: "https://sandbox.wert.io",
         listeners: {
           loaded: () => console.log("Wert widget loaded"),
-          "payment-status": (evt) => {
-            console.log("Wert payment-status event:", evt);
-          },
+          "payment-status": (evt) => console.log("Wert payment-status event:", evt),
         },
       });
 
@@ -170,14 +160,80 @@ export default function Home() {
         .video-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.35); z-index: -1; pointer-events: none; }
         header { text-align: center; margin: 30px 0 20px; position: relative; z-index: 10; }
         header img { width: 220px; filter: drop-shadow(0 0 10px rgba(250,10,10,0.6)); }
-        .social-buttons { display: flex; justify-content: center; gap: 15px; margin: 20px 0 40px; flex-wrap: wrap; position: relative; z-index: 10; }
-        .social-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; background: rgba(250, 10, 10, 0.9); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 14px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(250, 10, 10, 0.3); min-width: 140px; text-align: center; cursor:pointer; }
+
+        /* ===== Button Section ===== */
+        .social-section {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          margin: 40px 0;
+          gap: 25px;
+          position: relative;
+          z-index: 10;
+        }
+
+        .social-buttons {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 15px;
+          max-width: 600px;
+        }
+
+        .social-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          padding: 12px 20px;
+          background: rgba(250, 10, 10, 0.9);
+          color: white;
+          text-decoration: none;
+          border-radius: 8px;
+          font-weight: bold;
+          font-size: 14px;
+          transition: all 0.3s;
+          box-shadow: 0 4px 12px rgba(250, 10, 10, 0.3);
+          min-width: 140px;
+          text-align: center;
+          cursor:pointer;
+        }
         .social-btn:hover { background: rgba(224, 9, 9, 0.9); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(250, 10, 10, 0.4); }
 
-        /* deposit (gold) button variant */
-        .deposit-btn { background: linear-gradient(90deg, #facc15, #fcd34d); color: black; box-shadow: 0 4px 12px rgba(255, 215, 0, 0.25); }
-        .deposit-btn:hover { background: linear-gradient(90deg, #fde047, #facc15); transform: translateY(-2px); }
+        /* Glowing Deposit Button */
+        .deposit-btn {
+          background: linear-gradient(90deg, #facc15, #fcd34d);
+          color: black;
+          font-size: 16px;
+          font-weight: 700;
+          padding: 14px 26px;
+          border-radius: 10px;
+          box-shadow: 0 6px 18px rgba(255, 215, 0, 0.35);
+          transition: all 0.3s ease;
+          animation: pulseGlow 2s infinite ease-in-out;
+        }
+        .deposit-btn:hover {
+          background: linear-gradient(90deg, #fde047, #facc15);
+          transform: translateY(-3px);
+          box-shadow: 0 8px 22px rgba(255, 215, 0, 0.4);
+        }
 
+        @keyframes pulseGlow {
+          0% {
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.3);
+            transform: scale(1);
+          }
+          50% {
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 40px rgba(255, 215, 0, 0.5);
+            transform: scale(1.04);
+          }
+          100% {
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.3);
+            transform: scale(1);
+          }
+        }
+
+        /* ===== Game Grid ===== */
         #games { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; max-width: 1200px; margin: 0 auto 60px; padding: 0 15px; position: relative; z-index: 10; }
         @media (max-width: 1024px) { #games { grid-template-columns: repeat(3, 1fr); } }
         @media (max-width: 500px) { #games { grid-template-columns: repeat(2, 1fr); } }
@@ -187,7 +243,7 @@ export default function Home() {
         .card-label { position:absolute; left:8px; bottom:8px; right:8px; color:#fff; font-size:12px; background:rgba(0,0,0,0.4); padding:6px 8px; border-radius:6px; text-align:center; }
         .game-card:hover { transform: scale(1.08); box-shadow: 0 0 25px rgba(250,10,10,0.6); }
 
-        /* Popup form */
+        /* ===== Popup Form ===== */
         .popup { position: fixed; top: 0; left: 0; right: 0; bottom: 0; display:flex; align-items:center; justify-content:center; background: rgba(0,0,0,0.7); z-index: 9999; }
         .form-box { background: #121212; padding: 22px; border-radius: 12px; width: 92%; max-width: 420px; border: 2px solid rgba(255, 215, 0, 0.18); box-shadow: 0 0 20px rgba(255,215,0,0.06); color: white; text-align: center; }
         .form-box input { width: 100%; padding: 12px 14px; margin-bottom:10px; border-radius:8px; border: none; font-size:14px; color: black; }
@@ -199,14 +255,19 @@ export default function Home() {
       <video id="bg-video" src="https://shawn-sweepstakes.carrd.co/assets/videos/bg.mp4?v=0c91e9dc" autoPlay loop muted playsInline></video>
       <div className="video-overlay"></div>
 
-      <header><img src="https://shawn-sweepstakes.carrd.co/assets/images/image03.png?v=0c91e9dc" alt="ShawnSweeps"/></header>
+      <header>
+        <img src="https://shawn-sweepstakes.carrd.co/assets/images/image03.png?v=0c91e9dc" alt="ShawnSweeps" />
+      </header>
 
-      <div className="social-buttons">
+      {/* ===== Deposit + Social Buttons ===== */}
+      <div className="social-section">
         <button className="social-btn deposit-btn" onClick={() => setShowForm(true)}>💰 Deposit</button>
-        <a href="https://www.facebook.com/people/Shawn-Sweeps/61581214871852/" className="social-btn" target="_blank" rel="noopener noreferrer">Facebook Page</a>
-        <a href="https://www.facebook.com/shawn.shawn.927528" className="social-btn" target="_blank" rel="noopener noreferrer">Facebook Profile</a>
-        <a href="https://t.me/shawnsweeps" className="social-btn" target="_blank" rel="noopener noreferrer">Telegram</a>
-        <a href="https://api.whatsapp.com/send/?phone=%2B13463028043&text&type=phone_number&app_absent=0" className="social-btn" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+        <div className="social-buttons">
+          <a href="https://www.facebook.com/people/Shawn-Sweeps/61581214871852/" className="social-btn" target="_blank" rel="noopener noreferrer">Facebook Page</a>
+          <a href="https://www.facebook.com/shawn.shawn.927528" className="social-btn" target="_blank" rel="noopener noreferrer">Facebook Profile</a>
+          <a href="https://t.me/shawnsweeps" className="social-btn" target="_blank" rel="noopener noreferrer">Telegram</a>
+          <a href="https://api.whatsapp.com/send/?phone=%2B13463028043&text&type=phone_number&app_absent=0" className="social-btn" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+        </div>
       </div>
 
       <section id="games"></section>
@@ -214,7 +275,7 @@ export default function Home() {
       {showForm && (
         <div className="popup">
           <div className="form-box" role="dialog" aria-modal="true">
-            <h3 style={{marginBottom:12}}>Deposit to Shawn Sweeps</h3>
+            <h3 style={{ marginBottom: 12 }}>Deposit to Shawn Sweeps</h3>
             <input type="text" placeholder="Player Name" value={playerName} onChange={(e) => setPlayerName(e.target.value)} />
             <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
             <input type="text" placeholder="Game Name" value={gameName} onChange={(e) => setGameName(e.target.value)} />
