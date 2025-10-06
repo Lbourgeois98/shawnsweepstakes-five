@@ -1,6 +1,7 @@
 // pages/admin.js
 import { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "../lib/supabaseClient";
+
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
