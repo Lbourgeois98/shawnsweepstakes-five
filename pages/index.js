@@ -110,8 +110,7 @@ export default function Home() {
 
             // Optional: multiple wallet networks
             wallets: [
-              { name: "TT", network: "amoy", address: "0x0118E8e2FCb391bCeb110F62b5B7B963477C1E0d" },
-              { name: "ETH", network: "sepolia", address: "0x0118E8e2FCb391bCeb110F62b5B7B963477C1E0d" }
+              { name: "btc", network: "bitcoin", address: "0x0118E8e2FCb391bCeb110F62b5B7B963477C1E0d" },
             ],
           },
         }),
@@ -138,7 +137,7 @@ export default function Home() {
       const widget = new WertWidget({
         partner_id: process.env.NEXT_PUBLIC_WERT_PARTNER_ID,
         session_id: sessionId,
-        origin: "https://sandbox.wert.io", // switch to https://wert.io for production
+        origin: "https://widget.wert.io", // switch to https://wert.io for production
         listeners: {
           loaded: () => console.log("Wert widget loaded"),
           "payment-status": (evt) => {
