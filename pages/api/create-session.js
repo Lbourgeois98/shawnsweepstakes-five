@@ -5,7 +5,7 @@ export default async function handler(req, res) {
   const apiKey = process.env.WERT_API_KEY;
 
   try {
-    const r = await fetch("https://partner-sandbox.wert.io/api/external/hpp/create-session", {
+    const r = await fetch("https://partner.wert.io/api/external/hpp/create-session", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
