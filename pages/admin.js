@@ -1,11 +1,6 @@
 // pages/admin.js
 import { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
-
-// 🔥 Hardcode your Supabase project details here
-const supabaseUrl = "https://sklglvegajouwxzbebao.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-const supabase = createClient(supabaseUrl, supabaseKey);
+import { supabase } from "../lib/supabaseClient";
 
 export default function AdminPage() {
   const [authenticated, setAuthenticated] = useState(false);
@@ -14,9 +9,9 @@ export default function AdminPage() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // 🧠 Simple hardcoded login
-  const ADMIN_USER = "admin";     // change this
-  const ADMIN_PASS = "1234";      // change this
+  // 🧠 Simple hardcoded admin login (customize!)
+  const ADMIN_USER = "admin";  // change this
+  const ADMIN_PASS = "1234";   // change this
 
   const login = () => {
     if (inputUser === ADMIN_USER && inputPass === ADMIN_PASS) {
