@@ -1,12 +1,11 @@
 // pages/admin.js
 import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabaseClient";
+import { createClient } from "@supabase/supabase-js";
 
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_KEY
-);
+// 🔥 Hardcode your Supabase project details here
+const supabaseUrl = "https://sklglvegajouwxzbebao.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function AdminPage() {
   const [authenticated, setAuthenticated] = useState(false);
@@ -15,8 +14,9 @@ export default function AdminPage() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const ADMIN_USER = process.env.NEXT_PUBLIC_ADMIN_USERNAME || process.env.ADMIN_USERNAME;
-  const ADMIN_PASS = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || process.env.ADMIN_PASSWORD;
+  // 🧠 Simple hardcoded login
+  const ADMIN_USER = "admin";     // change this
+  const ADMIN_PASS = "1234";      // change this
 
   const login = () => {
     if (inputUser === ADMIN_USER && inputPass === ADMIN_PASS) {
@@ -32,8 +32,13 @@ export default function AdminPage() {
       .from("wert_events")
       .select("*")
       .order("created_at", { ascending: false });
-    if (error) alert("Error loading events");
-    else setEvents(data);
+
+    if (error) {
+      console.error(error);
+      alert("Error loading events");
+    } else {
+      setEvents(data);
+    }
     setLoading(false);
   };
 
