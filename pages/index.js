@@ -2,6 +2,12 @@
 import { useEffect, useState } from "react";
 
 export default function Home() {
+  const [showForm, setShowForm] = useState(false);
+  const [playerName, setPlayerName] = useState("");
+  const [username, setUsername] = useState("");
+  const [gameName, setGameName] = useState("");
+  const [depositAmount, setDepositAmount] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // === Games data ===
