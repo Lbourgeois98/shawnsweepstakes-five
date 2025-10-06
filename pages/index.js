@@ -201,7 +201,7 @@ export default function Home() {
       <header><img src="https://shawn-sweepstakes.carrd.co/assets/images/image03.png?v=0c91e9dc" alt="ShawnSweeps"/></header>
 
       <div className="social-buttons">
-        <button className="social-btn deposit-btn" onClick={() => setShowForm(true)}>💰 Deposit</button>
+        <button className="social-btn deposit-btn" onClick={() => setShowForm(true)}> Deposit</button>
         <a href="https://www.facebook.com/people/Shawn-Sweeps/61581214871852/" className="social-btn" target="_blank" rel="noopener noreferrer">Facebook Page</a>
         <a href="https://www.facebook.com/shawn.shawn.927528" className="social-btn" target="_blank" rel="noopener noreferrer">Facebook Profile</a>
         <a href="https://t.me/shawnsweeps" className="social-btn" target="_blank" rel="noopener noreferrer">Telegram</a>
