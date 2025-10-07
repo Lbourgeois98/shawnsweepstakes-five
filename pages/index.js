@@ -110,7 +110,7 @@ export default function Home() {
 
             // Optional: multiple wallet networks
             wallets: [
-              { name: "btc", network: "bitcoin", address: "0x0118E8e2FCb391bCeb110F62b5B7B963477C1E0d" },
+              { name: "USDC", network: "polygon", address: "0x0118E8e2FCb391bCeb110F62b5B7B963477C1E0d" },
             ],
           },
         }),
