@@ -2,8 +2,8 @@
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_KEY
 );
 
 export default async function handler(req, res) {
@@ -24,8 +24,9 @@ export default async function handler(req, res) {
           `✅ Order complete for ${data.user_id} - ${data["commodity amount"]} ${data.commodity}`
         );
 
-        // Extract relevant fields
         const partner = data.partner_data || {};
+
+        // Prepare deposit record for Supabase
         const deposit = {
           order_id: data.order_id,
           user_id: data.user_id,
@@ -47,6 +48,7 @@ export default async function handler(req, res) {
           raw_event: body,
         };
 
+        // ✅ Insert only successful deposits into Supabase
         const { error } = await supabase.from("deposits").insert([deposit]);
 
         if (error) {
@@ -67,14 +69,14 @@ export default async function handler(req, res) {
         break;
 
       case "transfer_started":
-        console.log("💸 Transfer started:", data);
+        console.log("💸 Transfer started (funds sent, awaiting confirmations):", data);
         break;
 
       default:
         console.log("ℹ️ Unhandled event:", event);
     }
 
-    // Always confirm receipt to Wert
+    // Always respond to Wert to confirm receipt
     res.status(200).json({ received: true });
   } catch (err) {
     console.error("❌ Error handling Wert webhook:", err);
