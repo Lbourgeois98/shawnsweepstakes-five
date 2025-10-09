@@ -15,8 +15,8 @@ export default async function handler(req, res) {
         flow_type: "simple",
         partner_id: "01K1T8VJJ8TY67M49FDXY865GF",
         origin: "https://widget.wert.io",
-        commodity: "USDT",            // ✅ set to USDT
-        network: "ethereum",          // ✅ set to Ethereum
+        commodity: "USDT",            // ✅ USDT
+        network: "ethereum",          // ✅ Ethereum
         commodity_amount: req.body.extra?.depositAmount || "5",
         extra: {
           partner_data: {
