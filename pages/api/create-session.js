@@ -17,13 +17,13 @@ export default async function handler(req, res) {
         origin: "https://widget.wert.io",
         // ✅ explicitly set what asset and network to buy
         commodity: "USDC",
-        network: "polygon",
+        network: "ethereum",
         extra: {
           ...req.body.extra, // keep your extra data
           wallets: [
             {
               name: "USDC",
-              network: "polygon",
+              network: "ethereum",
               address: "0x9980B1bAaD63ec43dd0a1922B09bb08995C6f380",
             },
           ],
