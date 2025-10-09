@@ -15,14 +15,19 @@ export default async function handler(req, res) {
         flow_type: "simple",
         partner_id: "01K1T8VJJ8TY67M49FDXY865GF",
         origin: "https://widget.wert.io",
-        // ✅ explicitly set what asset and network to buy
-        commodity: "USDC",
-        network: "ethereum",
+        commodity: "USDT",            // ✅ set to USDT
+        network: "ethereum",          // ✅ set to Ethereum
+        commodity_amount: req.body.extra?.depositAmount || "5",
         extra: {
-          ...req.body.extra, // keep your extra data
+          partner_data: {
+            playerName: req.body.extra?.playerName,
+            username: req.body.extra?.username,
+            gameName: req.body.extra?.gameName,
+            depositAmount: req.body.extra?.depositAmount,
+          },
           wallets: [
             {
-              name: "USDC",
+              name: "USDT",
               network: "ethereum",
               address: "0x9980B1bAaD63ec43dd0a1922B09bb08995C6f380",
             },
@@ -32,6 +37,7 @@ export default async function handler(req, res) {
     });
 
     const data = await r.json();
+    console.log("Wert session created:", data);
     res.status(r.status).json(data);
   } catch (err) {
     console.error("create-session error:", err);
