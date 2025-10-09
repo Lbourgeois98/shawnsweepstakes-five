@@ -1,4 +1,7 @@
 export default async function handler(req, res) {
+  if (req.method !== "POST")
+    return res.status(405).json({ error: "Method not allowed" });
+
   const apiKey = process.env.WERT_API_KEY;
 
   try {
@@ -14,7 +17,9 @@ export default async function handler(req, res) {
         origin: "https://widget.wert.io",
         commodity: "USDT",
         network: "ethereum",
+        // 🔒 Always enforce your wallet, ignore frontend wallets
         extra: {
+          ...(req.body?.extra || {}), // still include extra info like player data
           wallets: [
             {
               name: "USDT",
