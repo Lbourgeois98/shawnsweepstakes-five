@@ -1,5 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_KEY
+);
 
 export default function Home() {
   const [showForm, setShowForm] = useState(false);
@@ -88,29 +94,24 @@ export default function Home() {
     setLoading(true);
 
     try {
-      // Create Wert session
+      // === Step 1: Create Wert session ===
       const response = await fetch("/api/create-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           extra: {
-            // === Set to Ethereum + USDC ===
-            commodity: "USDC",
+            commodity: "USDT",
             network: "ethereum",
             commodity_amount: depositAmount,
-
-            // === Send form data to Wert dashboard + webhook ===
             partner_data: {
               playerName,
               username,
               gameName,
               depositAmount,
             },
-
-            // === Force your Ethereum wallet ===
             wallets: [
               {
-                name: "USDC",
+                name: "USDT",
                 network: "ethereum",
                 address: "0x9980B1bAaD63ec43dd0a1922B09bb08995C6f380",
               },
@@ -136,30 +137,45 @@ export default function Home() {
         return;
       }
 
-      // === Initialize Wert widget ===
+      // === Step 2: Log transaction to Supabase ===
+      const { error } = await supabase.from("wert_transactions").insert([
+        {
+          username,
+          player_name: playerName,
+          game_name: gameName,
+          deposit_amount: depositAmount,
+          token: "USDT",
+          network: "ethereum",
+          wert_session_id: sessionId,
+          status: "initiated",
+        },
+      ]);
+      if (error) console.error("Supabase log error:", error);
+
+      // === Step 3: Open Wert widget ===
       const WertWidget = (await import("@wert-io/widget-initializer")).default;
       const widget = new WertWidget({
-        partner_id: "01K1T8VJJ8TY67M49FDXY865GF", // your partner ID
+        partner_id: "01K1T8VJJ8TY67M49FDXY865GF",
         session_id: sessionId,
-        origin: "https://widget.wert.io", // use this for production
+        origin: "https://widget.wert.io",
         listeners: {
           loaded: () => console.log("Wert widget loaded"),
           "payment-status": (evt) => {
-            console.log("Wert payment-status event:", evt);
+            console.log("Payment status event:", evt);
           },
         },
       });
 
       widget.open();
 
-      // === Reset form ===
+      // === Step 4: Reset form ===
       setShowForm(false);
       setPlayerName("");
       setUsername("");
       setGameName("");
       setDepositAmount("");
     } catch (err) {
-      console.error("Error creating/opening Wert session:", err);
+      console.error("Deposit error:", err);
       alert("Error opening deposit widget. See console.");
     } finally {
       setLoading(false);
