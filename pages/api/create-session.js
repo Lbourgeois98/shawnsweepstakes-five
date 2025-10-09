@@ -5,7 +5,7 @@ export default async function handler(req, res) {
   const apiKey = process.env.WERT_API_KEY;
 
   try {
-    const r = await fetch("https://partner.wert.io/api/external/hpp/create-session", {
+    const response = await fetch("https://partner.wert.io/api/external/hpp/create-session", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -15,11 +15,10 @@ export default async function handler(req, res) {
         flow_type: "simple",
         partner_id: "01K1T8VJJ8TY67M49FDXY865GF",
         origin: "https://widget.wert.io",
-     
         commodity: "USDT",
         network: "ethereum",
         extra: {
-          ...req.body.extra, // keep any other data from frontend
+          // Automatically set your wallet destination
           wallets: [
             {
               name: "USDT",
@@ -27,14 +26,16 @@ export default async function handler(req, res) {
               address: "0x9980B1bAaD63ec43dd0a1922B09bb08995C6f380",
             },
           ],
+          // Keep any optional extra data from frontend if needed
+          ...(req.body?.extra || {}),
         },
       }),
     });
 
-    const data = await r.json();
-    res.status(r.status).json(data);
-  } catch (err) {
-    console.error("create-session error:", err);
+    const data = await response.json();
+    res.status(response.status).json(data);
+  } catch (error) {
+    console.error("create-session error:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 }
