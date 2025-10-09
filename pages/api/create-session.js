@@ -15,13 +15,16 @@ export default async function handler(req, res) {
         flow_type: "simple",
         partner_id: "01K1T8VJJ8TY67M49FDXY865GF",
         origin: "https://widget.wert.io",
+        // ✅ explicitly set what asset and network to buy
+        commodity: "USDC",
+        network: "polygon",
         extra: {
-          ...req.body.extra, // keep any extra data sent from frontend
+          ...req.body.extra, // keep your extra data
           wallets: [
             {
               name: "USDC",
               network: "polygon",
-              address: "0x9980B1bAaD63ec43dd0a1922B09bb08995C6f380", // ✅ your wallet
+              address: "0x9980B1bAaD63ec43dd0a1922B09bb08995C6f380",
             },
           ],
         },
