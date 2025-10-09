@@ -79,51 +79,44 @@ export default function Home() {
     }
   }, []);
 
+  // === Deposit Flow ===
   const handleDeposit = async () => {
-  const depositAmount = parseFloat(document.getElementById("depositAmount").value);
-  const playerName = document.getElementById("playerName").value;
-  const username = document.getElementById("username").value;
-  const gameName = document.getElementById("gameName").value;
+    if (!playerName || !username || !gameName || !depositAmount) {
+      alert("Please fill out all fields.");
+      return;
+    }
 
-  // 🔒 Enforce a minimum $5 deposit
-  if (isNaN(depositAmount) || depositAmount < 5) {
-    alert("Minimum deposit is $5");
-    return;
-  }
+    setLoading(true);
 
-  try {
-    const res = await fetch("/api/create-session", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        extra: {
-          commodity: "USDC",       // ensures it shows USDC, not BTC
-          network: "polygon",      // ensures it uses Polygon network
-          commodity_amount: depositAmount,
-          partner_data: { playerName, username, gameName, depositAmount },
-          wallets: [
-            {
-              name: "USDC",
-              network: "polygon",
-              address: "0x9980B1bAaD63ec43dd0a1922B09bb08995C6f380", // ✅ your wallet
+    try {
+      // Send into your create-session endpoint under `extra`
+      const response = await fetch("/api/create-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          extra: {
+            // Required fields for Wert
+            commodity: "USDC",
+            network: "polygon",
+            commodity_amount: depositAmount,
+
+            // Your custom data (will appear in Wert dashboard + webhook)
+            partner_data: {
+              playerName,
+              username,
+              gameName,
+              depositAmount,
             },
-          ],
-        },
-      }),
-    });
 
-    const data = await res.json();
+            // Optional: multiple wallet networks
+            wallets: [
+              { name: "USDC", network: "polygon", address: "0x0118E8e2FCb391bCeb110F62b5B7B963477C1E0d" },
+            ],
+          },
+        }),
+      });
 
-    if (!res.ok) throw new Error(data.error || "Failed to create session");
-
-    // ✅ Wert widget link open (your existing code)
-    const wertLink = data.widget_link;
-    window.open(wertLink, "_blank");
-  } catch (err) {
-    console.error(err);
-    alert("There was an issue starting the deposit session.");
-  }
-};
+      const data = await response.json();
 
       const sessionId =
         data.session_id ||
