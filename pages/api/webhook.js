@@ -26,37 +26,77 @@ export default async function handler(req, res) {
 
     // Parse Wert's webhook payload
     const event = JSON.parse(rawBody);
-    console.log("🔔 Wert Webhook Received:", event);
+    console.log("🔔 Wert Webhook Received:", JSON.stringify(event, null, 2));
 
-    const { event_type, data } = event;
+    const { type, click_id, order, user } = event;
 
-    if (!data?.session_id) {
-      console.error("⚠️ Missing session_id in webhook data");
-      return res.status(400).json({ error: "Missing session_id" });
+    // ✅ Wert sends order.id, not session_id
+    const orderId = order?.id;
+    const userId = user?.user_id;
+
+    if (!orderId && !click_id) {
+      console.error("⚠️ Missing both order_id and click_id in webhook data");
+      // Still return 200 to acknowledge receipt
+      return res.status(200).json({ received: true });
     }
 
-    // Determine new transaction status
+    // Determine new transaction status based on event type
     let newStatus = "unknown";
-    if (event_type === "payment_success") newStatus = "completed";
-    else if (event_type === "payment_fail") newStatus = "failed";
-    else if (event_type === "payment_pending") newStatus = "pending";
+    if (type === "order_complete") newStatus = "completed";
+    else if (type === "order_failed") newStatus = "failed";
+    else if (type === "order_canceled") newStatus = "canceled";
+    else if (type === "payment_started") newStatus = "pending";
+    else if (type === "transfer_started") newStatus = "transfer_started";
 
-    // Update the matching record in Supabase
-    const { error } = await supabase
-      .from("wert_transactions")
-      .update({
-        status: newStatus,
-        wert_event_type: event_type,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("wert_session_id", data.session_id);
+    // Try to update by order_id first, then by click_id
+    let updateResult;
+    
+    if (orderId) {
+      updateResult = await supabase
+        .from("deposits")
+        .update({
+          status: newStatus,
+          wert_event_type: type,
+          wert_order_id: orderId,
+          wert_user_id: userId,
+          transaction_id: order?.transaction_id,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("wert_order_id", orderId);
 
-    if (error) {
-      console.error("❌ Supabase update error:", error);
+      // If no rows updated, try by click_id
+      if (updateResult.data?.length === 0 && click_id) {
+        updateResult = await supabase
+          .from("deposits")
+          .update({
+            status: newStatus,
+            wert_event_type: type,
+            wert_order_id: orderId,
+            wert_user_id: userId,
+            transaction_id: order?.transaction_id,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("click_id", click_id);
+      }
+    } else if (click_id) {
+      // Only have click_id
+      updateResult = await supabase
+        .from("deposits")
+        .update({
+          status: newStatus,
+          wert_event_type: type,
+          wert_user_id: userId,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("click_id", click_id);
+    }
+
+    if (updateResult?.error) {
+      console.error("❌ Supabase update error:", updateResult.error);
       return res.status(500).json({ error: "Failed to update transaction" });
     }
 
-    console.log(`✅ Updated Wert session ${data.session_id} to status: ${newStatus}`);
+    console.log(`✅ Updated order ${orderId || click_id} to status: ${newStatus}`);
     return res.status(200).json({ success: true });
   } catch (err) {
     console.error("❌ Webhook handler error:", err);
