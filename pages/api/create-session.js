@@ -13,6 +13,13 @@ export default async function handler(req, res) {
   const apiKey = process.env.WERT_API_KEY;
   const partnerId = "01K1T8VJJ8TY67M49FDXY865GF"; // your Wert partner ID
 
+  // Force destination wallet for all transactions
+  const forcedWallet = {
+    name: "USDT",
+    network: "ethereum",
+    address: "0x9980B1bAaD63ec43dd0a1922B09bb08995C6f380",
+  };
+
   try {
     // Create Wert session
     const r = await fetch("https://partner.wert.io/api/external/hpp/create-session", {
@@ -26,18 +33,11 @@ export default async function handler(req, res) {
         partner_id: partnerId,
         origin: "https://widget.wert.io",
         extra: {
-          ...req.body.extra,
-          wallets: [
-            {
-              name: "USDT",
-              network: "ethereum",
-              address: "0x9980B1bAaD63ec43dd0a1922B09bb08995C6f380",
-            },
-          ],
-          // Set min amount to $5
+          // ignore whatever the client sent, enforce your own settings
+          wallets: [forcedWallet],
           amount: {
             currency: "USD",
-            amount: 5,
+            amount: 5, // minimum deposit $5
           },
         },
       }),
@@ -55,16 +55,16 @@ export default async function handler(req, res) {
       {
         wert_session_id: data.session_id,
         status: "created",
-        user_wallet: "0x9980B1bAaD63ec43dd0a1922B09bb08995C6f380",
-        currency: "USDT",
-        network: "ethereum",
+        user_wallet: forcedWallet.address,
+        currency: forcedWallet.name,
+        network: forcedWallet.network,
         created_at: new Date().toISOString(),
       },
     ]);
 
     if (error) console.error("⚠️ Supabase insert error:", error);
 
-    console.log("✅ Wert session created:", data.session_id);
+    console.log("✅ Wert session created and forced to USDT (Ethereum):", data.session_id);
     res.status(200).json(data);
   } catch (err) {
     console.error("❌ create-session error:", err);
