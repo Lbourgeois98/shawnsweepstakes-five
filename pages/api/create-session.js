@@ -18,7 +18,6 @@ export default async function handler(req, res) {
      
         commodity: "USDT",
         network: "ethereum",
-        address: "0x9980B1bAaD63ec43dd0a1922B09bb08995C6f380"
         extra: {
           ...req.body.extra, // keep any other data from frontend
           wallets: [
