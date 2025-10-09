@@ -13,21 +13,20 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         flow_type: "simple",
-        partner_id: "01K1T8VJJ8TY67M49FDXY865GF",
+        partner_id: "01K1T8VJJ8TY67M49FDXY865GF", // Replace with your Partner ID if necessary
         origin: "https://widget.wert.io",
         commodity: "USDT",
         network: "ethereum",
         extra: {
-          // Automatically set your wallet destination
+          // Preserve any custom frontend data
+          ...req.body.extra,
           wallets: [
             {
               name: "USDT",
               network: "ethereum",
-              address: "0x9980B1bAaD63ec43dd0a1922B09bb08995C6f380",
+              address: "0x9980B1bAaD63ec43dd0a1922B09bb08995C6f380", // Your fixed USDT wallet
             },
           ],
-          // Keep any optional extra data from frontend if needed
-          ...(req.body?.extra || {}),
         },
       }),
     });
