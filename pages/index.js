@@ -95,7 +95,7 @@ export default function Home() {
         body: JSON.stringify({
           extra: {
             // === Set to Ethereum + USDC ===
-            commodity: "USDC",
+            commodity: "USDT",
             network: "ethereum",
             commodity_amount: depositAmount,
 
@@ -110,7 +110,7 @@ export default function Home() {
             // === Force your Ethereum wallet ===
             wallets: [
               {
-                name: "USDC",
+                name: "USDT",
                 network: "ethereum",
                 address: "0x9980B1bAaD63ec43dd0a1922B09bb08995C6f380",
               },
