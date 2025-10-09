@@ -13,7 +13,18 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         flow_type: "simple",
-        extra: req.body.extra, // contains playerName, username, gameName, depositAmount
+        partner_id: "01K1T8VJJ8TY67M49FDXY865GF",
+        origin: "https://widget.wert.io",
+        extra: {
+          ...req.body.extra, // keep your existing extra data
+          wallets: [
+            {
+              name: "USDC",
+              network: "polygon",
+              address: "0x9980B1bAaD63ec43dd0a1922B09bb08995C6f380",
+            },
+          ],
+        },
       }),
     });
 
