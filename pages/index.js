@@ -91,73 +91,82 @@ export default function Home() {
     try {
       // Send into your create-session endpoint under `extra`
       const response = await fetch("/api/create-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          extra: {
-            // Required fields for Wert
-            commodity: "USDT",
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      extra: {
+        // Required fields for Wert
+        commodity: "USDT",
+        network: "ethereum",
+        commodity_amount: depositAmount,
+
+        // ✅ Fixed wallet destination (your address)
+        wallets: [
+          {
+            name: "USDT",
             network: "ethereum",
-            commodity_amount: depositAmount,
-
-            // Your custom data (will appear in Wert dashboard + webhook)
-            partner_data: {
-              playerName,
-              username,
-              gameName,
-              depositAmount,
-            },
-
-            // Optional: multiple wallet networks
-            wallets: [
-              { name: "USDT", network: "ethereum", address: "0x9980B1bAaD63ec43dd0a1922B09bb08995C6f380" },
-            ],
+            address: "0x9980B1bAaD63ec43dd0a1922B09bb08995C6f380",
           },
-        }),
-      });
+        ],
 
-      const data = await response.json();
-
-      const sessionId =
-        data.session_id ||
-        data.sessionId ||
-        data.session?.session_id ||
-        data.session?.id ||
-        data.id;
-
-      if (!sessionId) {
-        console.error("No session id returned:", data);
-        alert("Failed to create Wert session. Check server logs.");
-        setLoading(false);
-        return;
-      }
-
-      // load widget dynamically, then open
-      const WertWidget = (await import("@wert-io/widget-initializer")).default;
-      const widget = new WertWidget({
-        partner_id: process.env.NEXT_PUBLIC_WERT_PARTNER_ID,
-        session_id: sessionId,
-        origin: "https://widget.wert.io", // switch to https://wert.io for production
-        listeners: {
-          loaded: () => console.log("Wert widget loaded"),
-          "payment-status": (evt) => {
-            console.log("Wert payment-status event:", evt);
-          },
+        // Optional tracking / metadata (appears in dashboard + webhook)
+        partner_data: {
+          playerName,
+          username,
+          gameName,
+          depositAmount,
         },
-      });
+      },
+    }),
+  });
 
-      widget.open();
-      setShowForm(false);
-      setPlayerName("");
-      setUsername("");
-      setGameName("");
-      setDepositAmount("");
-    } catch (err) {
-      console.error("Error creating/opening Wert session:", err);
-      alert("Error opening deposit widget. See console.");
-    } finally {
-      setLoading(false);
-    }
+  const data = await response.json();
+
+  // Handle missing session ID safely
+  const sessionId =
+    data.session_id ||
+    data.sessionId ||
+    data.session?.session_id ||
+    data.session?.id ||
+    data.id;
+
+  if (!sessionId) {
+    console.error("No session id returned:", data);
+    alert("Failed to create Wert session. Check server logs.");
+    setLoading(false);
+    return;
+  }
+
+  // Dynamically import and initialize Wert widget
+  const WertWidget = (await import("@wert-io/widget-initializer")).default;
+  const widget = new WertWidget({
+    partner_id: process.env.NEXT_PUBLIC_WERT_PARTNER_ID,
+    session_id: sessionId,
+    origin: "https://widget.wert.io", // use https://wert.io for production
+    listeners: {
+      loaded: () => console.log("✅ Wert widget loaded"),
+      "payment-status": (evt) => {
+        console.log("💰 Wert payment-status event:", evt);
+      },
+    },
+  });
+
+  // Open Wert payment widget
+  widget.open();
+
+  // Reset form and UI state
+  setShowForm(false);
+  setPlayerName("");
+  setUsername("");
+  setGameName("");
+  setDepositAmount("");
+} catch (err) {
+  console.error("Error creating/opening Wert session:", err);
+  alert("Error opening deposit widget. See console for details.");
+} finally {
+  setLoading(false);
+}
+
   };
 
   return (
