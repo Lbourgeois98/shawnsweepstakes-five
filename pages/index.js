@@ -79,8 +79,8 @@ export default function Home() {
     }
   }, []);
 
-  // === Deposit Flow ===
-  const handleDeposit = async () => {
+// === Deposit Flow ===
+    const handleDeposit = async () => {
     if (!playerName || !username || !gameName || !depositAmount) {
       alert("Please fill out all fields.");
       return;
@@ -89,6 +89,9 @@ export default function Home() {
     setLoading(true);
 
     try {
+      // ✅ Generate unique click_id for tracking
+      const clickId = `click_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
       // ✅ Create Wert session with all required parameters
       const response = await fetch("/api/create-session", {
         method: "POST",
@@ -129,6 +132,7 @@ export default function Home() {
             gameName,
             depositAmount: parseFloat(depositAmount),
             sessionId,
+            clickId, // ✅ Include click_id for webhook matching
             timestamp: new Date().toISOString(),
           }),
         });
@@ -143,11 +147,29 @@ export default function Home() {
       const widget = new WertWidget({
         partner_id: process.env.NEXT_PUBLIC_WERT_PARTNER_ID || "01K1T8VJJ8TY67M49FDXY865GF",
         session_id: sessionId,
+        click_id: clickId, // ✅ Pass click_id to Wert widget
         origin: "https://widget.wert.io",
         listeners: {
           loaded: () => console.log("✅ Wert widget loaded"),
-          "payment-status": (evt) => {
+          "payment-status": async (evt) => {
             console.log("💰 Wert payment-status event:", evt);
+            
+            // ✅ Update Supabase when we receive order_id from widget
+            if (evt.order_id) {
+              try {
+                await fetch("/api/update-order", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    clickId,
+                    orderId: evt.order_id,
+                    status: evt.status,
+                  }),
+                });
+              } catch (err) {
+                console.error("Failed to update order:", err);
+              }
+            }
           },
         },
       });
