@@ -16,12 +16,12 @@ export default async function handler(req, res) {
         partner_id: "01K1T8VJJ8TY67M49FDXY865GF",
         origin: "https://widget.wert.io",
         extra: {
-          ...req.body.extra, // keep your existing extra data
+          ...req.body.extra, // keep any extra data sent from frontend
           wallets: [
             {
               name: "USDC",
               network: "polygon",
-              address: "0x9980B1bAaD63ec43dd0a1922B09bb08995C6f380",
+              address: "0x9980B1bAaD63ec43dd0a1922B09bb08995C6f380", // ✅ your wallet
             },
           ],
         },
