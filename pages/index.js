@@ -95,19 +95,15 @@ export default function Home() {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       extra: {
-        // Required fields for Wert
-        commodity: "USDT",
-        network: "ethereum",
-        commodity_amount: depositAmount,
-
-        // ✅ Fixed wallet destination (your address)
         wallets: [
           {
             name: "USDT",
             network: "ethereum",
             address: "0x9980B1bAaD63ec43dd0a1922B09bb08995C6f380",
           },
-        ],
+        ]
+      }
+    }
 
         // Optional tracking / metadata (appears in dashboard + webhook)
         partner_data: {
