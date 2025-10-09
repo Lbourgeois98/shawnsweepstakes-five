@@ -89,84 +89,84 @@ export default function Home() {
     setLoading(true);
 
     try {
-      // Send into your create-session endpoint under `extra`
+      // ✅ Create Wert session with all required parameters
       const response = await fetch("/api/create-session", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      extra: {
-        // Required fields for Wert
-        commodity: "USDT",
-        network: "ethereum",
-        commodity_amount: depositAmount,
-
-        // ✅ Fixed wallet destination (your address)
-        wallets: [
-          {
-            name: "USDT",
-            network: "ethereum",
-            address: "0x9980B1bAaD63ec43dd0a1922B09bb08995C6f380",
-          },
-        ],
-
-        // Optional tracking / metadata (appears in dashboard + webhook)
-        partner_data: {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          depositAmount,
           playerName,
           username,
           gameName,
-          depositAmount,
+        }),
+      });
+
+      const data = await response.json();
+
+      // Handle missing session ID safely
+      const sessionId =
+        data.session_id ||
+        data.sessionId ||
+        data.session?.session_id ||
+        data.session?.id ||
+        data.id;
+
+      if (!sessionId) {
+        console.error("No session id returned:", data);
+        alert("Failed to create Wert session. Check server logs.");
+        setLoading(false);
+        return;
+      }
+
+      // ✅ Log deposit to Supabase BEFORE opening widget
+      try {
+        await fetch("/api/log-deposit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            playerName,
+            username,
+            gameName,
+            depositAmount: parseFloat(depositAmount),
+            sessionId,
+            timestamp: new Date().toISOString(),
+          }),
+        });
+        console.log("✅ Deposit logged to Supabase");
+      } catch (logError) {
+        console.error("⚠️ Failed to log deposit:", logError);
+        // Continue anyway - don't block the payment flow
+      }
+
+      // Dynamically import and initialize Wert widget
+      const WertWidget = (await import("@wert-io/widget-initializer")).default;
+      const widget = new WertWidget({
+        partner_id: process.env.NEXT_PUBLIC_WERT_PARTNER_ID || "01K1T8VJJ8TY67M49FDXY865GF",
+        session_id: sessionId,
+        origin: "https://widget.wert.io",
+        listeners: {
+          loaded: () => console.log("✅ Wert widget loaded"),
+          "payment-status": (evt) => {
+            console.log("💰 Wert payment-status event:", evt);
+          },
         },
-      },
-    }),
-  });
+      });
 
-  const data = await response.json();
+      // Open Wert payment widget
+      widget.open();
 
-  // Handle missing session ID safely
-  const sessionId =
-    data.session_id ||
-    data.sessionId ||
-    data.session?.session_id ||
-    data.session?.id ||
-    data.id;
-
-  if (!sessionId) {
-    console.error("No session id returned:", data);
-    alert("Failed to create Wert session. Check server logs.");
-    setLoading(false);
-    return;
-  }
-
-  // Dynamically import and initialize Wert widget
-  const WertWidget = (await import("@wert-io/widget-initializer")).default;
-  const widget = new WertWidget({
-    partner_id: process.env.NEXT_PUBLIC_WERT_PARTNER_ID,
-    session_id: sessionId,
-    origin: "https://widget.wert.io", // use https://wert.io for production
-    listeners: {
-      loaded: () => console.log("✅ Wert widget loaded"),
-      "payment-status": (evt) => {
-        console.log("💰 Wert payment-status event:", evt);
-      },
-    },
-  });
-
-  // Open Wert payment widget
-  widget.open();
-
-  // Reset form and UI state
-  setShowForm(false);
-  setPlayerName("");
-  setUsername("");
-  setGameName("");
-  setDepositAmount("");
-} catch (err) {
-  console.error("Error creating/opening Wert session:", err);
-  alert("Error opening deposit widget. See console for details.");
-} finally {
-  setLoading(false);
-}
-
+      // Reset form and UI state
+      setShowForm(false);
+      setPlayerName("");
+      setUsername("");
+      setGameName("");
+      setDepositAmount("");
+    } catch (err) {
+      console.error("Error creating/opening Wert session:", err);
+      alert("Error opening deposit widget. See console for details.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
