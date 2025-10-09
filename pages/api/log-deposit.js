@@ -2,14 +2,14 @@ import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY // ✅ corrected variable name
+  process.env.SUPABASE_SERVICE_KEY
 );
 
 export default async function handler(req, res) {
   if (req.method !== "POST")
     return res.status(405).json({ error: "Method not allowed" });
 
-  const { playerName, username, gameName, depositAmount, sessionId, timestamp } = req.body;
+  const { playerName, username, gameName, depositAmount, sessionId, clickId, timestamp } = req.body;
 
   try {
     const { data, error } = await supabase
@@ -21,6 +21,8 @@ export default async function handler(req, res) {
           game_name: gameName,
           deposit_amount: depositAmount,
           wert_session_id: sessionId,
+          click_id: clickId, // ✅ Added click_id for tracking
+          status: "initiated", // ✅ Initial status
           created_at: timestamp || new Date().toISOString(),
         },
       ]);
