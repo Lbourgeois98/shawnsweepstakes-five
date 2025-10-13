@@ -295,13 +295,13 @@ return (
 }
 
 .payment-method-btn {
-  padding: 20px 12px;
-  border-radius: 8px;
+  padding: 30px 20px;
+  border-radius: 12px;
   border: none;
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s;
-  font-size: 15px;
+  font-size: 16px;
   background: linear-gradient(90deg, #facc15, #fcd34d);
   color: black;
   box-shadow: 0 4px 12px rgba(255, 215, 0, 0.25);
@@ -310,8 +310,8 @@ return (
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  min-height: 120px;
+  gap: 14px;
+  min-height: 180px;
 }
 
 .payment-method-btn:hover {
@@ -339,17 +339,22 @@ return (
 }
 
 .payment-logos img {
-  width: 28px;
-  height: 28px;
+  width: 42px;
+  height: 42px;
   object-fit: contain;
   filter: drop-shadow(0 0 2px rgba(0,0,0,0.3));
+}
+
+.payment-logos img.bitcoin-logo {
+  width: 56px;
+  height: 56px;
 }
 
 .payment-btn-text {
   font-weight: bold;
   color: black;
-  font-size: 13px;
-  margin-top: 4px;
+  font-size: 15px;
+  margin-top: 6px;
 }`}</style>
 
         <video
@@ -468,18 +473,17 @@ return (
 
                         {/* Bitcoin (Paidly) */}
                         <button
-  className="payment-method-btn"
-  onClick={() => {
-    setShowDepositOptions(false);
-    setShowBTCForm(true);
-  }}
-  disabled={loading}
->
-  <div className="payment-logos">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Bitcoin_logo.svg" alt="Bitcoin" />
-  </div>
-  <span className="payment-btn-text">Bitcoin (Paidly)</span>
-</button>
+                            className="payment-method-btn"
+                            onClick={() => {
+                                setShowDepositOptions(false);
+                                setShowBTCForm(true);
+                            }}
+                            disabled={loading}
+                        >
+                            <div className="payment-logos">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Bitcoin_logo.svg" alt="Bitcoin" className="bitcoin-logo" />
+                            </div>
+                        </button>
                     </div>
                     <button className="cancel" onClick={() => setShowDepositOptions(false)}>
                         Cancel
