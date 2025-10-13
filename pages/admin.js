@@ -16,7 +16,7 @@ export default function Admin() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [password, setPassword] = useState("");
 
-  // 🧠 Password check (client-side)
+  // 🧠 Handle login
   const handleLogin = (e) => {
     e.preventDefault();
     if (password === process.env.NEXT_PUBLIC_ADMIN_PASS) {
@@ -26,7 +26,7 @@ export default function Admin() {
     }
   };
 
-  // 🧾 Fetch all transactions from API
+  // 🧾 Fetch transactions
   const fetchAllTransactions = async () => {
     try {
       setLoading(true);
@@ -40,7 +40,7 @@ export default function Admin() {
     }
   };
 
-  // 🔄 Live Supabase listener
+  // 🔄 Supabase realtime
   useEffect(() => {
     if (!loggedIn) return;
     fetchAllTransactions();
@@ -49,49 +49,60 @@ export default function Admin() {
     const subscriptions = tables.map((table) =>
       supabase
         .channel(`public:${table}`)
-        .on(
-          "postgres_changes",
-          { event: "*", schema: "public", table },
-          () => fetchAllTransactions()
+        .on("postgres_changes", { event: "*", schema: "public", table }, () =>
+          fetchAllTransactions()
         )
         .subscribe()
     );
 
-    return () => {
-      subscriptions.forEach((sub) => supabase.removeChannel(sub));
-    };
+    return () => subscriptions.forEach((sub) => supabase.removeChannel(sub));
   }, [loggedIn]);
 
-  // 🧱 If not logged in → show password screen
+  // 🧱 LOGIN PAGE (styled)
   if (!loggedIn) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 to-black text-white">
-        <form
-          onSubmit={handleLogin}
-          className="bg-gray-800 p-8 rounded-2xl shadow-lg border border-gray-700 w-80"
-        >
-          <h1 className="text-2xl font-bold mb-6 text-center text-yellow-400">
-            Admin Login
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black flex items-center justify-center">
+        <Head>
+          <title>Admin Login - Shawn Sweeps</title>
+          <script src="https://cdn.tailwindcss.com"></script>
+        </Head>
+
+        <div className="bg-gray-900/80 border border-yellow-500/30 rounded-3xl shadow-2xl p-10 w-96 text-center backdrop-blur-md">
+          <h1 className="text-4xl font-extrabold text-yellow-400 mb-6">
+            Admin Access
           </h1>
-          <input
-            type="password"
-            placeholder="Enter password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-2 mb-4 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-yellow-400"
-          />
-          <button
-            type="submit"
-            className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 rounded-lg transition"
-          >
-            Login
-          </button>
-        </form>
+          <p className="text-gray-400 mb-8 text-sm">
+            Secure login required to view dashboard
+          </p>
+
+          <form onSubmit={handleLogin}>
+            <input
+              type="password"
+              placeholder="Enter admin password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-3 bg-black border border-yellow-500/40 text-white rounded-xl focus:outline-none focus:border-yellow-400 mb-6 placeholder-gray-500"
+            />
+            <button
+              type="submit"
+              className="w-full bg-gradient-to-r from-yellow-500 to-yellow-400 text-black font-semibold py-3 rounded-xl shadow-lg hover:shadow-yellow-500/50 transition-transform transform hover:-translate-y-1"
+            >
+              Enter Dashboard
+            </button>
+          </form>
+
+          <div className="mt-8">
+            <div className="flex items-center justify-center space-x-2">
+              <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+              <span className="text-sm text-gray-500">Authorized Personnel Only</span>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
 
-  // 🧮 Filtering & stats
+  // 🧮 FILTERING + STATS
   const filteredTransactions = allTransactions.filter((tx) => {
     const nameMatch =
       tx.player_name?.toLowerCase().includes(filter.toLowerCase()) ||
@@ -105,7 +116,6 @@ export default function Admin() {
     (sum, tx) => sum + (parseFloat(tx.deposit_amount) || 0),
     0
   );
-
   const completedDeposits = filteredTransactions.filter(
     (tx) => tx.status === "completed"
   ).length;
@@ -127,7 +137,7 @@ export default function Admin() {
     }
   };
 
-  // ✅ Dashboard UI
+  // ✅ DASHBOARD UI
   return (
     <>
       <Head>
@@ -138,10 +148,12 @@ export default function Admin() {
       <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white p-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-4xl font-bold text-yellow-400">Admin Dashboard</h1>
+            <h1 className="text-4xl font-bold text-yellow-400">
+              Admin Dashboard
+            </h1>
           </div>
 
-          {/* Stats */}
+          {/* STATS */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
               <p className="text-gray-400 text-sm">Total Deposits</p>
@@ -163,7 +175,7 @@ export default function Admin() {
             </div>
           </div>
 
-          {/* Filters */}
+          {/* FILTERS */}
           <div className="flex flex-col md:flex-row gap-4 mb-6">
             <input
               type="text"
@@ -185,7 +197,7 @@ export default function Admin() {
             </select>
           </div>
 
-          {/* Transactions Table */}
+          {/* TABLE */}
           {loading ? (
             <div className="text-center py-12">
               <p className="text-gray-400">Loading transactions...</p>
@@ -207,10 +219,19 @@ export default function Admin() {
                 <tbody>
                   {filteredTransactions.length > 0 ? (
                     filteredTransactions.map((tx) => (
-                      <tr key={`${tx.table}-${tx.id}`} className="border-b border-gray-700 hover:bg-gray-700 transition">
-                        <td className="px-6 py-4 text-sm">{tx.player_name || "N/A"}</td>
-                        <td className="px-6 py-4 text-sm">{tx.username || "N/A"}</td>
-                        <td className="px-6 py-4 text-sm">{tx.game_name || "N/A"}</td>
+                      <tr
+                        key={`${tx.table}-${tx.id}`}
+                        className="border-b border-gray-700 hover:bg-gray-700 transition"
+                      >
+                        <td className="px-6 py-4 text-sm">
+                          {tx.player_name || "N/A"}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          {tx.username || "N/A"}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          {tx.game_name || "N/A"}
+                        </td>
                         <td className="px-6 py-4 text-sm font-semibold text-green-400">
                           ${parseFloat(tx.deposit_amount || 0).toFixed(2)}
                         </td>
@@ -220,7 +241,11 @@ export default function Admin() {
                           </span>
                         </td>
                         <td className="px-6 py-4 text-sm">
-                          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(tx.status)}`}>
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
+                              tx.status
+                            )}`}
+                          >
                             {tx.status || "unknown"}
                           </span>
                         </td>
