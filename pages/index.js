@@ -90,10 +90,8 @@ export default function Home() {
     setLoading(true);
 
     try {
-      // ✅ Generate unique click_id for tracking
       const clickId = `click_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-      // ✅ Create Wert session with all required parameters
       const response = await fetch("/api/create-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -107,7 +105,6 @@ export default function Home() {
 
       const data = await response.json();
 
-      // Handle missing session ID safely
       const sessionId =
         data.session_id ||
         data.sessionId ||
@@ -122,7 +119,6 @@ export default function Home() {
         return;
       }
 
-      // ✅ Log deposit to Supabase BEFORE opening widget
       try {
         await fetch("/api/log-deposit", {
           method: "POST",
@@ -133,29 +129,26 @@ export default function Home() {
             gameName,
             depositAmount: parseFloat(depositAmount),
             sessionId,
-            clickId, // ✅ Include click_id for webhook matching
+            clickId,
             timestamp: new Date().toISOString(),
           }),
         });
         console.log("✅ Deposit logged to Supabase");
       } catch (logError) {
         console.error("⚠️ Failed to log deposit:", logError);
-        // Continue anyway - don't block the payment flow
       }
 
-      // Dynamically import and initialize Wert widget
       const WertWidget = (await import("@wert-io/widget-initializer")).default;
       const widget = new WertWidget({
         partner_id: process.env.NEXT_PUBLIC_WERT_PARTNER_ID || "01K1T8VJJ8TY67M49FDXY865GF",
         session_id: sessionId,
-        click_id: clickId, // ✅ Pass click_id to Wert widget
+        click_id: clickId,
         origin: "https://widget.wert.io",
         listeners: {
           loaded: () => console.log("✅ Wert widget loaded"),
           "payment-status": async (evt) => {
             console.log("💰 Wert payment-status event:", evt);
             
-            // ✅ Update Supabase when we receive order_id from widget
             if (evt.order_id) {
               try {
                 await fetch("/api/update-order", {
@@ -175,10 +168,8 @@ export default function Home() {
         },
       });
 
-      // Open Wert payment widget
       widget.open();
 
-      // Reset form and UI state
       setShowWertForm(false);
       setShowDepositOptions(false);
       setPlayerName("");
@@ -205,7 +196,6 @@ export default function Home() {
         .social-buttons { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; max-width: 600px; margin: 20px auto 40px; padding: 0 15px; position: relative; z-index: 10; }
         .social-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 16px 24px; background: rgba(250, 10, 10, 0.9); color: white; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 16px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(250, 10, 10, 0.3); text-align: center; cursor:pointer; border: none; }
         .social-btn:hover { background: rgba(224, 9, 9, 0.9); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(250, 10, 10, 0.4); }
-        /* deposit (gold) button variant */
         .deposit-btn { grid-column: 1 / -1; background: linear-gradient(90deg, #facc15, #fcd34d); color: black; box-shadow: 0 4px 12px rgba(255, 215, 0, 0.25); padding: 20px 28px; font-size: 18px; }
         .deposit-btn:hover { background: linear-gradient(90deg, #fde047, #facc15); transform: translateY(-2px); }
 
@@ -218,7 +208,6 @@ export default function Home() {
         .card-label { position:absolute; left:8px; bottom:8px; right:8px; color:#fff; font-size:12px; background:rgba(0,0,0,0.4); padding:6px 8px; border-radius:6px; text-align:center; }
         .game-card:hover { transform: scale(1.08); box-shadow: 0 0 25px rgba(250,10,10,0.6); }
 
-        /* Popup form */
         .popup { position: fixed; top: 0; left: 0; right: 0; bottom: 0; display:flex; align-items:center; justify-content:center; background: rgba(0,0,0,0.7); z-index: 9999; }
         .form-box { background: #121212; padding: 22px; border-radius: 12px; width: 92%; max-width: 420px; border: 2px solid rgba(255, 215, 0, 0.18); box-shadow: 0 0 20px rgba(255,215,0,0.06); color: white; text-align: center; }
         .form-box input { width: 100%; padding: 12px 14px; margin-bottom:10px; border-radius:8px; border: none; font-size:14px; color: black; }
@@ -226,23 +215,15 @@ export default function Home() {
         .form-box .submit[disabled] { opacity: 0.6; cursor: not-allowed; }
         .form-box .cancel { margin-top:8px; background:transparent; color:#ccc; border:none; cursor:pointer; }
         
-        /* Payment method buttons inside popup */
         .payment-methods { margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
-        .payment-method-btn { width: 100%; padding: 16px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; font-size: 15px; }
-        .payment-method-btn:hover { transform: translateY(-2px); }
+        .payment-method-btn { width: 100%; padding: 16px 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 15px; background: linear-gradient(90deg, #facc15, #fcd34d); color: black; box-shadow: 0 4px 12px rgba(255, 215, 0, 0.25); text-decoration: none; display: block; }
+        .payment-method-btn:hover { background: linear-gradient(90deg, #fde047, #facc15); box-shadow: 0 6px 16px rgba(255, 215, 0, 0.35); transform: translateY(-2px); }
         .payment-method-btn[disabled] { opacity: 0.6; cursor: not-allowed; }
         
-        .wert-btn { background: linear-gradient(90deg, #facc15, #fcd34d); color: black; box-shadow: 0 4px 12px rgba(255, 215, 0, 0.25); }
-        .wert-btn:hover { background: linear-gradient(90deg, #fde047, #facc15); box-shadow: 0 6px 16px rgba(255, 215, 0, 0.35); }
+        .payment-logos { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 8px; }
+        .payment-logos img { height: 24px; width: auto; }
         
-        .btc-btn { background: linear-gradient(90deg, #f7931a, #ff9b28); color: white; box-shadow: 0 4px 12px rgba(247, 147, 26, 0.3); }
-        .btc-btn:hover { background: linear-gradient(90deg, #ff9b28, #f7931a); box-shadow: 0 6px 16px rgba(247, 147, 26, 0.4); }
-        
-        .tierlock-btn { background: linear-gradient(90deg, #8b5cf6, #a78bfa); color: white; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3); }
-        .tierlock-btn:hover { background: linear-gradient(90deg, #a78bfa, #8b5cf6); box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4); }
-        
-        .payment-logos { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: center; }
-        .payment-logos img { height: 18px; width: auto; filter: brightness(0); }
+        .payment-btn-text { font-weight: bold; color: black; }
       `}</style>
 
       <video id="bg-video" src="https://shawn-sweepstakes.carrd.co/assets/videos/bg.mp4?v=0c91e9dc" autoPlay loop muted playsInline></video>
@@ -265,7 +246,8 @@ export default function Home() {
           <div className="form-box" role="dialog" aria-modal="true">
             <h3 style={{marginBottom:16}}>Choose Payment Method</h3>
             <div className="payment-methods">
-              <button className="payment-method-btn wert-btn" onClick={() => setShowWertForm(true)}>
+              
+              <button className="payment-method-btn" onClick={() => setShowWertForm(true)}>
                 <div className="payment-logos">
                   <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
                   <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
@@ -274,39 +256,72 @@ export default function Home() {
                   <img src="https://upload.wikimedia.org/wikipedia/commons/5/57/Discover_Card_logo.svg" alt="Discover" />
                   <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/American_Express_logo.svg" alt="Amex" />
                 </div>
-                <span>Pay with Card/Wallet</span>
+                <span className="payment-btn-text">Pay with Card/Wallet (Wert)</span>
               </button>
               
-              <button className="payment-method-btn btc-btn" onClick={() => alert("Bitcoin payment coming soon!")}>
-               <span style={{fontSize: '20px'}}>₿</span> Pay with Bitcoin</button>
-               <button className="payment-method-btn tierlock-btn" onClick={() => alert("Tierlock payment coming soon!")}>
-            🔒 Pay with Tierlock
-          </button>
-        </div>
-        
-        <button className="cancel" onClick={() => setShowDepositOptions(false)}>Cancel</button>
-      </div>
-    </div>
-  )}
+              <a 
+                href="https://app.tierlock.com/pay/U2FsdGVkX18Xm9%2FenGSBxX1Gqeq4LupkuIKfuxI3%2F1gQ5fWzWTBGYB8G66oFJSCkc8tNqxell5NlcLrRLhH2lGhudkn2tto9gSS7G2tyJ0%2BfTgZIKuZBb%2BSzkABBUfgm?data=U2FsdGVkX1%2Fsqm2EnXylYdMUgUAiCU1Y888wBYrN3BM%3D" 
+                className="payment-method-btn"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <div className="payment-logos">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/b/b0/Apple_Pay_logo.svg" alt="Apple Pay" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/5/57/Discover_Card_logo.svg" alt="Discover" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/American_Express_logo.svg" alt="Amex" />
+                </div>
+                <span className="payment-btn-text">Pay with Card (TierLock)</span>
+              </a>
 
-  {showWertForm && (
-    <div className="popup">
-      <div className="form-box" role="dialog" aria-modal="true">
-        <h3 style={{marginBottom:12}}>Deposit to Shawn Sweeps</h3>
-        <input type="text" placeholder="Player Name" value={playerName} onChange={(e) => setPlayerName(e.target.value)} />
-        <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
-        <input type="text" placeholder="Game Name" value={gameName} onChange={(e) => setGameName(e.target.value)} />
-        <input type="number" placeholder="Deposit Amount (USD)" value={depositAmount} onChange={(e) => setDepositAmount(e.target.value)} />
-        <button className="submit" onClick={handleDeposit} disabled={loading}>
-          {loading ? "Opening..." : "Submit Deposit"}
-        </button>
-        <button className="cancel" onClick={() => {
-          setShowWertForm(false);
-          setShowDepositOptions(true);
-        }}>Back</button>
-      </div>
-    </div>
-  )}
-</>
-);
+              <a 
+                href="https://buy.fnupay.com/genz-sweeps/deposit" 
+                className="payment-method-btn"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <div className="payment-logos">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/b/b0/Apple_Pay_logo.svg" alt="Apple Pay" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/5/57/Discover_Card_logo.svg" alt="Discover" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/American_Express_logo.svg" alt="Amex" />
+                </div>
+                <span className="payment-btn-text">Pay with Card (FNUPAY)</span>
+              </a>
+              
+              <button className="payment-method-btn" onClick={() => alert("Bitcoin payment coming soon!")}>
+                <span style={{fontSize: '20px', display: 'block', marginBottom: '4px'}}>₿</span>
+                <span className="payment-btn-text">Pay with Bitcoin</span>
+              </button>
+            </div>
+            
+            <button className="cancel" onClick={() => setShowDepositOptions(false)}>Cancel</button>
+          </div>
+        </div>
+      )}
+
+      {showWertForm && (
+        <div className="popup">
+          <div className="form-box" role="dialog" aria-modal="true">
+            <h3 style={{marginBottom:12}}>Deposit to Shawn Sweeps</h3>
+            <input type="text" placeholder="Player Name" value={playerName} onChange={(e) => setPlayerName(e.target.value)} />
+            <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
+            <input type="text" placeholder="Game Name" value={gameName} onChange={(e) => setGameName(e.target.value)} />
+            <input type="number" placeholder="Deposit Amount (USD)" value={depositAmount} onChange={(e) => setDepositAmount(e.target.value)} />
+            <button className="submit" onClick={handleDeposit} disabled={loading}>
+              {loading ? "Opening..." : "Submit Deposit"}
+            </button>
+            <button className="cancel" onClick={() => {
+              setShowWertForm(false);
+              setShowDepositOptions(true);
+            }}>Back</button>
+          </div>
+        </div>
+      )}
+    </>
+  );
 }
