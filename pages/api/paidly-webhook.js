@@ -12,11 +12,11 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Verify webhook signature
     const signature = req.headers["btcpay-sig"];
     const secret = process.env.PAIDLY_WEBHOOK_SECRET;
-    
+
     if (!signature || !secret) {
+      console.warn("⚠️ Missing signature or secret");
       return res.status(401).json({ error: "Invalid webhook" });
     }
 
@@ -27,12 +27,14 @@ export default async function handler(req, res) {
       .digest("hex");
 
     if (hash !== signature) {
+      console.warn("⚠️ Signature mismatch");
       return res.status(401).json({ error: "Signature mismatch" });
     }
 
     const { type, metadata, tx } = req.body;
 
-    // Update deposit status in database
+    console.log("🔔 Paidly Webhook:", type, metadata);
+
     if (type === "OnchainDepositSettled") {
       await supabase
         .from("bitcoin_deposits")
@@ -42,6 +44,8 @@ export default async function handler(req, res) {
           bitcoin_address: tx?.address,
         })
         .eq("bitcoin_tx", metadata?.customerId);
+
+      console.log("✅ Deposit marked as completed");
     } else if (type === "OnchainDepositProcessing") {
       await supabase
         .from("bitcoin_deposits")
@@ -51,6 +55,8 @@ export default async function handler(req, res) {
           bitcoin_address: tx?.address,
         })
         .eq("bitcoin_tx", metadata?.customerId);
+
+      console.log("⏳ Deposit marked as processing");
     }
 
     res.status(200).json({ success: true });
