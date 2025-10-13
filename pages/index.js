@@ -2,15 +2,14 @@
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  const [showDepositOptions, setShowDepositOptions] = useState(false);
   const [showWertForm, setShowWertForm] = useState(false);
+  const [showTierLockForm, setShowTierLockForm] = useState(false);
   const [playerName, setPlayerName] = useState("");
   const [username, setUsername] = useState("");
   const [gameName, setGameName] = useState("");
   const [depositAmount, setDepositAmount] = useState("");
   const [loading, setLoading] = useState(false);
   const [showBTCForm, setShowBTCForm] = useState(false);
-
 
   useEffect(() => {
     // === Games data ===
@@ -254,6 +253,55 @@ const handlePaidlyBTC = async () => {
   }
 };
 
+  // === TierLock Deposit Flow ===
+  const handleTierLock = async () => {
+    if (!playerName || !username || !gameName || !depositAmount) {
+      alert("Please fill out all fields.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const tierlockId = `tierlock_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const tierlockOrderId = `order_${Date.now()}`;
+
+      // Log to database first
+      await fetch("/api/tierlock/log-deposit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          playerName,
+          username,
+          gameName,
+          depositAmount: parseFloat(depositAmount),
+          tierlockId,
+          tierlockOrderId,
+        }),
+      });
+      console.log("✅ TierLock deposit logged to Supabase");
+
+      // Open TierLock payment page
+      window.open(
+        "https://app.tierlock.com/pay/U2FsdGVkX18Xm9%2FenGSBxX1Gqeq4LupkuIKfuxI3%2F1gQ5fWzWTBGYB8G66oFJSCkc8tNqxell5NlcLrRLhH2lGhudkn2tto9gSS7G2tyJ0%2BfTgZIKuZBb%2BSzkABBUfgm?data=U2FsdGVkX1%2Fsqm2EnXylYdMUgUAiCU1Y888wBYrN3BM%3D",
+        "_blank"
+      );
+
+      // Reset form
+      setShowTierLockForm(false);
+      setShowDepositOptions(false);
+      setPlayerName("");
+      setUsername("");
+      setGameName("");
+      setDepositAmount("");
+    } catch (error) {
+      console.error("TierLock Error:", error);
+      alert("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
 
 return (
@@ -438,11 +486,13 @@ return (
                         </button>
 
                         {/* TierLock */}
-                        <a
-                            href="https://app.tierlock.com/pay/U2FsdGVkX18Xm9%2FenGSBxX1Gqeq4LupkuIKfuxI3%2F1gQ5fWzWTBGYB8G66oFJSCkc8tNqxell5NlcLrRLhH2lGhudkn2tto9gSS7G2tyJ0%2BfTgZIKuZBb%2BSzkABBUfgm?data=U2FsdGVkX1%2Fsqm2EnXylYdMUgUAiCU1Y888wBYrN3BM%3D"
+                        <button
                             className="payment-method-btn"
-                            target="_blank"
-                            rel="noopener noreferrer"
+                            onClick={() => {
+                                setShowDepositOptions(false);
+                                setShowTierLockForm(true);
+                            }}
+                            disabled={loading}
                         >
                             <div className="payment-logos">
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
@@ -452,7 +502,8 @@ return (
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" />
                             </div>
-                        </a>
+                            <span className="payment-btn-text">TierLock</span>
+                        </button>
 
                         {/* FNUPAY */}
                         <a
@@ -570,11 +621,46 @@ return (
                         disabled={loading}
                     >
                         {loading ? "Processing..." : "Continue with Bitcoin"}
+
+        {showTierLockForm && (
+            <div className="popup">
+                <div className="form-box" role="dialog" aria-modal="true">
+                    <h3 style={{ marginBottom: 12 }}>Deposit with TierLock</h3>
+                    <input
+                        type="text"
+                        placeholder="Player Name"
+                        value={playerName}
+                        onChange={(e) => setPlayerName(e.target.value)}
+                    />
+                    <input
+                        type="text"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
+                    <input
+                        type="text"
+                        placeholder="Game Name"
+                        value={gameName}
+                        onChange={(e) => setGameName(e.target.value)}
+                    />
+                    <input
+                        type="number"
+                        placeholder="Deposit Amount (USD)"
+                        value={depositAmount}
+                        onChange={(e) => setDepositAmount(e.target.value)}
+                    />
+                    <button
+                        className="submit"
+                        onClick={handleTierLock}
+                        disabled={loading}
+                    >
+                        {loading ? "Processing..." : "Continue with TierLock"}
                     </button>
                     <button
                         className="cancel"
                         onClick={() => {
-                            setShowBTCForm(false);
+                            setShowTierLockForm(false);
                             setShowDepositOptions(true);
                         }}
                     >
