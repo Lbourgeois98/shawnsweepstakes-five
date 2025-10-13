@@ -254,7 +254,7 @@ export default function Home() {
                   <img src="https://upload.wikimedia.org/wikipedia/commons/b/b0/Apple_Pay_logo.svg" alt="Apple Pay" />
                   <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
                   <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Square_Cash_app_logo.svg" alt="Cash App" />
-                  <img src="https://logos-world.net/wp-content/uploads/2021/02/Chime-Logo.png" alt="Chime" />
+                  <img src="https://commons.wikimedia.org/wiki/Category:Chime_Financial" alt="Chime" />
                 </div>
                 <span className="payment-btn-text">Pay with Card</span>
               </button>
@@ -271,7 +271,7 @@ export default function Home() {
                   <img src="https://upload.wikimedia.org/wikipedia/commons/b/b0/Apple_Pay_logo.svg" alt="Apple Pay" />
                   <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
                   <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Square_Cash_app_logo.svg" alt="Cash App" />
-                  <img src="https://logos-world.net/wp-content/uploads/2021/02/Chime-Logo.png" alt="Chime" />
+                  <img src="https://commons.wikimedia.org/wiki/Category:Chime_Financial" alt="Chime" />
                 </div>
                 <span className="payment-btn-text">Pay with Card</span>
               </a>
@@ -288,7 +288,7 @@ export default function Home() {
                   <img src="https://upload.wikimedia.org/wikipedia/commons/b/b0/Apple_Pay_logo.svg" alt="Apple Pay" />
                   <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
                   <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Square_Cash_app_logo.svg" alt="Cash App" />
-                  <img src="https://logos-world.net/wp-content/uploads/2021/02/Chime-Logo.png" alt="Chime" />
+                  <img src="https://commons.wikimedia.org/wiki/Category:Chime_Financial" alt="Chime" />
                 </div>
                 <span className="payment-btn-text">Pay with Card</span>
               </a>
