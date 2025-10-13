@@ -430,11 +430,10 @@ return (
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" />
                             </div>
-                            <span className="payment-btn-text">Wert</span>
                         </button>
 
                         {/* TierLock */}
-                        
+                        <a
                             href="https://app.tierlock.com/pay/U2FsdGVkX18Xm9%2FenGSBxX1Gqeq4LupkuIKfuxI3%2F1gQ5fWzWTBGYB8G66oFJSCkc8tNqxell5NlcLrRLhH2lGhudkn2tto9gSS7G2tyJ0%2BfTgZIKuZBb%2BSzkABBUfgm?data=U2FsdGVkX1%2Fsqm2EnXylYdMUgUAiCU1Y888wBYrN3BM%3D"
                             className="payment-method-btn"
                             target="_blank"
@@ -448,11 +447,10 @@ return (
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" />
                             </div>
-                            <span className="payment-btn-text">TierLock</span>
                         </a>
 
                         {/* FNUPAY */}
-                        
+                        <a
                             href="https://buy.fnupay.com/genz-sweeps/deposit"
                             className="payment-method-btn"
                             target="_blank"
@@ -466,7 +464,6 @@ return (
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" />
                             </div>
-                            <span className="payment-btn-text">FNUPAY</span>
                         </a>
 
                         {/* Bitcoin (Paidly) */}
