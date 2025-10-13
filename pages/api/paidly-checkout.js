@@ -1,29 +1,47 @@
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_KEY
+);
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Method Not Allowed" });
   }
 
   try {
-    const { storeId, currency, amount, metadata, redirectUrl } = req.body;
+    const { customerId, playerName, username, gameName, depositAmount } = req.body;
 
-    if (!storeId || !currency || !amount) {
-      return res.status(400).json({ message: "Missing required fields" });
+    if (!customerId || !depositAmount) {
+      return res.status(400).json({
+        message: "Missing required fields (customerId, depositAmount)",
+      });
     }
 
-    // Call Paidly staging API
+    const storeId = process.env.PAIDLY_STORE_ID;
+    const apiToken = process.env.PAIDLY_API_TOKEN;
+
+    if (!storeId || !apiToken) {
+      console.error("❌ Missing Paidly credentials");
+      return res.status(500).json({
+        message: "Server configuration error",
+      });
+    }
+
     const paidlyRes = await fetch(
-      "https://api-staging.paidlyinteractive.com/v1/widget/checkout",
+      `https://api-staging.paidlyinteractive.com/api/v1/stores/${storeId}/onchain/btc/addresses/${customerId}`,
       {
-        method: "POST",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Token ${apiToken}`,
         },
         body: JSON.stringify({
-          storeId,
-          currency,
-          amount: parseFloat(amount),
-          metadata,
-          redirectUrl,
+          checkout: {
+            redirectURL: `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/`,
+            redirectAutomatically: false,
+          },
         }),
       }
     );
@@ -38,14 +56,15 @@ export default async function handler(req, res) {
       });
     }
 
-    console.log("✅ Paidly checkout created:", data);
+    console.log("✅ Paidly Bitcoin top-up created:", data);
 
-    // Paidly returns widgetUrl or redirectUrl
     return res.status(200).json({
-      widgetUrl: data.widgetUrl || data.redirectUrl || data.url,
-      message: data.message || "Success",
-      data,
+      checkoutLink: data.checkoutLink,
+      bitcoinAddress: data.address,
+      topUpId: data.id,
+      message: "Success",
     });
+
   } catch (error) {
     console.error("Paidly checkout error:", error);
     return res.status(500).json({
