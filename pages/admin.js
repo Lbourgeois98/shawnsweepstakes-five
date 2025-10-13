@@ -119,12 +119,16 @@ export default function Admin() {
   });
 
   const totalDeposits = filteredTransactions
-    .filter((tx) => tx.status === "completed" || tx.status === "settled")
+    .filter((tx) => {
+      const status = tx.status?.toLowerCase();
+      return status === "completed" || status === "settled";
+    })
     .reduce((sum, tx) => sum + (parseFloat(tx.deposit_amount) || 0), 0);
   
-  const completedDeposits = filteredTransactions.filter(
-    (tx) => tx.status === "completed" || tx.status === "settled"
-  ).length;
+  const completedDeposits = filteredTransactions.filter((tx) => {
+    const status = tx.status?.toLowerCase();
+    return status === "completed" || status === "settled";
+  }).length;
 
   const getStatusColor = (status) => {
   if (!status) return "bg-gray-600 text-white";
