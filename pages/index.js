@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  const [showPaymentOptions, setShowPaymentOptions] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [playerName, setPlayerName] = useState("");
   const [username, setUsername] = useState("");
@@ -11,6 +10,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    // === Games data ===
     const games = [
       { id: "megaspinsweeps", name: "Mega Spin Sweeps", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/85307f95.jpg?v=0c91e9dc", gameUrl: "http://www.megaspinsweeps.com/index.html" },
       { id: "vblink777", name: "Vblink", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/753a32c3.jpg?v=0c91e9dc", gameUrl: "https://www.vblink777.club/" },
@@ -66,47 +66,126 @@ export default function Home() {
       { id: "nova", name: "Nova", imageUrl: "https://sweepshub.us/IMG_2683.jpeg", gameUrl: "https://novaplay.cc/" },
       { id: "funstation", name: "FunStation", imageUrl: "https://sweepshub.us/IMG_2663.jpeg", gameUrl: "https://www.funstation.site/" }
     ];
+
     const gamesEl = document.getElementById("games");
     if (gamesEl) {
       gamesEl.innerHTML = "";
       games.forEach((g) => {
         const card = document.createElement("div");
         card.className = "game-card";
-        card.innerHTML = `<a href="${g.gameUrl}" target="_blank"><img src="${g.imageUrl}" alt="${g.name}"/><div class="card-label">${g.name}</div></a>`;
+        card.innerHTML = `<a href="${g.gameUrl}" target="_blank" rel="noopener noreferrer"><img src="${g.imageUrl}" alt="${g.name}"/><div class="card-label">${g.name}</div></a>`;
         gamesEl.appendChild(card);
       });
     }
   }, []);
 
-  const handleDeposit = async () => {
+// === Deposit Flow ===
+    const handleDeposit = async () => {
     if (!playerName || !username || !gameName || !depositAmount) {
-      alert("Please fill out all fields before continuing.");
+      alert("Please fill out all fields.");
       return;
     }
 
     setLoading(true);
+
     try {
+      // ✅ Generate unique click_id for tracking
       const clickId = `click_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+      // ✅ Create Wert session with all required parameters
       const response = await fetch("/api/create-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ depositAmount, playerName, username, gameName }),
+        body: JSON.stringify({
+          depositAmount,
+          playerName,
+          username,
+          gameName,
+        }),
       });
-      const data = await response.json();
-      const sessionId = data.session_id || data.id;
-      if (!sessionId) throw new Error("No session id returned");
 
+      const data = await response.json();
+
+      // Handle missing session ID safely
+      const sessionId =
+        data.session_id ||
+        data.sessionId ||
+        data.session?.session_id ||
+        data.session?.id ||
+        data.id;
+
+      if (!sessionId) {
+        console.error("No session id returned:", data);
+        alert("Failed to create Wert session. Check server logs.");
+        setLoading(false);
+        return;
+      }
+
+      // ✅ Log deposit to Supabase BEFORE opening widget
+      try {
+        await fetch("/api/log-deposit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            playerName,
+            username,
+            gameName,
+            depositAmount: parseFloat(depositAmount),
+            sessionId,
+            clickId, // ✅ Include click_id for webhook matching
+            timestamp: new Date().toISOString(),
+          }),
+        });
+        console.log("✅ Deposit logged to Supabase");
+      } catch (logError) {
+        console.error("⚠️ Failed to log deposit:", logError);
+        // Continue anyway - don't block the payment flow
+      }
+
+      // Dynamically import and initialize Wert widget
       const WertWidget = (await import("@wert-io/widget-initializer")).default;
       const widget = new WertWidget({
         partner_id: process.env.NEXT_PUBLIC_WERT_PARTNER_ID || "01K1T8VJJ8TY67M49FDXY865GF",
         session_id: sessionId,
-        click_id: clickId,
+        click_id: clickId, // ✅ Pass click_id to Wert widget
+        origin: "https://widget.wert.io",
+        listeners: {
+          loaded: () => console.log("✅ Wert widget loaded"),
+          "payment-status": async (evt) => {
+            console.log("💰 Wert payment-status event:", evt);
+            
+            // ✅ Update Supabase when we receive order_id from widget
+            if (evt.order_id) {
+              try {
+                await fetch("/api/update-order", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    clickId,
+                    orderId: evt.order_id,
+                    status: evt.status,
+                  }),
+                });
+              } catch (err) {
+                console.error("Failed to update order:", err);
+              }
+            }
+          },
+        },
       });
+
+      // Open Wert payment widget
       widget.open();
+
+      // Reset form and UI state
       setShowForm(false);
+      setPlayerName("");
+      setUsername("");
+      setGameName("");
+      setDepositAmount("");
     } catch (err) {
-      console.error(err);
-      alert("Error opening Wert deposit widget.");
+      console.error("Error creating/opening Wert session:", err);
+      alert("Error opening deposit widget. See console for details.");
     } finally {
       setLoading(false);
     }
@@ -115,84 +194,62 @@ export default function Home() {
   return (
     <>
       <style>{`
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body, html { width:100%; min-height:100vh; font-family:Arial,sans-serif; color:white; overflow-x:hidden; }
-        #bg-video { position:fixed; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:-2; }
-        .video-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.35); z-index:-1; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body, html { width: 100%; min-height: 100vh; overflow-x: hidden; font-family: Arial, sans-serif; color: white; }
+        #bg-video { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; pointer-events: none; }
+        .video-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.35); z-index: -1; pointer-events: none; }
+        header { text-align: center; margin: 30px 0 20px; position: relative; z-index: 10; }
+        header img { width: 220px; filter: drop-shadow(0 0 10px rgba(250,10,10,0.6)); }
+        .social-buttons { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; max-width: 600px; margin: 20px auto 40px; padding: 0 15px; position: relative; z-index: 10; }
+        .social-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 16px 24px; background: rgba(250, 10, 10, 0.9); color: white; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 16px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(250, 10, 10, 0.3); text-align: center; cursor:pointer; }
+        .social-btn:hover { background: rgba(224, 9, 9, 0.9); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(250, 10, 10, 0.4); }
+        /* deposit (gold) button variant */
+        .deposit-btn { grid-column: 1 / -1; background: linear-gradient(90deg, #facc15, #fcd34d); color: black; box-shadow: 0 4px 12px rgba(255, 215, 0, 0.25); padding: 20px 28px; font-size: 18px; }
+        .deposit-btn:hover { background: linear-gradient(90deg, #fde047, #facc15); transform: translateY(-2px); }
 
-        header { text-align:center; margin:30px 0 20px; }
-        header img { width:220px; filter:drop-shadow(0 0 10px rgba(250,10,10,0.6)); }
+        #games { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; max-width: 1200px; margin: 0 auto 60px; padding: 0 15px; position: relative; z-index: 10; }
+        @media (max-width: 1024px) { #games { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 500px) { #games { grid-template-columns: repeat(2, 1fr); } }
+        .game-card { position: relative; width: 100%; padding-bottom: 100%; border-radius: 50%; overflow: hidden; box-shadow: 0 6px 15px rgba(0,0,0,0.5); transition: all 0.3s; background: #111; }
+        .game-card a { display:block; width:100%; height:100%; }
+        .game-card img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .card-label { position:absolute; left:8px; bottom:8px; right:8px; color:#fff; font-size:12px; background:rgba(0,0,0,0.4); padding:6px 8px; border-radius:6px; text-align:center; }
+        .game-card:hover { transform: scale(1.08); box-shadow: 0 0 25px rgba(250,10,10,0.6); }
 
-        .social-buttons { display:grid; grid-template-columns:repeat(2,1fr); gap:18px; max-width:600px; margin:20px auto; padding:0 15px; }
-        .social-btn { display:flex; justify-content:center; align-items:center; gap:8px; padding:16px 24px; border-radius:10px; font-weight:bold; cursor:pointer; text-align:center; transition:0.3s; box-shadow:0 4px 12px rgba(250,10,10,0.3); }
-        .social-btn:hover { transform:translateY(-2px); }
-        .deposit-btn { grid-column:1 / -1; background:linear-gradient(90deg,#facc15,#fcd34d); color:black; }
-        .deposit-btn:hover { background:linear-gradient(90deg,#fde047,#facc15); }
-        .social-btn.red { background:rgba(250,10,10,0.9); color:white; }
-        .social-btn.red:hover { background:rgba(224,9,9,0.9); }
-
-        .payment-options { display:flex; flex-direction:column; gap:10px; margin-top:10px; align-items:center; animation:fadeIn 0.3s ease; }
-        @keyframes fadeIn { from {opacity:0; transform:translateY(-5px);} to {opacity:1; transform:translateY(0);} }
-        .payment-btn { width:100%; max-width:360px; padding:12px; border-radius:10px; font-weight:bold; background:white; color:black; border:none; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(0,0,0,0.2); }
-        .payment-btn img { height:24px; margin:3px; }
-        .btc-btn { background:linear-gradient(90deg,#f7931a,#ffb347); color:white; }
-        .teirlock-btn { background:linear-gradient(90deg,#06b6d4,#0ea5e9); color:white; }
-
-        .popup { position:fixed; top:0; left:0; right:0; bottom:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.7); z-index:9999; }
-        .form-box { background:#121212; padding:22px; border-radius:12px; width:92%; max-width:420px; color:white; border:2px solid rgba(255,215,0,0.18); text-align:center; }
-        .form-box input { width:100%; padding:12px; margin-bottom:10px; border-radius:8px; border:none; font-size:14px; }
-        .form-box button { width:100%; padding:12px; border-radius:8px; border:none; font-weight:bold; cursor:pointer; }
+        /* Popup form */
+        .popup { position: fixed; top: 0; left: 0; right: 0; bottom: 0; display:flex; align-items:center; justify-content:center; background: rgba(0,0,0,0.7); z-index: 9999; }
+        .form-box { background: #121212; padding: 22px; border-radius: 12px; width: 92%; max-width: 420px; border: 2px solid rgba(255, 215, 0, 0.18); box-shadow: 0 0 20px rgba(255,215,0,0.06); color: white; text-align: center; }
+        .form-box input { width: 100%; padding: 12px 14px; margin-bottom:10px; border-radius:8px; border: none; font-size:14px; color: black; }
+        .form-box .submit { width:100%; padding:12px; border-radius:8px; border:none; background: linear-gradient(90deg, #facc15, #fcd34d); color: black; font-weight:bold; cursor:pointer; }
+        .form-box .submit[disabled] { opacity: 0.6; cursor: not-allowed; }
+        .form-box .cancel { margin-top:8px; background:transparent; color:#ccc; border:none; cursor:pointer; }
       `}</style>
 
       <video id="bg-video" src="https://shawn-sweepstakes.carrd.co/assets/videos/bg.mp4?v=0c91e9dc" autoPlay loop muted playsInline></video>
       <div className="video-overlay"></div>
 
-      <header>
-        <img src="https://shawn-sweepstakes.carrd.co/assets/images/image03.png?v=0c91e9dc" alt="ShawnSweeps"/>
-      </header>
+      <header><img src="https://shawn-sweepstakes.carrd.co/assets/images/image03.png?v=0c91e9dc" alt="ShawnSweeps"/></header>
 
       <div className="social-buttons">
-        <button className="social-btn deposit-btn" onClick={() => setShowPaymentOptions(!showPaymentOptions)}>
-          {showPaymentOptions ? "Close Deposit Options" : "Deposit"}
-        </button>
-
-        {showPaymentOptions && (
-          <div className="payment-options">
-            <button className="payment-btn" onClick={() => setShowForm(true)}>
-              <div style={{display:"flex", justifyContent:"center", flexWrap:"wrap"}}>
-                <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa"/>
-                <img src="https://upload.wikimedia.org/wikipedia/commons/0/0e/Mastercard-logo.png" alt="Mastercard"/>
-                <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay"/>
-                <img src="https://upload.wikimedia.org/wikipedia/commons/5/5a/Google_Pay_Logo.svg" alt="GPay"/>
-                <img src="https://upload.wikimedia.org/wikipedia/commons/5/50/Discover_Card_logo.svg" alt="Discover"/>
-                <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/American_Express_logo.svg" alt="AmEx"/>
-              </div>
-              Card / Mobile Pay
-            </button>
-
-            <button className="payment-btn btc-btn" onClick={() => alert("BTC deposit coming soon!")}>Deposit with Bitcoin</button>
-            <button className="payment-btn teirlock-btn" onClick={() => alert("Teirlock deposit coming soon!")}>Deposit with Teirlock</button>
-          </div>
-        )}
-
-        <a href="https://www.facebook.com/people/Shawn-Sweeps/61581214871852/" className="social-btn red" target="_blank">Facebook Page</a>
-        <a href="https://www.facebook.com/shawn.shawn.927528" className="social-btn red" target="_blank">Facebook Profile</a>
-        <a href="https://t.me/shawnsweeps" className="social-btn red" target="_blank">Telegram</a>
-        <a href="https://api.whatsapp.com/send/?phone=%2B13463028043" className="social-btn red" target="_blank">WhatsApp</a>
+        <button className="social-btn deposit-btn" onClick={() => setShowForm(true)}> Deposit</button>
+        <a href="https://www.facebook.com/people/Shawn-Sweeps/61581214871852/" className="social-btn" target="_blank" rel="noopener noreferrer">Facebook Page</a>
+        <a href="https://www.facebook.com/shawn.shawn.927528" className="social-btn" target="_blank" rel="noopener noreferrer">Facebook Profile</a>
+        <a href="https://t.me/shawnsweeps" className="social-btn" target="_blank" rel="noopener noreferrer">Telegram</a>
+        <a href="https://api.whatsapp.com/send/?phone=%2B13463028043&text&type=phone_number&app_absent=0" className="social-btn" target="_blank" rel="noopener noreferrer">WhatsApp</a>
       </div>
 
       <section id="games"></section>
 
       {showForm && (
-        <div className="popup" onClick={(e) => e.target.className === "popup" && setShowForm(false)}>
-          <div className="form-box">
-            <h2>Deposit Details</h2>
+        <div className="popup">
+          <div className="form-box" role="dialog" aria-modal="true">
+            <h3 style={{marginBottom:12}}>Deposit to Shawn Sweeps</h3>
             <input type="text" placeholder="Player Name" value={playerName} onChange={(e) => setPlayerName(e.target.value)} />
             <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
             <input type="text" placeholder="Game Name" value={gameName} onChange={(e) => setGameName(e.target.value)} />
             <input type="number" placeholder="Deposit Amount (USD)" value={depositAmount} onChange={(e) => setDepositAmount(e.target.value)} />
-            <button onClick={handleDeposit} disabled={loading}>{loading ? "Processing..." : "Continue to Payment"}</button>
-            <button onClick={() => setShowForm(false)} style={{marginTop:"10px", background:"#444", color:"white"}}>Cancel</button>
+            <button className="submit" onClick={handleDeposit} disabled={loading}>{loading ? "Opening..." : "Submit Deposit"}</button>
+            <button className="cancel" onClick={() => setShowForm(false)}>Cancel</button>
           </div>
         </div>
       )}
