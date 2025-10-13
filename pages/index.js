@@ -195,7 +195,7 @@ export default function Home() {
 
     try {
       setLoading(true);
-      const response = await fetch("https://api.staging.paidlyinteractive.com/v1/widget/checkout", {
+      const response = await fetch("https://api-staging.paidlyinteractive.com/v1/widget/checkout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -228,7 +228,7 @@ export default function Home() {
 
       const script = document.createElement("script");
       script.id = "paidly-widget-script";
-      script.src = "https://widget.staging.paidlyinteractive.com/widget.js";
+      script.src = "https://widget-staging.paidlyinteractive.com/widget.js";
       script.onload = () => {
         if (window.PaidlyWidget) {
           window.PaidlyWidget.open({
