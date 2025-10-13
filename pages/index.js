@@ -428,7 +428,7 @@ return (
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" />
                             </div>
-                            <span className="payment-btn-text">Wert Card</span>
+                            <span className="payment-btn-text">Pay with Card</span>
                         </button>
 
                         {/* TierLock */}
@@ -446,7 +446,7 @@ return (
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" />
                             </div>
-                            <span className="payment-btn-text">TierLock</span>
+                            <span className="payment-btn-text">Pay with Card</span>
                         </a>
 
                         {/* FNUPAY */}
@@ -464,7 +464,7 @@ return (
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" />
                             </div>
-                            <span className="payment-btn-text">FNUPAY</span>
+                            <span className="payment-btn-text">Pay with Card</span>
                         </a>
 
                         {/* Bitcoin (Paidly) */}
