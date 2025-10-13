@@ -15,7 +15,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("");
 
-  // Fetch initial deposits
+  // Fetch deposits on load
   useEffect(() => {
     async function fetchDeposits() {
       try {
@@ -26,16 +26,16 @@ export default function AdminDashboard() {
 
         if (error) throw error;
         setDeposits(data);
-        setLoading(false);
       } catch (err) {
         console.error("Error fetching deposits:", err);
+      } finally {
         setLoading(false);
       }
     }
     fetchDeposits();
   }, []);
 
-  // Subscribe to real-time updates
+  // Real-time subscription
   useEffect(() => {
     const subscription = supabase
       .from("deposits")
@@ -66,10 +66,7 @@ export default function AdminDashboard() {
     <>
       <Head>
         <title>Admin Dashboard</title>
-        <link
-          href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/dist/tailwind.min.css"
-          rel="stylesheet"
-        />
+        <script src="https://cdn.tailwindcss.com"></script>
       </Head>
 
       <div className="min-h-screen bg-red-900 text-yellow-300 p-8 font-sans">
