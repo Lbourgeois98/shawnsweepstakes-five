@@ -13,7 +13,12 @@ export default function Admin() {
   const [filter, setFilter] = useState("");
   const [paymentFilter, setPaymentFilter] = useState("all");
   const [loading, setLoading] = useState(true);
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem('adminLoggedIn') === 'true';
+    }
+    return false;
+  });
   const [password, setPassword] = useState("");
 
   // 🧠 Handle login
@@ -21,6 +26,7 @@ export default function Admin() {
     e.preventDefault();
     if (password === process.env.NEXT_PUBLIC_ADMIN_PASS) {
       setLoggedIn(true);
+      sessionStorage.setItem('adminLoggedIn', 'true');
     } else {
       alert("Incorrect password");
     }
@@ -112,12 +118,12 @@ export default function Admin() {
     return nameMatch && methodMatch;
   });
 
-  const totalDeposits = filteredTransactions.reduce(
-    (sum, tx) => sum + (parseFloat(tx.deposit_amount) || 0),
-    0
-  );
+  const totalDeposits = filteredTransactions
+    .filter((tx) => tx.status === "completed" || tx.status === "settled")
+    .reduce((sum, tx) => sum + (parseFloat(tx.deposit_amount) || 0), 0);
+  
   const completedDeposits = filteredTransactions.filter(
-    (tx) => tx.status === "completed"
+    (tx) => tx.status === "completed" || tx.status === "settled"
   ).length;
 
   const getStatusColor = (status) => {
@@ -156,6 +162,15 @@ export default function Admin() {
             <h1 className="text-4xl font-bold text-yellow-400">
               Admin Dashboard
             </h1>
+            <button
+              onClick={() => {
+                setLoggedIn(false);
+                sessionStorage.removeItem('adminLoggedIn');
+              }}
+              className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition"
+            >
+              Logout
+            </button>
           </div>
 
           {/* STATS */}
