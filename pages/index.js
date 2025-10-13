@@ -222,7 +222,12 @@ export default function Home() {
         .payment-method-btn.full-width { grid-column: 1 / -1; }
         
         .payment-logos { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: center; margin-bottom: 8px; }
-        .payment-logos img { height: 24px; width: auto; object-fit: contain; }
+        .payment-logos img {
+          height: 24px;
+          width: 24px;
+          object-fit: contain;
+       }
+
         
         .payment-btn-text { font-weight: bold; color: black; font-size: 14px; }
       `}</style>
@@ -251,12 +256,12 @@ export default function Home() {
               {/* Wert Card */}
               <button className="payment-method-btn" onClick={() => setShowWertForm(true)}>
                 <div className="payment-logos">
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" />
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" />
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/4/46/Cash_App_logo.svg" />
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/8/89/Chime_logo.svg" />
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/5/5b/Google_Pay_Logo.svg" />
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Square_Cash_app_logo.svg" alt="Cash App" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/Chime_Bank_logo.png" alt="Chime" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" />
                 </div>
                 <span className="payment-btn-text">Wert Card</span>
               </button>
@@ -264,12 +269,12 @@ export default function Home() {
               {/* TierLock */}
               <a href="https://app.tierlock.com/pay/U2FsdGVkX18Xm9%2FenGSBxX1Gqeq4LupkuIKfuxI3%2F1gQ5fWzWTBGYB8G66oFJSCkc8tNqxell5NlcLrRLhH2lGhudkn2tto9gSS7G2tyJ0%2BfTgZIKuZBb%2BSzkABBUfgm?data=U2FsdGVkX1%2Fsqm2EnXylYdMUgUAiCU1Y888wBYrN3BM%3D" className="payment-method-btn" target="_blank" rel="noopener noreferrer">
                 <div className="payment-logos">
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" />
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" />
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/4/46/Cash_App_logo.svg" />
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/8/89/Chime_logo.svg" />
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/5/5b/Google_Pay_Logo.svg" />
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Square_Cash_app_logo.svg" alt="Cash App" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/Chime_Bank_logo.png" alt="Chime" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" />
                 </div>
                 <span className="payment-btn-text">TierLock</span>
               </a>
@@ -277,12 +282,12 @@ export default function Home() {
               {/* FNUPAY */}
               <a href="https://buy.fnupay.com/genz-sweeps/deposit" className="payment-method-btn" target="_blank" rel="noopener noreferrer">
                 <div className="payment-logos">
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" />
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" />
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/4/46/Cash_App_logo.svg" />
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/8/89/Chime_logo.svg" />
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/5/5b/Google_Pay_Logo.svg" />
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Square_Cash_app_logo.svg" alt="Cash App" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/Chime_Bank_logo.png" alt="Chime" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" />
                 </div>
                 <span className="payment-btn-text">FNUPAY</span>
               </a>
