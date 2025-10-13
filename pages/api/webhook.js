@@ -1,56 +1,47 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@supabase/supabase-js"
+
+export const config = {
+  api: {
+    bodyParser: false, // Wert sends raw JSON
+  },
+}
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SERVICE_KEY
-);
-
-export const config = {
-  api: {
-    bodyParser: false, // Important — Wert sends raw JSON
-  },
-};
+)
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
+  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" })
 
   try {
-    // Collect the raw request body
-    const chunks = [];
-    for await (const chunk of req) {
-      chunks.push(chunk);
-    }
-    const rawBody = Buffer.concat(chunks).toString("utf8");
+    // Collect raw request body (Wert requires this)
+    const chunks = []
+    for await (const chunk of req) chunks.push(chunk)
+    const rawBody = Buffer.concat(chunks).toString("utf8")
 
-    // Parse Wert's webhook payload
-    const event = JSON.parse(rawBody);
-    console.log("🔔 Wert Webhook Received:", JSON.stringify(event, null, 2));
+    const event = JSON.parse(rawBody)
+    console.log("🔔 Wert Webhook Received:", event)
 
-    const { type, click_id, order, user } = event;
-
-    // ✅ Wert sends order.id, not session_id
-    const orderId = order?.id;
-    const userId = user?.user_id;
+    const { type, click_id, order, user } = event
+    const orderId = order?.id
+    const userId = user?.user_id
 
     if (!orderId && !click_id) {
-      console.error("⚠️ Missing both order_id and click_id in webhook data");
-      // Still return 200 to acknowledge receipt
-      return res.status(200).json({ received: true });
+      console.warn("⚠️ Missing both order_id and click_id in webhook data")
+      return res.status(200).json({ received: true })
     }
 
-    // Determine new transaction status based on event type
-    let newStatus = "unknown";
-    if (type === "order_complete") newStatus = "completed";
-    else if (type === "order_failed") newStatus = "failed";
-    else if (type === "order_canceled") newStatus = "canceled";
-    else if (type === "payment_started") newStatus = "pending";
-    else if (type === "transfer_started") newStatus = "transfer_started";
+    const statusMap = {
+      order_complete: "completed",
+      order_failed: "failed",
+      order_canceled: "canceled",
+      payment_started: "pending",
+      transfer_started: "transfer_started",
+    }
+    const newStatus = statusMap[type] || "unknown"
 
-    // Try to update by order_id first, then by click_id
-    let updateResult;
-    
+    let updateResult
     if (orderId) {
       updateResult = await supabase
         .from("deposits")
@@ -62,9 +53,10 @@ export default async function handler(req, res) {
           transaction_id: order?.transaction_id,
           updated_at: new Date().toISOString(),
         })
-        .eq("wert_order_id", orderId);
+        .eq("wert_order_id", orderId)
+        .select()
 
-      // If no rows updated, try by click_id
+      // Fallback to click_id
       if (updateResult.data?.length === 0 && click_id) {
         updateResult = await supabase
           .from("deposits")
@@ -76,10 +68,10 @@ export default async function handler(req, res) {
             transaction_id: order?.transaction_id,
             updated_at: new Date().toISOString(),
           })
-          .eq("click_id", click_id);
+          .eq("click_id", click_id)
+          .select()
       }
     } else if (click_id) {
-      // Only have click_id
       updateResult = await supabase
         .from("deposits")
         .update({
@@ -88,18 +80,19 @@ export default async function handler(req, res) {
           wert_user_id: userId,
           updated_at: new Date().toISOString(),
         })
-        .eq("click_id", click_id);
+        .eq("click_id", click_id)
+        .select()
     }
 
     if (updateResult?.error) {
-      console.error("❌ Supabase update error:", updateResult.error);
-      return res.status(500).json({ error: "Failed to update transaction" });
+      console.error("❌ Supabase update error:", updateResult.error)
+      return res.status(500).json({ error: "Failed to update transaction" })
     }
 
-    console.log(`✅ Updated order ${orderId || click_id} to status: ${newStatus}`);
-    return res.status(200).json({ success: true });
+    console.log(`✅ Updated ${orderId || click_id} → ${newStatus}`)
+    res.status(200).json({ success: true })
   } catch (err) {
-    console.error("❌ Webhook handler error:", err);
-    return res.status(500).json({ error: "Internal server error" });
+    console.error("❌ Webhook handler error:", err)
+    res.status(500).json({ error: "Internal server error", details: err.message })
   }
 }
