@@ -14,7 +14,7 @@ export default async function handler(req, res) {
     console.log("📩 /api/update-order called:", req.body)
 
     const { data, error } = await supabase
-      .from("deposits")
+      .from("wert_deposits")
       .update({
         wert_order_id: orderId,
         status: status || "processing",
