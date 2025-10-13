@@ -1,5 +1,4 @@
-// /api/paidly-checkout.js
-import fetch from "node-fetch";
+// /pages/api/paidly-checkout.js
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -13,20 +12,23 @@ export default async function handler(req, res) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    // Call Paidly staging API
-    const paidlyRes = await fetch("https://api-staging.paidlyinteractive.com/v1/widget/checkout", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        storeId,
-        currency,
-        amount,
-        metadata,
-        redirectUrl,
-      }),
-    });
+    // Call Paidly staging API using the global fetch
+    const paidlyRes = await fetch(
+      "https://api-staging.paidlyinteractive.com/v1/widget/checkout",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          storeId,
+          currency,
+          amount,
+          metadata,
+          redirectUrl,
+        }),
+      }
+    );
 
     const data = await paidlyRes.json();
 
