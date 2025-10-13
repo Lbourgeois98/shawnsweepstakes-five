@@ -195,24 +195,18 @@ export default function Home() {
 
     try {
       setLoading(true);
-      const response = await fetch("https://api-staging.paidlyinteractive.com/v1/widget/checkout", {
+      const response = await fetch("/api/paidly-checkout", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer 4owypIxcfRWxNpbCZ75R2j5LL-srLR6ufyjV_QGwN4u3ADPICcLjjbZ1v9HP-6YYq5FokV4`,
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           storeId: "4EHWNL1uyUdGezbZW9dGBXhKzcwj8e3oY7Jj1mnTCcD8",
           currency: "BTC",
           amount: parseFloat(depositAmount),
-          metadata: {
-            playerName,
-            username,
-            gameName,
-          },
+          metadata: { playerName, username, gameName },
           redirectUrl: window.location.href,
         }),
       });
+
 
       const data = await response.json();
 
