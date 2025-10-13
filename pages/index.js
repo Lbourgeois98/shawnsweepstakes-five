@@ -621,6 +621,19 @@ return (
                         disabled={loading}
                     >
                         {loading ? "Processing..." : "Continue with Bitcoin"}
+                    </button>
+                    <button
+                        className="cancel"
+                        onClick={() => {
+                            setShowBTCForm(false);
+                            setShowDepositOptions(true);
+                        }}
+                    >
+                        Back
+                    </button>
+                </div>
+            </div>
+        )}
 
         {showTierLockForm && (
             <div className="popup">
