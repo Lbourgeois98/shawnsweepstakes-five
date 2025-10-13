@@ -372,7 +372,7 @@ const handlePaidlyBTC = async () => {
                 </div>
                 <span className="payment-btn-text">FNUPAY</span>
               </a>
-
+                
                 <button
   className="payment-method-btn"
   onClick={() => {
@@ -384,7 +384,8 @@ const handlePaidlyBTC = async () => {
   <span style={{ fontSize: "20px", display: "block", marginBottom: "4px" }}>₿</span>
   <span className="payment-btn-text">Bitcoin (Paidly)</span>
 </button>
-             </div>
+    
+    </div>
             
             <button className="cancel" onClick={() => setShowDepositOptions(false)}>Cancel</button>
           </div>
