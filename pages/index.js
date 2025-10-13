@@ -187,63 +187,54 @@ export default function Home() {
   };
 
   // === Paidly BTC Deposit Flow ===
-  const handlePaidlyBTC = async () => {
-    if (!playerName || !username || !gameName || !depositAmount) {
-      alert("Please fill out all player fields and amount first.");
+const handlePaidlyBTC = async () => {
+  setLoading(true);
+
+  try {
+    const response = await fetch("/api/paidly-checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        storeId: "4EHWNL1uyUdGezbZW9dGBXhKzcwj8e3oY7Jj1mnTCcD8",
+        currency: "BTC",
+        amount: 10, // default amount; change if needed
+        metadata: { info: "Paidly deposit" },
+        redirectUrl: window.location.href,
+      }),
+    });
+
+    const data = await response.json();
+    console.log("Paidly checkout response:", data);
+
+    if (!data.widgetUrl) {
+      alert("No widget URL returned from Paidly.");
       return;
     }
 
-    setLoading(true);
+    const script = document.createElement("script");
+    script.src = "https://widget-staging.paidlyinteractive.com/widget.js";
+    script.async = true;
 
-    try {
-      const response = await fetch("/api/paidly-checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          storeId: "4EHWNL1uyUdGezbZW9dGBXhKzcwj8e3oY7Jj1mnTCcD8",
-          currency: "BTC",
-          amount: parseFloat(depositAmount),
-          metadata: { playerName, username, gameName },
-          redirectUrl: window.location.href,
-        }),
-      });
-
-      const data = await response.json();
-      console.log("Paidly checkout response:", data);
-
-      if (!response.ok) {
-        alert(`Paidly error: ${data.message || "Request failed"}`);
-        return;
+    script.onload = () => {
+      if (window.PaidlyWidget) {
+        const widget = new window.PaidlyWidget({
+          widgetUrl: data.widgetUrl,
+        });
+        widget.open();
+      } else {
+        alert("Paidly widget failed to load.");
       }
+    };
 
-      if (!data.widgetUrl) {
-        alert("No widget URL returned from Paidly.");
-        return;
-      }
+    document.body.appendChild(script);
+  } catch (error) {
+    console.error("Paidly BTC Error:", error);
+    alert("An error occurred. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
 
-      const script = document.createElement("script");
-      script.src = "https://widget-staging.paidlyinteractive.com/widget.js";
-      script.async = true;
-
-      script.onload = () => {
-        if (window.PaidlyWidget) {
-          const widget = new window.PaidlyWidget({
-            widgetUrl: data.widgetUrl,
-          });
-          widget.open();
-        } else {
-          alert("Paidly widget failed to load.");
-        }
-      };
-
-      document.body.appendChild(script);
-    } catch (error) {
-      console.error("Paidly BTC Error:", error);
-      alert("An error occurred. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
 
   return (
@@ -362,20 +353,19 @@ export default function Home() {
                 </div>
                 <span className="payment-btn-text">FNUPAY</span>
               </a>
-              
-              <button
-                className="payment-method-btn"
-                onClick={() => {
-                  setShowDepositOptions(false);
-                  setShowBTCForm(true);
-             }}     
-                disabled={loading}
-           >
-              <span style={{ fontSize: "20px", display: "block", marginBottom: "4px" }}>₿</span>
-              <span className="payment-btn-text">Bitcoin (Paidly)</span>
-            </button>
 
-            </div>
+                <button
+                  className="payment-method-btn"
+                  onClick={() => {
+                    setShowDepositOptions(false);
+                    handlePaidlyBTC(); // directly open Paidly widget
+                  }}
+                  disabled={loading}
+                >
+                 <span style={{ fontSize: "20px", display: "block", marginBottom: "4px" }}>₿</span>
+                 <span className="payment-btn-text">Bitcoin (Paidly)</span>
+               </button>
+             </div>
             
             <button className="cancel" onClick={() => setShowDepositOptions(false)}>Cancel</button>
           </div>
