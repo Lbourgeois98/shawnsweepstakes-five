@@ -9,6 +9,8 @@ export default function Home() {
   const [gameName, setGameName] = useState("");
   const [depositAmount, setDepositAmount] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showBTCForm, setShowBTCForm] = useState(false);
+
 
   useEffect(() => {
     // === Games data ===
@@ -367,10 +369,18 @@ export default function Home() {
                 <span className="payment-btn-text">FNUPAY</span>
               </a>
               
-              <button className="payment-method-btn" onClick={handlePaidlyBTC} disabled={loading}>
-                <span style={{fontSize: '20px', display: 'block', marginBottom: '4px'}}>₿</span>
-                <span className="payment-btn-text">{loading ? "Opening..." : "Bitcoin (Paidly)"}</span>
-              </button>
+              <button
+                className="payment-method-btn"
+                onClick={() => {
+                  setShowDepositOptions(false);
+                  setShowBTCForm(true);
+             }}     
+                disabled={loading}
+           >
+              <span style={{ fontSize: "20px", display: "block", marginBottom: "4px" }}>₿</span>
+              <span className="payment-btn-text">Bitcoin (Paidly)</span>
+            </button>
+
             </div>
             
             <button className="cancel" onClick={() => setShowDepositOptions(false)}>Cancel</button>
@@ -396,6 +406,61 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {showBTCForm && (
+        <div className="popup">
+            <div className="form-box" role="dialog" aria-modal="true">
+                <h3 style={{ marginBottom: 12 }}>Deposit with Bitcoin</h3>
+                <input
+                  type="text"
+                  placeholder="Player Name"
+                  value={playerName}
+                  onChange={(e) => setPlayerName(e.target.value)}
+                  
+                />
+                <input
+                  type="text"
+                  placeholder="Username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  
+               />
+               <input
+                 type="text"
+                 placeholder="Game Name"
+                 value={gameName}
+                 onChange={(e) => setGameName(e.target.value)}
+                 
+               />
+               <input
+                 type="number"
+                 placeholder="Deposit Amount (USD)"
+                 value={depositAmount}
+                 onChange={(e) => setDepositAmount(e.target.value)}
+               />
+               
+               <button
+                 className="submit"
+                 onClick={handlePaidlyBTC}
+                 disabled={loading}
+               
+               >
+                
+                {loading ? "Processing..." : "Continue with Bitcoin"}
+              </button>
+              
+              <button
+                className="cancel"
+                onClick={() => {
+                  setShowBTCForm(false);
+                  setShowDepositOptions(true);
+                }}
+         >
+                Back
+              </button>
+            </div>
+          </div>
+        )}
     </>
   );
 }
