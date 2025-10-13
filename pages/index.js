@@ -2,7 +2,8 @@
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  const [showForm, setShowForm] = useState(false);
+  const [showDepositOptions, setShowDepositOptions] = useState(false);
+  const [showWertForm, setShowWertForm] = useState(false);
   const [playerName, setPlayerName] = useState("");
   const [username, setUsername] = useState("");
   const [gameName, setGameName] = useState("");
@@ -79,8 +80,8 @@ export default function Home() {
     }
   }, []);
 
-// === Deposit Flow ===
-    const handleDeposit = async () => {
+  // === Wert.io Deposit Flow ===
+  const handleDeposit = async () => {
     if (!playerName || !username || !gameName || !depositAmount) {
       alert("Please fill out all fields.");
       return;
@@ -178,7 +179,8 @@ export default function Home() {
       widget.open();
 
       // Reset form and UI state
-      setShowForm(false);
+      setShowWertForm(false);
+      setShowDepositOptions(false);
       setPlayerName("");
       setUsername("");
       setGameName("");
@@ -201,7 +203,7 @@ export default function Home() {
         header { text-align: center; margin: 30px 0 20px; position: relative; z-index: 10; }
         header img { width: 220px; filter: drop-shadow(0 0 10px rgba(250,10,10,0.6)); }
         .social-buttons { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; max-width: 600px; margin: 20px auto 40px; padding: 0 15px; position: relative; z-index: 10; }
-        .social-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 16px 24px; background: rgba(250, 10, 10, 0.9); color: white; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 16px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(250, 10, 10, 0.3); text-align: center; cursor:pointer; }
+        .social-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 16px 24px; background: rgba(250, 10, 10, 0.9); color: white; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 16px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(250, 10, 10, 0.3); text-align: center; cursor:pointer; border: none; }
         .social-btn:hover { background: rgba(224, 9, 9, 0.9); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(250, 10, 10, 0.4); }
         /* deposit (gold) button variant */
         .deposit-btn { grid-column: 1 / -1; background: linear-gradient(90deg, #facc15, #fcd34d); color: black; box-shadow: 0 4px 12px rgba(255, 215, 0, 0.25); padding: 20px 28px; font-size: 18px; }
@@ -223,6 +225,24 @@ export default function Home() {
         .form-box .submit { width:100%; padding:12px; border-radius:8px; border:none; background: linear-gradient(90deg, #facc15, #fcd34d); color: black; font-weight:bold; cursor:pointer; }
         .form-box .submit[disabled] { opacity: 0.6; cursor: not-allowed; }
         .form-box .cancel { margin-top:8px; background:transparent; color:#ccc; border:none; cursor:pointer; }
+        
+        /* Payment method buttons inside popup */
+        .payment-methods { margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+        .payment-method-btn { width: 100%; padding: 16px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; font-size: 15px; }
+        .payment-method-btn:hover { transform: translateY(-2px); }
+        .payment-method-btn[disabled] { opacity: 0.6; cursor: not-allowed; }
+        
+        .wert-btn { background: linear-gradient(90deg, #facc15, #fcd34d); color: black; box-shadow: 0 4px 12px rgba(255, 215, 0, 0.25); }
+        .wert-btn:hover { background: linear-gradient(90deg, #fde047, #facc15); box-shadow: 0 6px 16px rgba(255, 215, 0, 0.35); }
+        
+        .btc-btn { background: linear-gradient(90deg, #f7931a, #ff9b28); color: white; box-shadow: 0 4px 12px rgba(247, 147, 26, 0.3); }
+        .btc-btn:hover { background: linear-gradient(90deg, #ff9b28, #f7931a); box-shadow: 0 6px 16px rgba(247, 147, 26, 0.4); }
+        
+        .tierlock-btn { background: linear-gradient(90deg, #8b5cf6, #a78bfa); color: white; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3); }
+        .tierlock-btn:hover { background: linear-gradient(90deg, #a78bfa, #8b5cf6); box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4); }
+        
+        .payment-logos { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: center; }
+        .payment-logos img { height: 18px; width: auto; filter: brightness(0); }
       `}</style>
 
       <video id="bg-video" src="https://shawn-sweepstakes.carrd.co/assets/videos/bg.mp4?v=0c91e9dc" autoPlay loop muted playsInline></video>
@@ -231,7 +251,7 @@ export default function Home() {
       <header><img src="https://shawn-sweepstakes.carrd.co/assets/images/image03.png?v=0c91e9dc" alt="ShawnSweeps"/></header>
 
       <div className="social-buttons">
-        <button className="social-btn deposit-btn" onClick={() => setShowForm(true)}> Deposit</button>
+        <button className="social-btn deposit-btn" onClick={() => setShowDepositOptions(true)}>Deposit</button>
         <a href="https://www.facebook.com/people/Shawn-Sweeps/61581214871852/" className="social-btn" target="_blank" rel="noopener noreferrer">Facebook Page</a>
         <a href="https://www.facebook.com/shawn.shawn.927528" className="social-btn" target="_blank" rel="noopener noreferrer">Facebook Profile</a>
         <a href="https://t.me/shawnsweeps" className="social-btn" target="_blank" rel="noopener noreferrer">Telegram</a>
@@ -240,19 +260,53 @@ export default function Home() {
 
       <section id="games"></section>
 
-      {showForm && (
+      {showDepositOptions && !showWertForm && (
         <div className="popup">
           <div className="form-box" role="dialog" aria-modal="true">
-            <h3 style={{marginBottom:12}}>Deposit to Shawn Sweeps</h3>
-            <input type="text" placeholder="Player Name" value={playerName} onChange={(e) => setPlayerName(e.target.value)} />
-            <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
-            <input type="text" placeholder="Game Name" value={gameName} onChange={(e) => setGameName(e.target.value)} />
-            <input type="number" placeholder="Deposit Amount (USD)" value={depositAmount} onChange={(e) => setDepositAmount(e.target.value)} />
-            <button className="submit" onClick={handleDeposit} disabled={loading}>{loading ? "Opening..." : "Submit Deposit"}</button>
-            <button className="cancel" onClick={() => setShowForm(false)}>Cancel</button>
-          </div>
+            <h3 style={{marginBottom:16}}>Choose Payment Method</h3>
+            <div className="payment-methods">
+              <button className="payment-method-btn wert-btn" onClick={() => setShowWertForm(true)}>
+                <div className="payment-logos">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/b/b0/Apple_Pay_logo.svg" alt="Apple Pay" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/5/57/Discover_Card_logo.svg" alt="Discover" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/American_Express_logo.svg" alt="Amex" />
+                </div>
+                <span>Pay with Card/Wallet</span>
+              </button>
+              
+              <button className="payment-method-btn btc-btn" onClick={() => alert("Bitcoin payment coming soon!")}>
+               <span style={{fontSize: '20px'}}>₿</span> Pay with Bitcoin</button>
+               <button className="payment-method-btn tierlock-btn" onClick={() => alert("Tierlock payment coming soon!")}>
+            🔒 Pay with Tierlock
+          </button>
         </div>
-      )}
-    </>
-  );
+        
+        <button className="cancel" onClick={() => setShowDepositOptions(false)}>Cancel</button>
+      </div>
+    </div>
+  )}
+
+  {showWertForm && (
+    <div className="popup">
+      <div className="form-box" role="dialog" aria-modal="true">
+        <h3 style={{marginBottom:12}}>Deposit to Shawn Sweeps</h3>
+        <input type="text" placeholder="Player Name" value={playerName} onChange={(e) => setPlayerName(e.target.value)} />
+        <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
+        <input type="text" placeholder="Game Name" value={gameName} onChange={(e) => setGameName(e.target.value)} />
+        <input type="number" placeholder="Deposit Amount (USD)" value={depositAmount} onChange={(e) => setDepositAmount(e.target.value)} />
+        <button className="submit" onClick={handleDeposit} disabled={loading}>
+          {loading ? "Opening..." : "Submit Deposit"}
+        </button>
+        <button className="cancel" onClick={() => {
+          setShowWertForm(false);
+          setShowDepositOptions(true);
+        }}>Back</button>
+      </div>
+    </div>
+  )}
+</>
+);
 }
