@@ -11,7 +11,6 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // === Games data ===
     const games = [
       { id: "megaspinsweeps", name: "Mega Spin Sweeps", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/85307f95.jpg?v=0c91e9dc", gameUrl: "http://www.megaspinsweeps.com/index.html" },
       { id: "vblink777", name: "Vblink", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/753a32c3.jpg?v=0c91e9dc", gameUrl: "https://www.vblink777.club/" },
@@ -67,7 +66,7 @@ export default function Home() {
       { id: "nova", name: "Nova", imageUrl: "https://sweepshub.us/IMG_2683.jpeg", gameUrl: "https://novaplay.cc/" },
       { id: "funstation", name: "FunStation", imageUrl: "https://sweepshub.us/IMG_2663.jpeg", gameUrl: "https://www.funstation.site/" }
     ];
-
+    
     const gamesEl = document.getElementById("games");
     if (gamesEl) {
       gamesEl.innerHTML = "";
@@ -80,45 +79,32 @@ export default function Home() {
     }
   }, []);
 
-  // === Wert.io Deposit Flow ===
   const handleDeposit = async () => {
     if (!playerName || !username || !gameName || !depositAmount) {
       alert("Please fill out all fields.");
       return;
     }
-
     setLoading(true);
-
     try {
       const clickId = `click_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
       const response = await fetch("/api/create-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          depositAmount,
-          playerName,
-          username,
-          gameName,
-        }),
+        body: JSON.stringify({ depositAmount, playerName, username, gameName }),
       });
-
       const data = await response.json();
-
       const sessionId =
         data.session_id ||
         data.sessionId ||
         data.session?.session_id ||
         data.session?.id ||
         data.id;
-
       if (!sessionId) {
         console.error("No session id returned:", data);
         alert("Failed to create Wert session. Check server logs.");
         setLoading(false);
         return;
       }
-
       try {
         await fetch("/api/log-deposit", {
           method: "POST",
@@ -148,7 +134,6 @@ export default function Home() {
           loaded: () => console.log("✅ Wert widget loaded"),
           "payment-status": async (evt) => {
             console.log("💰 Wert payment-status event:", evt);
-            
             if (evt.order_id) {
               try {
                 await fetch("/api/update-order", {
@@ -169,7 +154,6 @@ export default function Home() {
       });
 
       widget.open();
-
       setShowWertForm(false);
       setShowDepositOptions(false);
       setPlayerName("");
@@ -193,6 +177,7 @@ export default function Home() {
         .video-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.35); z-index: -1; pointer-events: none; }
         header { text-align: center; margin: 30px 0 20px; position: relative; z-index: 10; }
         header img { width: 220px; filter: drop-shadow(0 0 10px rgba(250,10,10,0.6)); }
+
         .social-buttons { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; max-width: 600px; margin: 20px auto 40px; padding: 0 15px; position: relative; z-index: 10; }
         .social-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 16px 24px; background: rgba(250, 10, 10, 0.9); color: white; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 16px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(250, 10, 10, 0.3); text-align: center; cursor:pointer; border: none; }
         .social-btn:hover { background: rgba(224, 9, 9, 0.9); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(250, 10, 10, 0.4); }
@@ -202,29 +187,33 @@ export default function Home() {
         #games { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; max-width: 1200px; margin: 0 auto 60px; padding: 0 15px; position: relative; z-index: 10; }
         @media (max-width: 1024px) { #games { grid-template-columns: repeat(3, 1fr); } }
         @media (max-width: 500px) { #games { grid-template-columns: repeat(2, 1fr); } }
-        .game-card { position: relative; width: 100%; padding-bottom: 100%; border-radius: 50%; overflow: hidden; box-shadow: 0 6px 15px rgba(0,0,0,0.5); transition: all 0.3s; background: #111; }
-        .game-card a { display:block; width:100%; height:100%; }
-        .game-card img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-        .card-label { position:absolute; left:8px; bottom:8px; right:8px; color:#fff; font-size:12px; background:rgba(0,0,0,0.4); padding:6px 8px; border-radius:6px; text-align:center; }
-        .game-card:hover { transform: scale(1.08); box-shadow: 0 0 25px rgba(250,10,10,0.6); }
 
         .popup { position: fixed; top: 0; left: 0; right: 0; bottom: 0; display:flex; align-items:center; justify-content:center; background: rgba(0,0,0,0.7); z-index: 9999; }
         .form-box { background: #121212; padding: 22px; border-radius: 12px; width: 92%; max-width: 420px; border: 2px solid rgba(255, 215, 0, 0.18); box-shadow: 0 0 20px rgba(255,215,0,0.06); color: white; text-align: center; }
         .form-box input { width: 100%; padding: 12px 14px; margin-bottom:10px; border-radius:8px; border: none; font-size:14px; color: black; }
+
         .form-box .submit { width:100%; padding:12px; border-radius:8px; border:none; background: linear-gradient(90deg, #facc15, #fcd34d); color: black; font-weight:bold; cursor:pointer; }
         .form-box .submit[disabled] { opacity: 0.6; cursor: not-allowed; }
-        .form-box .cancel { margin-top:8px; background:transparent; color:#ccc; border:none; cursor:pointer; }
-        
-        .payment-methods { margin-top: 16px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        .payment-method-btn { padding: 16px 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 15px; background: linear-gradient(90deg, #facc15, #fcd34d); color: black; box-shadow: 0 4px 12px rgba(255, 215, 0, 0.25); text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .payment-method-btn:hover { background: linear-gradient(90deg, #fde047, #facc15); box-shadow: 0 6px 16px rgba(255, 215, 0, 0.35); transform: translateY(-2px); }
-        .payment-method-btn[disabled] { opacity: 0.6; cursor: not-allowed; }
-        .payment-method-btn.full-width { grid-column: 1 / -1; }
-        
+
+        .form-box .cancel {
+          margin-top:8px;
+          background: linear-gradient(90deg, #facc15, #f87171);
+          color: black;
+          border:none;
+          cursor:pointer;
+          font-weight: bold;
+          padding: 10px;
+          border-radius: 8px;
+          width: 100%;
+          transition: all 0.3s;
+        }
+        .form-box .cancel:hover {
+          background: linear-gradient(90deg, #fde047, #ef4444);
+          box-shadow: 0 0 10px rgba(250,10,10,0.5);
+        }
+
         .payment-logos { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: center; margin-bottom: 8px; }
         .payment-logos img { height: 24px; width: auto; object-fit: contain; }
-        
-        .payment-btn-text { font-weight: bold; color: black; font-size: 14px; }
       `}</style>
 
       <video id="bg-video" src="https://shawn-sweepstakes.carrd.co/assets/videos/bg.mp4?v=0c91e9dc" autoPlay loop muted playsInline></video>
@@ -248,46 +237,51 @@ export default function Home() {
             <h3 style={{marginBottom:16}}>Choose Payment Method</h3>
             <div className="payment-methods">
               
+              {/* Wert Card */}
               <button className="payment-method-btn" onClick={() => setShowWertForm(true)}>
                 <div className="payment-logos">
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Cash_App_logo.svg" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Chime_logo.svg" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/d/d7/Google_Pay_Logo.svg" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" />
                 </div>
                 <span className="payment-btn-text">Wert Card</span>
               </button>
 
-              <a 
-                href="https://app.tierlock.com/pay/U2FsdGVkX18Xm9%2FenGSBxX1Gqeq4LupkuIKfuxI3%2F1gQ5fWzWTBGYB8G66oFJSCkc8tNqxell5NlcLrRLhH2lGhudkn2tto9gSS7G2tyJ0%2BfTgZIKuZBb%2BSzkABBUfgm?data=U2FsdGVkX1%2Fsqm2EnXylYdMUgUAiCU1Y888wBYrN3BM%3D" 
-                className="payment-method-btn"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              {/* TierLock */}
+              <a href="https://app.tierlock.com/pay/..." className="payment-method-btn" target="_blank" rel="noopener noreferrer">
                 <div className="payment-logos">
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Cash_App_logo.svg" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Chime_logo.svg" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/d/d7/Google_Pay_Logo.svg" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" />
                 </div>
                 <span className="payment-btn-text">TierLock</span>
               </a>
 
-              <a 
-                href="https://buy.fnupay.com/genz-sweeps/deposit" 
-                className="payment-method-btn"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              {/* FNUPAY */}
+              <a href="https://buy.fnupay.com/genz-sweeps/deposit" className="payment-method-btn" target="_blank" rel="noopener noreferrer">
                 <div className="payment-logos">
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Cash_App_logo.svg" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Chime_logo.svg" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/d/d7/Google_Pay_Logo.svg" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" />
                 </div>
                 <span className="payment-btn-text">FNUPAY</span>
               </a>
-              
+
               <button className="payment-method-btn" onClick={() => alert("Bitcoin payment coming soon!")}>
                 <span style={{fontSize: '20px', display: 'block', marginBottom: '4px'}}>₿</span>
                 <span className="payment-btn-text">Bitcoin</span>
               </button>
             </div>
-            
+
             <button className="cancel" onClick={() => setShowDepositOptions(false)}>Cancel</button>
           </div>
         </div>
