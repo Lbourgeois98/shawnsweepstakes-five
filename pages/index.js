@@ -215,15 +215,16 @@ export default function Home() {
         .form-box .submit[disabled] { opacity: 0.6; cursor: not-allowed; }
         .form-box .cancel { margin-top:8px; background:transparent; color:#ccc; border:none; cursor:pointer; }
         
-        .payment-methods { margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
-        .payment-method-btn { width: 100%; padding: 16px 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 15px; background: linear-gradient(90deg, #facc15, #fcd34d); color: black; box-shadow: 0 4px 12px rgba(255, 215, 0, 0.25); text-decoration: none; display: block; }
+        .payment-methods { margin-top: 16px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .payment-method-btn { padding: 16px 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 15px; background: linear-gradient(90deg, #facc15, #fcd34d); color: black; box-shadow: 0 4px 12px rgba(255, 215, 0, 0.25); text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .payment-method-btn:hover { background: linear-gradient(90deg, #fde047, #facc15); box-shadow: 0 6px 16px rgba(255, 215, 0, 0.35); transform: translateY(-2px); }
         .payment-method-btn[disabled] { opacity: 0.6; cursor: not-allowed; }
+        .payment-method-btn.full-width { grid-column: 1 / -1; }
         
-        .payment-logos { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 8px; }
-        .payment-logos img { height: 28px; width: auto; object-fit: contain; }
+        .payment-logos { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: center; margin-bottom: 8px; }
+        .payment-logos img { height: 24px; width: auto; object-fit: contain; }
         
-        .payment-btn-text { font-weight: bold; color: black; }
+        .payment-btn-text { font-weight: bold; color: black; font-size: 14px; }
       `}</style>
 
       <video id="bg-video" src="https://shawn-sweepstakes.carrd.co/assets/videos/bg.mp4?v=0c91e9dc" autoPlay loop muted playsInline></video>
@@ -251,14 +252,10 @@ export default function Home() {
                 <div className="payment-logos">
                   <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
                   <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/b/b0/Apple_Pay_logo.svg" alt="Apple Pay" />
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Square_Cash_app_logo.svg" alt="Cash App" />
-                  <img src="https://commons.wikimedia.org/wiki/Category:Chime_Financial" alt="Chime" />
                 </div>
-                <span className="payment-btn-text">Pay with Card</span>
+                <span className="payment-btn-text">Wert Card</span>
               </button>
-              
+
               <a 
                 href="https://app.tierlock.com/pay/U2FsdGVkX18Xm9%2FenGSBxX1Gqeq4LupkuIKfuxI3%2F1gQ5fWzWTBGYB8G66oFJSCkc8tNqxell5NlcLrRLhH2lGhudkn2tto9gSS7G2tyJ0%2BfTgZIKuZBb%2BSzkABBUfgm?data=U2FsdGVkX1%2Fsqm2EnXylYdMUgUAiCU1Y888wBYrN3BM%3D" 
                 className="payment-method-btn"
@@ -268,12 +265,8 @@ export default function Home() {
                 <div className="payment-logos">
                   <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
                   <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/b/b0/Apple_Pay_logo.svg" alt="Apple Pay" />
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Square_Cash_app_logo.svg" alt="Cash App" />
-                  <img src="https://commons.wikimedia.org/wiki/Category:Chime_Financial" alt="Chime" />
                 </div>
-                <span className="payment-btn-text">Pay with Card</span>
+                <span className="payment-btn-text">TierLock</span>
               </a>
 
               <a 
@@ -285,17 +278,13 @@ export default function Home() {
                 <div className="payment-logos">
                   <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
                   <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/b/b0/Apple_Pay_logo.svg" alt="Apple Pay" />
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Square_Cash_app_logo.svg" alt="Cash App" />
-                  <img src="https://commons.wikimedia.org/wiki/Category:Chime_Financial" alt="Chime" />
                 </div>
-                <span className="payment-btn-text">Pay with Card</span>
+                <span className="payment-btn-text">FNUPAY</span>
               </a>
               
               <button className="payment-method-btn" onClick={() => alert("Bitcoin payment coming soon!")}>
                 <span style={{fontSize: '20px', display: 'block', marginBottom: '4px'}}>₿</span>
-                <span className="payment-btn-text">Pay with Bitcoin</span>
+                <span className="payment-btn-text">Bitcoin</span>
               </button>
             </div>
             
