@@ -222,53 +222,55 @@ export default function Admin() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredTransactions.length > 0 ? (
-                    filteredTransactions.map((tx) => {
-  const displayAmount = parseFloat(tx.deposit_amount || 0).toFixed(2);
-  const displayStatus = tx.status || "unknown";
-  
-  return (
-    <tr
-      key={`${tx.table || "unknown"}-${tx.id}`}
-      className="border-b border-gray-700 hover:bg-gray-700 transition"
-    >
-      <td className="px-6 py-4 text-sm">
-        {tx.player_name || "N/A"}
-      </td>
-      <td className="px-6 py-4 text-sm">
-        {tx.username || "N/A"}
-      </td>
-      <td className="px-6 py-4 text-sm">
-        {tx.game_name || "N/A"}
-      </td>
-      <td className="px-6 py-4 text-sm font-semibold text-green-400">
-        ${displayAmount}
-      </td>
-      <td className="px-6 py-4 text-sm">
-        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-600 text-white">
-          {tx.payment_method || "Unknown"}
-        </span>
-      </td>
-      <td className="px-6 py-4 text-sm">
-        <span
-          className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
-            displayStatus
-          )}`}
-        >
-          {displayStatus}
-        </span>
-      </td>
-      <td className="px-6 py-4 text-sm text-gray-400">
-        {tx.created_at
-          ? new Date(tx.created_at).toLocaleDateString() +
-            " " +
-            new Date(tx.created_at).toLocaleTimeString()
-          : "N/A"}
+  {filteredTransactions.length > 0 ? (
+    filteredTransactions.map((tx) => (
+      <tr
+        key={`${tx.table || "unknown"}-${tx.id}`}
+        className="border-b border-gray-700 hover:bg-gray-700 transition"
+      >
+        <td className="px-6 py-4 text-sm">
+          {tx.player_name || "N/A"}
+        </td>
+        <td className="px-6 py-4 text-sm">
+          {tx.username || "N/A"}
+        </td>
+        <td className="px-6 py-4 text-sm">
+          {tx.game_name || "N/A"}
+        </td>
+        <td className="px-6 py-4 text-sm font-semibold text-green-400">
+          ${parseFloat(tx.deposit_amount || 0).toFixed(2)}
+        </td>
+        <td className="px-6 py-4 text-sm">
+          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-600 text-white">
+            {tx.payment_method || "Unknown"}
+          </span>
+        </td>
+        <td className="px-6 py-4 text-sm">
+          <span
+            className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
+              tx.status
+            )}`}
+          >
+            {tx.status || "unknown"}
+          </span>
+        </td>
+        <td className="px-6 py-4 text-sm text-gray-400">
+          {tx.created_at
+            ? new Date(tx.created_at).toLocaleDateString() +
+              " " +
+              new Date(tx.created_at).toLocaleTimeString()
+            : "N/A"}
+        </td>
+      </tr>
+    ))
+  ) : (
+    <tr>
+      <td colSpan="7" className="text-center py-8 text-gray-400">
+        No transactions found
       </td>
     </tr>
-  );
-})
-                </tbody>
+  )}
+</tbody>
               </table>
             </div>
           )}
