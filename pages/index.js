@@ -256,7 +256,7 @@ export default function Home() {
                   <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Square_Cash_app_logo.svg" alt="Cash App" />
                   <img src="https://logos-world.net/wp-content/uploads/2021/02/Chime-Logo.png" alt="Chime" />
                 </div>
-                <span className="payment-btn-text">Pay with Card/Wallet (Wert)</span>
+                <span className="payment-btn-text">Pay with Card</span>
               </button>
               
               <a 
@@ -273,7 +273,7 @@ export default function Home() {
                   <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Square_Cash_app_logo.svg" alt="Cash App" />
                   <img src="https://logos-world.net/wp-content/uploads/2021/02/Chime-Logo.png" alt="Chime" />
                 </div>
-                <span className="payment-btn-text">Pay with Card (TierLock)</span>
+                <span className="payment-btn-text">Pay with Card</span>
               </a>
 
               <a 
@@ -290,7 +290,7 @@ export default function Home() {
                   <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Square_Cash_app_logo.svg" alt="Cash App" />
                   <img src="https://logos-world.net/wp-content/uploads/2021/02/Chime-Logo.png" alt="Chime" />
                 </div>
-                <span className="payment-btn-text">Pay with Card (FNUPAY)</span>
+                <span className="payment-btn-text">Pay with Card</span>
               </a>
               
               <button className="payment-method-btn" onClick={() => alert("Bitcoin payment coming soon!")}>
