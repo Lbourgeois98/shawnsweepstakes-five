@@ -379,16 +379,16 @@ const handlePaidlyBTC = async () => {
               </a>
 
                 <button
-                  className="payment-method-btn"
-                  onClick={() => {
-                    setShowDepositOptions(false);
-                    handlePaidlyBTC(); // directly open Paidly widget
-                  }}
-                  disabled={loading}
-                >
-                 <span style={{ fontSize: "20px", display: "block", marginBottom: "4px" }}>₿</span>
-                 <span className="payment-btn-text">Bitcoin (Paidly)</span>
-               </button>
+  className="payment-method-btn"
+  onClick={() => {
+    setShowDepositOptions(false);
+    setShowBTCForm(true);
+  }}
+  disabled={loading}
+>
+  <span style={{ fontSize: "20px", display: "block", marginBottom: "4px" }}>₿</span>
+  <span className="payment-btn-text">Bitcoin (Paidly)</span>
+</button>
              </div>
             
             <button className="cancel" onClick={() => setShowDepositOptions(false)}>Cancel</button>
