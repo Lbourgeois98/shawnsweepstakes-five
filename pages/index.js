@@ -188,6 +188,11 @@ export default function Home() {
 
   // === Paidly BTC Deposit Flow ===
 const handlePaidlyBTC = async () => {
+  if (!playerName || !username || !gameName || !depositAmount) {
+    alert("Please fill out all fields.");
+    return;
+  }
+
   setLoading(true);
 
   try {
@@ -197,8 +202,13 @@ const handlePaidlyBTC = async () => {
       body: JSON.stringify({
         storeId: "4EHWNL1uyUdGezbZW9dGBXhKzcwj8e3oY7Jj1mnTCcD8",
         currency: "BTC",
-        amount: 10, // default amount; change if needed
-        metadata: { info: "Paidly deposit" },
+        amount: parseFloat(depositAmount),
+        metadata: {
+          playerName,
+          username,
+          gameName,
+          depositAmount: parseFloat(depositAmount),
+        },
         redirectUrl: window.location.href,
       }),
     });
@@ -208,29 +218,43 @@ const handlePaidlyBTC = async () => {
 
     if (!data.widgetUrl) {
       alert("No widget URL returned from Paidly.");
+      setLoading(false);
       return;
     }
 
-    const script = document.createElement("script");
-    script.src = "https://widget-staging.paidlyinteractive.com/widget.js";
-    script.async = true;
+    // Log deposit to database
+    try {
+      await fetch("/api/bitcoin/log-deposit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          playerName,
+          username,
+          gameName,
+          depositAmount: parseFloat(depositAmount),
+          bitcoinTx: "pending",
+          bitcoinAddress: "pending",
+        }),
+      });
+      console.log("✅ Bitcoin deposit logged to Supabase");
+    } catch (logError) {
+      console.error("⚠️ Failed to log bitcoin deposit:", logError);
+    }
 
-    script.onload = () => {
-      if (window.PaidlyWidget) {
-        const widget = new window.PaidlyWidget({
-          widgetUrl: data.widgetUrl,
-        });
-        widget.open();
-      } else {
-        alert("Paidly widget failed to load.");
-      }
-    };
+    // Open widget URL in new window/tab
+    window.open(data.widgetUrl, "paidly-widget", "width=600,height=700");
 
-    document.body.appendChild(script);
+    setShowBTCForm(false);
+    setShowDepositOptions(false);
+    setPlayerName("");
+    setUsername("");
+    setGameName("");
+    setDepositAmount("");
+
+    setLoading(false);
   } catch (error) {
     console.error("Paidly BTC Error:", error);
     alert("An error occurred. Please try again.");
-  } finally {
     setLoading(false);
   }
 };
