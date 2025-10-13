@@ -14,15 +14,14 @@ export default async function handler(req, res) {
 
     console.log("📩 /api/log-deposits called:", req.body)
 
-    // ✅ Check Supabase connection
-    const { error: connError } = await supabase.from("deposits").select("*").limit(1)
+    const { error: connError } = await supabase.from("wert_deposits").select("*").limit(1)
     if (connError) {
       console.error("❌ Supabase connection failed:", connError)
       return res.status(500).json({ error: "Supabase connection failed", details: connError.message })
     }
 
     const { data, error } = await supabase
-      .from("deposits")
+      .from("wert_deposits")
       .insert([
         {
           player_name: playerName,
