@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 
 export default function Home() {
+  const [showDepositOptions, setShowDepositOptions] = useState(false);
   const [showWertForm, setShowWertForm] = useState(false);
   const [showTierLockForm, setShowTierLockForm] = useState(false);
   const [playerName, setPlayerName] = useState("");
