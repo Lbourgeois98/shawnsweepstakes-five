@@ -295,7 +295,7 @@ return (
 }
 
 .payment-method-btn {
-  padding: 18px 16px;
+  padding: 20px 12px;
   border-radius: 8px;
   border: none;
   font-weight: bold;
@@ -310,7 +310,8 @@ return (
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
+  min-height: 120px;
 }
 
 .payment-method-btn:hover {
@@ -332,22 +333,23 @@ return (
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
-  height: 36px;
+  max-width: 100%;
 }
 
 .payment-logos img {
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
   object-fit: contain;
-  filter: drop-shadow(0 0 1px rgba(0,0,0,0.4));
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.3));
 }
 
 .payment-btn-text {
   font-weight: bold;
   color: black;
-  font-size: 14px;
+  font-size: 13px;
+  margin-top: 4px;
 }`}</style>
 
         <video
@@ -428,10 +430,11 @@ return (
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" />
                             </div>
+                            <span className="payment-btn-text">Wert</span>
                         </button>
 
                         {/* TierLock */}
-                        <a
+                        
                             href="https://app.tierlock.com/pay/U2FsdGVkX18Xm9%2FenGSBxX1Gqeq4LupkuIKfuxI3%2F1gQ5fWzWTBGYB8G66oFJSCkc8tNqxell5NlcLrRLhH2lGhudkn2tto9gSS7G2tyJ0%2BfTgZIKuZBb%2BSzkABBUfgm?data=U2FsdGVkX1%2Fsqm2EnXylYdMUgUAiCU1Y888wBYrN3BM%3D"
                             className="payment-method-btn"
                             target="_blank"
@@ -445,10 +448,11 @@ return (
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" />
                             </div>
+                            <span className="payment-btn-text">TierLock</span>
                         </a>
 
                         {/* FNUPAY */}
-                        <a
+                        
                             href="https://buy.fnupay.com/genz-sweeps/deposit"
                             className="payment-method-btn"
                             target="_blank"
@@ -462,6 +466,7 @@ return (
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" />
                             </div>
+                            <span className="payment-btn-text">FNUPAY</span>
                         </a>
 
                         {/* Bitcoin (Paidly) */}
