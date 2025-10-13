@@ -2,7 +2,7 @@ import { createClient } from "@supabase/supabase-js"
 
 export const config = {
   api: {
-    bodyParser: false, // Wert sends raw JSON
+    bodyParser: false,
   },
 }
 
@@ -15,7 +15,6 @@ export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" })
 
   try {
-    // Collect raw request body (Wert requires this)
     const chunks = []
     for await (const chunk of req) chunks.push(chunk)
     const rawBody = Buffer.concat(chunks).toString("utf8")
@@ -44,7 +43,7 @@ export default async function handler(req, res) {
     let updateResult
     if (orderId) {
       updateResult = await supabase
-        .from("deposits")
+        .from("wert_deposits")
         .update({
           status: newStatus,
           wert_event_type: type,
@@ -56,10 +55,9 @@ export default async function handler(req, res) {
         .eq("wert_order_id", orderId)
         .select()
 
-      // Fallback to click_id
       if (updateResult.data?.length === 0 && click_id) {
         updateResult = await supabase
-          .from("deposits")
+          .from("wert_deposits")
           .update({
             status: newStatus,
             wert_event_type: type,
@@ -73,7 +71,7 @@ export default async function handler(req, res) {
       }
     } else if (click_id) {
       updateResult = await supabase
-        .from("deposits")
+        .from("wert_deposits")
         .update({
           status: newStatus,
           wert_event_type: type,
