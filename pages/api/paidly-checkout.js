@@ -1,52 +1,48 @@
-export const config = {
-  api: {
-    bodyParser: false, // important for raw stream forwarding
-  },
-};
+// /api/paidly-checkout.js
+import fetch from "node-fetch";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({ message: "Method not allowed" });
+    return res.status(405).json({ message: "Method Not Allowed" });
   }
 
   try {
-    // Collect raw body manually
-    const buffers = [];
-    for await (const chunk of req) {
-      buffers.push(chunk);
+    const { storeId, currency, amount, metadata, redirectUrl } = req.body;
+
+    if (!storeId || !currency || !amount) {
+      return res.status(400).json({ message: "Missing required fields" });
     }
-    const bodyString = Buffer.concat(buffers).toString();
 
-    // Send request to Paidly staging
-    const paidlyResponse = await fetch(
-      "https://api-staging.paidlyinteractive.com/v1/widget/checkout",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.PAIDLY_API_KEY}`, // staging key
-        },
-        body: bodyString,
-      }
-    );
+    // Call Paidly staging API
+    const paidlyRes = await fetch("https://api-staging.paidlyinteractive.com/v1/widget/checkout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        storeId,
+        currency,
+        amount,
+        metadata,
+        redirectUrl,
+      }),
+    });
 
-    // Try to parse JSON safely
-    let data;
-    try {
-      data = await paidlyResponse.json();
-    } catch {
-      const text = await paidlyResponse.text();
-      console.error("Paidly returned non-JSON:", text);
-      return res.status(paidlyResponse.status).json({
-        message: "Paidly returned non-JSON response",
-        raw: text,
+    const data = await paidlyRes.json();
+
+    if (!paidlyRes.ok) {
+      return res.status(paidlyRes.status).json({
+        message: data.message || "Paidly request failed",
       });
     }
 
-    // Forward Paidly's response
-    res.status(paidlyResponse.status).json(data);
+    // Return widget URL to frontend
+    return res.status(200).json({
+      widgetUrl: data.widgetUrl,
+      message: data.message || "Success",
+    });
   } catch (error) {
-    console.error("Paidly proxy error:", error);
-    res.status(500).json({ message: "Server error", error: error.message });
+    console.error("Paidly checkout error:", error);
+    return res.status(500).json({ message: "Server error", error: error.message });
   }
 }
