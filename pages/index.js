@@ -188,65 +188,62 @@ export default function Home() {
 
   // === Paidly BTC Deposit Flow ===
   const handlePaidlyBTC = async () => {
-  if (!playerName || !username || !gameName || !depositAmount) {
-    alert("Please fill out all player fields and amount first.");
-    return;
-  }
-
-  setLoading(true);
-
-  try {
-    // Send form data to your Vercel backend proxy
-    const response = await fetch("/api/paidly-checkout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        storeId: "4EHWNL1uyUdGezbZW9dGBXhKzcwj8e3oY7Jj1mnTCcD8", // your Paidly staging store ID
-        currency: "BTC",
-        amount: parseFloat(depositAmount),
-        metadata: { playerName, username, gameName },
-        redirectUrl: window.location.href,
-      }),
-    });
-
-    // Try to parse response
-    const data = await response.json();
-    console.log("Paidly checkout response:", data);
-
-    if (!response.ok) {
-      alert(`Paidly error: ${data.message || "Request failed"}`);
+    if (!playerName || !username || !gameName || !depositAmount) {
+      alert("Please fill out all player fields and amount first.");
       return;
     }
 
-    if (!data.widgetUrl) {
-      alert("No widget URL returned from Paidly.");
-      return;
-    }
+    setLoading(true);
 
-    // Dynamically load the staging widget
-    const script = document.createElement("script");
-    script.src = "https://widget-staging.paidlyinteractive.com/widget.js";
-    script.async = true;
+    try {
+      const response = await fetch("/api/paidly-checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          storeId: "4EHWNL1uyUdGezbZW9dGBXhKzcwj8e3oY7Jj1mnTCcD8",
+          currency: "BTC",
+          amount: parseFloat(depositAmount),
+          metadata: { playerName, username, gameName },
+          redirectUrl: window.location.href,
+        }),
+      });
 
-    script.onload = () => {
-      if (window.PaidlyWidget) {
-        const widget = new window.PaidlyWidget({
-          widgetUrl: data.widgetUrl,
-        });
-        widget.open();
-      } else {
-        alert("Paidly widget failed to load.");
+      const data = await response.json();
+      console.log("Paidly checkout response:", data);
+
+      if (!response.ok) {
+        alert(`Paidly error: ${data.message || "Request failed"}`);
+        return;
       }
-    };
 
-    document.body.appendChild(script);
-  } catch (error) {
-    console.error("Paidly BTC Error:", error);
-    alert("An error occurred. Please try again.");
-  } finally {
-    setLoading(false);
-  }
-};
+      if (!data.widgetUrl) {
+        alert("No widget URL returned from Paidly.");
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.src = "https://widget-staging.paidlyinteractive.com/widget.js";
+      script.async = true;
+
+      script.onload = () => {
+        if (window.PaidlyWidget) {
+          const widget = new window.PaidlyWidget({
+            widgetUrl: data.widgetUrl,
+          });
+          widget.open();
+        } else {
+          alert("Paidly widget failed to load.");
+        }
+      };
+
+      document.body.appendChild(script);
+    } catch (error) {
+      console.error("Paidly BTC Error:", error);
+      alert("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
   return (
