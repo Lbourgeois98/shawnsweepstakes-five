@@ -216,8 +216,8 @@ export default function Home() {
         .form-box .cancel { margin-top:8px; background:transparent; color:#ccc; border:none; cursor:pointer; }
 
         .payment-methods { margin-top: 16px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        .payment-method-btn { padding: 16px 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 15px; background: linear-gradient(90deg, #8e0808cd, #d40b0ba8); color: black; box-shadow: 0 4px 12px rgba(255, 215, 0, 0.25); text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .payment-method-btn:hover { background: linear-gradient(90deg, #8e0808cd, #d40b0ba8); box-shadow: 0 6px 16px rgba(255, 215, 0, 0.35); transform: translateY(-2px); }
+        .payment-method-btn { padding: 16px 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 15px; background: linear-gradient(90deg, #facc15, #fcd34d); color: black; box-shadow: 0 4px 12px rgba(255, 215, 0, 0.25); text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .payment-method-btn:hover { background: linear-gradient(90deg, #facc15, #fcd34d); box-shadow: 0 6px 16px rgba(255, 215, 0, 0.35); transform: translateY(-2px); }
         .payment-method-btn[disabled] { opacity: 0.6; cursor: not-allowed; }
         .payment-method-btn.full-width { grid-column: 1 / -1; }
         
@@ -230,8 +230,8 @@ export default function Home() {
    }
 
        .payment-logos img {
-         width: 28px;
-         height: 28px;
+         width: 32px;
+         height: 32px;
          object-fit: contain;
          filter: drop-shadow(0 0 1px rgba(0,0,0,0.4));
  }
