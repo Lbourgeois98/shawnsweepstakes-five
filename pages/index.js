@@ -367,9 +367,9 @@ export default function Home() {
                 <span className="payment-btn-text">FNUPAY</span>
               </a>
               
-              <button className="payment-method-btn" onClick={() => alert("Bitcoin payment coming soon!")}>
+              <button className="payment-method-btn" onClick={handlePaidlyBTC} disabled={loading}>
                 <span style={{fontSize: '20px', display: 'block', marginBottom: '4px'}}>₿</span>
-                <span className="payment-btn-text">Bitcoin</span>
+                <span className="payment-btn-text">{loading ? "Opening..." : "Bitcoin (Paidly)"}</span>
               </button>
             </div>
             
