@@ -1,7 +1,10 @@
 "use client";
+
 import { useEffect, useState } from "react";
+import Head from "next/head";
 import { createClient } from "@supabase/supabase-js";
 
+// Initialize Supabase client
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SERVICE_KEY
@@ -12,6 +15,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("");
 
+  // Fetch initial deposits
   useEffect(() => {
     async function fetchDeposits() {
       try {
@@ -19,17 +23,19 @@ export default function AdminDashboard() {
           .from("deposits")
           .select("*")
           .order("created_at", { ascending: false });
+
         if (error) throw error;
         setDeposits(data);
         setLoading(false);
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching deposits:", err);
         setLoading(false);
       }
     }
     fetchDeposits();
   }, []);
 
+  // Subscribe to real-time updates
   useEffect(() => {
     const subscription = supabase
       .from("deposits")
@@ -42,7 +48,8 @@ export default function AdminDashboard() {
             updated[index] = payload.new;
             return updated;
           }
-          if (payload.eventType === "DELETE") return prev.filter((d) => d.id !== payload.old.id);
+          if (payload.eventType === "DELETE")
+            return prev.filter((d) => d.id !== payload.old.id);
           return prev;
         });
       })
@@ -57,11 +64,13 @@ export default function AdminDashboard() {
 
   return (
     <>
-      {/* Tailwind CDN */}
-      <link
-        href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/dist/tailwind.min.css"
-        rel="stylesheet"
-      />
+      <Head>
+        <title>Admin Dashboard</title>
+        <link
+          href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/dist/tailwind.min.css"
+          rel="stylesheet"
+        />
+      </Head>
 
       <div className="min-h-screen bg-red-900 text-yellow-300 p-8 font-sans">
         <h1 className="text-4xl font-bold mb-6">Admin Dashboard</h1>
