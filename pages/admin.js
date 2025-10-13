@@ -12,7 +12,6 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("");
 
-  // Fetch initial deposits
   useEffect(() => {
     async function fetchDeposits() {
       try {
@@ -31,7 +30,6 @@ export default function AdminDashboard() {
     fetchDeposits();
   }, []);
 
-  // Real-time subscription
   useEffect(() => {
     const subscription = supabase
       .from("deposits")
@@ -59,6 +57,7 @@ export default function AdminDashboard() {
 
   return (
     <>
+      {/* Tailwind CDN */}
       <link
         href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/dist/tailwind.min.css"
         rel="stylesheet"
@@ -95,4 +94,30 @@ export default function AdminDashboard() {
               </tr>
             </thead>
             <tbody>
-              {f
+              {filteredDeposits.map((d) => (
+                <tr key={d.id} className="even:bg-red-800 odd:bg-red-700">
+                  <td className="border border-yellow-300 px-2 py-1">{d.player_name}</td>
+                  <td className="border border-yellow-300 px-2 py-1">{d.username}</td>
+                  <td className="border border-yellow-300 px-2 py-1">{d.game_name}</td>
+                  <td className="border border-yellow-300 px-2 py-1">{d.deposit_amount}</td>
+                  <td className="border border-yellow-300 px-2 py-1">{d.status}</td>
+                  <td className="border border-yellow-300 px-2 py-1">{d.click_id}</td>
+                  <td className="border border-yellow-300 px-2 py-1">{d.wert_order_id}</td>
+                  <td className="border border-yellow-300 px-2 py-1">{d.created_at}</td>
+                  <td className="border border-yellow-300 px-2 py-1">{d.updated_at}</td>
+                </tr>
+              ))}
+              {filteredDeposits.length === 0 && (
+                <tr>
+                  <td colSpan="9" className="text-center p-4">
+                    No deposits found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </>
+  );
+}
