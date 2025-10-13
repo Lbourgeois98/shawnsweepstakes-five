@@ -196,33 +196,29 @@ const handlePaidlyBTC = async () => {
   setLoading(true);
 
   try {
+    const customerId = `${username}_${Date.now()}`;
+
     const response = await fetch("/api/paidly-checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        storeId: "4EHWNL1uyUdGezbZW9dGBXhKzcwj8e3oY7Jj1mnTCcD8",
-        currency: "BTC",
-        amount: parseFloat(depositAmount),
-        metadata: {
-          playerName,
-          username,
-          gameName,
-          depositAmount: parseFloat(depositAmount),
-        },
-        redirectUrl: window.location.href,
+        customerId,
+        playerName,
+        username,
+        gameName,
+        depositAmount: parseFloat(depositAmount),
       }),
     });
 
     const data = await response.json();
     console.log("Paidly checkout response:", data);
 
-    if (!data.widgetUrl) {
-      alert("No widget URL returned from Paidly.");
+    if (!data.checkoutLink) {
+      alert("Failed to generate checkout link. " + (data.message || ""));
       setLoading(false);
       return;
     }
 
-    // Log deposit to database
     try {
       await fetch("/api/bitcoin/log-deposit", {
         method: "POST",
@@ -232,7 +228,7 @@ const handlePaidlyBTC = async () => {
           username,
           gameName,
           depositAmount: parseFloat(depositAmount),
-          bitcoinTx: "pending",
+          bitcoinTx: customerId,
           bitcoinAddress: "pending",
         }),
       });
@@ -241,8 +237,7 @@ const handlePaidlyBTC = async () => {
       console.error("⚠️ Failed to log bitcoin deposit:", logError);
     }
 
-    // Open widget URL in new window/tab
-    window.open(data.widgetUrl, "paidly-widget", "width=600,height=700");
+    window.open(data.checkoutLink, "paidly-widget", "width=800,height=900");
 
     setShowBTCForm(false);
     setShowDepositOptions(false);
@@ -251,10 +246,10 @@ const handlePaidlyBTC = async () => {
     setGameName("");
     setDepositAmount("");
 
-    setLoading(false);
   } catch (error) {
     console.error("Paidly BTC Error:", error);
     alert("An error occurred. Please try again.");
+  } finally {
     setLoading(false);
   }
 };
