@@ -510,7 +510,7 @@ return (
                             onClick={() => setShowWertForm(true)}
                         >
                             <div className="payment-logos">
-                                <img src="https://static.wixstatic.com/media/7fb4e7_4fc518a6d15b45e6af5b1a436f72f39d~mv2.png" alt="Wert" style={{width: '80px', height: 'auto'}} />
+                                <img src="/Public/wert-logo.png" alt="Wert" style={{width: '80px', height: 'auto'}} />
                             </div>
                             <span className="payment-btn-text">Wert</span>
                         </button>
@@ -525,7 +525,7 @@ return (
                             disabled={loading}
                         >
                             <div className="payment-logos">
-                                <img src="https://app.tierlock.com/assets/logo.png" alt="TierLock" style={{width: '80px', height: 'auto'}} />
+                                <img src="Public/tierlock-logo.png" alt="TierLock" style={{width: '80px', height: 'auto'}} />
                             </div>
                             <span className="payment-btn-text">TierLock</span>
                         </button>
@@ -538,7 +538,7 @@ return (
                             rel="noopener noreferrer"
                         >
                             <div className="payment-logos">
-                                <img src="https://fnupay.com/logo.png" alt="FNUpay" style={{width: '80px', height: 'auto'}} />
+                                <img src="Public/fnupay-logo.png" alt="FNUpay" style={{width: '80px', height: 'auto'}} />
                             </div>
                             <span className="payment-btn-text">FNUpay</span>
                         </a>
@@ -553,7 +553,7 @@ return (
                             disabled={loading}
                         >
                             <div className="payment-logos">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Bitcoin_logo.svg" alt="Bitcoin" className="bitcoin-logo" />
+                                <img src="Public/btc-logo.png" alt="Bitcoin" className="bitcoin-logo" />
                             </div>
                             <span className="payment-btn-text">Bitcoin</span>
                         </button>
