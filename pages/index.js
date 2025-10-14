@@ -403,20 +403,44 @@ return (
 
 .payment-logos {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  max-width: 100%;
-  padding: 12px;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 8px;
   background: rgba(0, 0, 0, 0.3);
   border-radius: 12px;
   min-height: 80px;
 }
 
+.payment-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.payment-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.payment-item-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #facc15;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
 .payment-logos img {
-  width: 38px;
-  height: 38px;
+  width: 34px;
+  height: 34px;
   object-fit: contain;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
   transition: transform 0.2s;
@@ -510,12 +534,34 @@ return (
                             onClick={() => setShowWertForm(true)}
                         >
                             <div className="payment-logos">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Square_Cash_app_logo.svg" alt="Cash App" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/Chime_Bank_logo.png" alt="Chime" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" />
+                                <div className="payment-row">
+                                    <div className="payment-item">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
+                                        <span className="payment-item-label">Cards</span>
+                                    </div>
+                                    <div className="payment-item">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
+                                        <span className="payment-item-label">Cards</span>
+                                    </div>
+                                    <div className="payment-item">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Square_Cash_app_logo.svg" alt="Cash App" />
+                                        <span className="payment-item-label">Cash App</span>
+                                    </div>
+                                </div>
+                                <div className="payment-row">
+                                    <div className="payment-item">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/Chime_Bank_logo.png" alt="Chime" />
+                                        <span className="payment-item-label">Chime</span>
+                                    </div>
+                                    <div className="payment-item">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
+                                        <span className="payment-item-label">Google Pay</span>
+                                    </div>
+                                    <div className="payment-item">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" />
+                                        <span className="payment-item-label">Apple Pay</span>
+                                    </div>
+                                </div>
                             </div>
                         </button>
 
@@ -529,30 +575,74 @@ return (
                             disabled={loading}
                         >
                             <div className="payment-logos">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Square_Cash_app_logo.svg" alt="Cash App" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/Chime_Bank_logo.png" alt="Chime" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" />
+                                <div className="payment-row">
+                                    <div className="payment-item">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
+                                        <span className="payment-item-label">Cards</span>
+                                    </div>
+                                    <div className="payment-item">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
+                                        <span className="payment-item-label">Cards</span>
+                                    </div>
+                                    <div className="payment-item">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Square_Cash_app_logo.svg" alt="Cash App" />
+                                        <span className="payment-item-label">Cash App</span>
+                                    </div>
+                                </div>
+                                <div className="payment-row">
+                                    <div className="payment-item">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/Chime_Bank_logo.png" alt="Chime" />
+                                        <span className="payment-item-label">Chime</span>
+                                    </div>
+                                    <div className="payment-item">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
+                                        <span className="payment-item-label">Google Pay</span>
+                                    </div>
+                                    <div className="payment-item">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" />
+                                        <span className="payment-item-label">Apple Pay</span>
+                                    </div>
+                                </div>
                             </div>
                             <span className="payment-btn-text">TierLock</span>
                         </button>
 
                         {/* FNUPAY */}
-                        <a
+                        
                             href="https://buy.fnupay.com/genz-sweeps/deposit"
                             className="payment-method-btn"
                             target="_blank"
                             rel="noopener noreferrer"
                         >
                             <div className="payment-logos">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Square_Cash_app_logo.svg" alt="Cash App" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/Chime_Bank_logo.png" alt="Chime" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" />
+                                <div className="payment-row">
+                                    <div className="payment-item">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
+                                        <span className="payment-item-label">Cards</span>
+                                    </div>
+                                    <div className="payment-item">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
+                                        <span className="payment-item-label">Cards</span>
+                                    </div>
+                                    <div className="payment-item">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Square_Cash_app_logo.svg" alt="Cash App" />
+                                        <span className="payment-item-label">Cash App</span>
+                                    </div>
+                                </div>
+                                <div className="payment-row">
+                                    <div className="payment-item">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/Chime_Bank_logo.png" alt="Chime" />
+                                        <span className="payment-item-label">Chime</span>
+                                    </div>
+                                    <div className="payment-item">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
+                                        <span className="payment-item-label">Google Pay</span>
+                                    </div>
+                                    <div className="payment-item">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" />
+                                        <span className="payment-item-label">Apple Pay</span>
+                                    </div>
+                                </div>
                             </div>
                         </a>
 
