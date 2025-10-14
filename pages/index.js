@@ -510,7 +510,7 @@ return (
                             onClick={() => setShowWertForm(true)}
                         >
                             <div className="payment-logos">
-                                <img src="/Public/wert-logo.png" alt="Wert" style={{width: '80px', height: 'auto'}} />
+                                <img src="wert-logo.PNG" alt="Wert" style={{width: '80px', height: 'auto'}} />
                             </div>
                             <span className="payment-btn-text">Wert</span>
                         </button>
@@ -525,7 +525,7 @@ return (
                             disabled={loading}
                         >
                             <div className="payment-logos">
-                                <img src="Public/tierlock-logo.png" alt="TierLock" style={{width: '80px', height: 'auto'}} />
+                                <img src="tierlock-logo.PNG" alt="TierLock" style={{width: '80px', height: 'auto'}} />
                             </div>
                             <span className="payment-btn-text">TierLock</span>
                         </button>
@@ -538,7 +538,7 @@ return (
                             rel="noopener noreferrer"
                         >
                             <div className="payment-logos">
-                                <img src="Public/fnupay-logo.png" alt="FNUpay" style={{width: '80px', height: 'auto'}} />
+                                <img src="fnupay-logo.PNG" alt="FNUpay" style={{width: '80px', height: 'auto'}} />
                             </div>
                             <span className="payment-btn-text">FNUpay</span>
                         </a>
@@ -553,7 +553,7 @@ return (
                             disabled={loading}
                         >
                             <div className="payment-logos">
-                                <img src="Public/btc-logo.png" alt="Bitcoin" className="bitcoin-logo" />
+                                <img src="btc-logo.PNG" alt="Bitcoin" className="bitcoin-logo" />
                             </div>
                             <span className="payment-btn-text">Bitcoin</span>
                         </button>
