@@ -608,44 +608,46 @@ return (
                         </button>
 
                         {/* FNUPAY */}
-                        
-                            href="https://buy.fnupay.com/genz-sweeps/deposit"
-                            className="payment-method-btn"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <div className="payment-logos">
-                                <div className="payment-row">
-                                    <div className="payment-item">
-                                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
-                                        <span className="payment-item-label">Cards</span>
-                                    </div>
-                                    <div className="payment-item">
-                                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
-                                        <span className="payment-item-label">Cards</span>
-                                    </div>
-                                    <div className="payment-item">
-                                        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Square_Cash_app_logo.svg" alt="Cash App" />
-                                        <span className="payment-item-label">Cash App</span>
-                                    </div>
-                                </div>
-                                <div className="payment-row">
-                                    <div className="payment-item">
-                                        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/Chime_Bank_logo.png" alt="Chime" />
-                                        <span className="payment-item-label">Chime</span>
-                                    </div>
-                                    <div className="payment-item">
-                                        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
-                                        <span className="payment-item-label">Google Pay</span>
-                                    </div>
-                                    <div className="payment-item">
-                                        <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" />
-                                        <span className="payment-item-label">Apple Pay</span>
+<a
+  href="https://buy.fnupay.com/genz-sweeps/deposit"
+  className="payment-method-btn"
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  <div className="payment-logos">
+    <div className="payment-row">
+      <div className="payment-item">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
+        <span className="payment-item-label">Cards</span>
+      </div>
+      <div className="payment-item">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
+        <span className="payment-item-label">Cards</span>
+      </div>
+      <div className="payment-item">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Square_Cash_app_logo.svg" alt="Cash App" />
+        <span className="payment-item-label">Cash App</span>
+      </div>
+    </div>
+    <div className="payment-row">
+      <div className="payment-item">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/Chime_Bank_logo.png" alt="Chime" />
+        <span className="payment-item-label">Chime</span>
+      </div>
+      <div className="payment-item">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
+        <span className="payment-item-label">Google Pay</span>
+      </div>
+      <div className="payment-item">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" />
+        <span className="payment-item-label">Apple Pay</span>
+      </div>
     </div>
   </div>
-</div>
 </a>
+
 {/* Bitcoin (Paidly) */}
+
 <button
   className="payment-method-btn"
   onClick={() => {
