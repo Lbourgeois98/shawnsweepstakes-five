@@ -645,7 +645,6 @@ return (
   </div>
 </div>
 </a>
-
 {/* Bitcoin (Paidly) */}
 <button
   className="payment-method-btn"
