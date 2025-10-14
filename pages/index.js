@@ -641,26 +641,32 @@ return (
                                     <div className="payment-item">
                                         <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" />
                                         <span className="payment-item-label">Apple Pay</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
+    </div>
+  </div>
+</div>
+</a>
 
-                        {/* Bitcoin (Paidly) */}
-                           <button
-                            className="payment-method-btn"
-                            onClick={() => {
-                                setShowDepositOptions(false);
-                                setShowBTCForm(true);
-                            }}
-                            disabled={loading}
-                        >
-                            <div className="payment-logos">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Bitcoin_logo.svg" alt="Bitcoin" className="bitcoin-logo" />
-                            </div>
-                        </button>
-                    </div>
-        )}
+{/* Bitcoin (Paidly) */}
+<button
+  className="payment-method-btn"
+  onClick={() => {
+    setShowDepositOptions(false);
+    setShowBTCForm(true);
+  }}
+  disabled={loading}
+>
+  <div className="payment-logos">
+    <img
+      src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Bitcoin_logo.svg"
+      alt="Bitcoin"
+      className="bitcoin-logo"
+    />
+  </div>
+</button>
+
+</div> {/* 👈 add this to close the outer wrapper div */}
+)}
+
 
         {showWertForm && (
             <div className="popup">
