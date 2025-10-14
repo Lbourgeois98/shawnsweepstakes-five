@@ -660,11 +660,6 @@ return (
                             </div>
                         </button>
                     </div>
-                    <button className="cancel" onClick={() => setShowDepositOptions(false)}>
-                        Cancel
-                    </button>
-                </div>
-            </div>
         )}
 
         {showWertForm && (
