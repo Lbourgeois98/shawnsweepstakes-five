@@ -510,13 +510,9 @@ return (
                             onClick={() => setShowWertForm(true)}
                         >
                             <div className="payment-logos">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Square_Cash_app_logo.svg" alt="Cash App" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/Chime_Bank_logo.png" alt="Chime" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" />
+                                <img src="https://static.wixstatic.com/media/7fb4e7_4fc518a6d15b45e6af5b1a436f72f39d~mv2.png" alt="Wert" style={{width: '80px', height: 'auto'}} />
                             </div>
+                            <span className="payment-btn-text">Wert</span>
                         </button>
 
                         {/* TierLock */}
@@ -529,12 +525,7 @@ return (
                             disabled={loading}
                         >
                             <div className="payment-logos">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Square_Cash_app_logo.svg" alt="Cash App" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/Chime_Bank_logo.png" alt="Chime" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" />
+                                <img src="https://app.tierlock.com/assets/logo.png" alt="TierLock" style={{width: '80px', height: 'auto'}} />
                             </div>
                             <span className="payment-btn-text">TierLock</span>
                         </button>
@@ -547,13 +538,9 @@ return (
                             rel="noopener noreferrer"
                         >
                             <div className="payment-logos">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Square_Cash_app_logo.svg" alt="Cash App" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/Chime_Bank_logo.png" alt="Chime" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" />
+                                <img src="https://fnupay.com/logo.png" alt="FNUpay" style={{width: '80px', height: 'auto'}} />
                             </div>
+                            <span className="payment-btn-text">FNUpay</span>
                         </a>
 
                         {/* Bitcoin (Paidly) */}
@@ -568,6 +555,7 @@ return (
                             <div className="payment-logos">
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Bitcoin_logo.svg" alt="Bitcoin" className="bitcoin-logo" />
                             </div>
+                            <span className="payment-btn-text">Bitcoin</span>
                         </button>
                     </div>
                     <button className="cancel" onClick={() => setShowDepositOptions(false)}>
