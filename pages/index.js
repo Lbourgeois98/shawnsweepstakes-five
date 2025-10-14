@@ -344,29 +344,47 @@ return (
 }
 
 .payment-method-btn {
-  padding: 30px 20px;
-  border-radius: 12px;
-  border: none;
+  padding: 24px 20px;
+  border-radius: 16px;
+  border: 2px solid rgba(250, 10, 10, 0.3);
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s;
   font-size: 16px;
-  background: linear-gradient(90deg, #facc15, #fcd34d);
-  color: black;
-  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.25);
+  background: linear-gradient(135deg, rgba(20, 20, 20, 0.95), rgba(30, 30, 30, 0.95));
+  color: white;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
   text-decoration: none;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 14px;
-  min-height: 180px;
+  gap: 16px;
+  min-height: 200px;
+  position: relative;
+  overflow: hidden;
+}
+
+.payment-method-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(250, 10, 10, 0.1), rgba(250, 10, 10, 0.05));
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.payment-method-btn:hover::before {
+  opacity: 1;
 }
 
 .payment-method-btn:hover {
-  background: linear-gradient(90deg, #fde047, #facc15);
-  box-shadow: 0 6px 16px rgba(255, 215, 0, 0.35);
-  transform: translateY(-2px);
+  border-color: rgba(250, 10, 10, 0.6);
+  box-shadow: 0 12px 30px rgba(250, 10, 10, 0.3);
+  transform: translateY(-4px);
 }
 
 .payment-method-btn[disabled] {
@@ -374,36 +392,51 @@ return (
   cursor: not-allowed;
 }
 
-.payment-method-btn.full-width {
-  grid-column: 1 / -1;
+.payment-option-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #facc15;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
 }
 
 .payment-logos {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 8px;
   flex-wrap: wrap;
   max-width: 100%;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  min-height: 80px;
 }
 
 .payment-logos img {
-  width: 42px;
-  height: 42px;
+  width: 38px;
+  height: 38px;
   object-fit: contain;
-  filter: drop-shadow(0 0 2px rgba(0,0,0,0.3));
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+  transition: transform 0.2s;
+}
+
+.payment-method-btn:hover .payment-logos img {
+  transform: scale(1.1);
 }
 
 .payment-logos img.bitcoin-logo {
-  width: 56px;
-  height: 56px;
+  width: 52px;
+  height: 52px;
 }
 
 .payment-btn-text {
   font-weight: bold;
-  color: black;
-  font-size: 15px;
-  margin-top: 6px;
+  color: white;
+  font-size: 14px;
+  margin-top: 4px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }`}</style>
 
         <video
