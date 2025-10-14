@@ -647,7 +647,7 @@ return (
                         </a>
 
                         {/* Bitcoin (Paidly) */}
-                        <button
+                           <button
                             className="payment-method-btn"
                             onClick={() => {
                                 setShowDepositOptions(false);
