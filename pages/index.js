@@ -437,23 +437,6 @@ return (
   font-size: 14px;
   margin-top: 4px;
   text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-}
-
-.payment-logo-group {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 4px 10px;
-}
-
-.payment-type-label {
-  font-size: 12px;
-  color: #facc15;
-  font-weight: 600;
-  margin-bottom: 6px;
-  text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }`}</style>
 
         <video
@@ -521,107 +504,72 @@ return (
                 <div className="form-box" role="dialog" aria-modal="true">
                     <h3 style={{ marginBottom: 16 }}>Choose Payment Method</h3>
                     <div className="payment-methods">
-  {/* Wert Card */}
-  <button
-    className="payment-method-btn"
-    onClick={() => setShowWertForm(true)}
-  >
-    <div className="payment-logos">
-      <div className="payment-logo-group">
-        <div className="payment-type-label">Cards</div>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
-        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
-      </div>
-      <div className="payment-logo-group">
-        <div className="payment-type-label">Cash Apps</div>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Square_Cash_app_logo.svg" alt="Cash App" />
-        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/Chime_Bank_logo.png" alt="Chime" />
-      </div>
-      <div className="payment-logo-group">
-        <div className="payment-type-label">Mobile Pay</div>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
-        <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" />
-      </div>
-    </div>
-    <span className="payment-btn-text">Wert Deposit</span>
-  </button>
+                        {/* Wert Card */}
+                        <button
+                            className="payment-method-btn"
+                            onClick={() => setShowWertForm(true)}
+                        >
+                            <div className="payment-logos">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Square_Cash_app_logo.svg" alt="Cash App" />
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/Chime_Bank_logo.png" alt="Chime" />
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" />
+                            </div>
+                        </button>
 
-  {/* TierLock */}
-  <button
-    className="payment-method-btn"
-    onClick={() => {
-      setShowDepositOptions(false);
-      setShowTierLockForm(true);
-    }}
-    disabled={loading}
-  >
-    <div className="payment-logos">
-      <div className="payment-logo-group">
-        <div className="payment-type-label">Cards</div>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
-        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
-      </div>
-      <div className="payment-logo-group">
-        <div className="payment-type-label">Cash Apps</div>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Square_Cash_app_logo.svg" alt="Cash App" />
-        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/Chime_Bank_logo.png" alt="Chime" />
-      </div>
-      <div className="payment-logo-group">
-        <div className="payment-type-label">Mobile Pay</div>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
-        <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" />
-      </div>
-    </div>
-    <span className="payment-btn-text">TierLock</span>
-  </button>
+                        {/* TierLock */}
+                        <button
+                            className="payment-method-btn"
+                            onClick={() => {
+                                setShowDepositOptions(false);
+                                setShowTierLockForm(true);
+                            }}
+                            disabled={loading}
+                        >
+                            <div className="payment-logos">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Square_Cash_app_logo.svg" alt="Cash App" />
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/Chime_Bank_logo.png" alt="Chime" />
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" />
+                            </div>
+                            <span className="payment-btn-text">TierLock</span>
+                        </button>
 
-  {/* FNUPAY */}
-  <a
-    href="https://buy.fnupay.com/genz-sweeps/deposit"
-    className="payment-method-btn"
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    <div className="payment-logos">
-      <div className="payment-logo-group">
-        <div className="payment-type-label">Cards</div>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
-        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
-      </div>
-      <div className="payment-logo-group">
-        <div className="payment-type-label">Cash Apps</div>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Square_Cash_app_logo.svg" alt="Cash App" />
-        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/Chime_Bank_logo.png" alt="Chime" />
-      </div>
-      <div className="payment-logo-group">
-        <div className="payment-type-label">Mobile Pay</div>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
-        <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" />
-      </div>
-    </div>
-    <span className="payment-btn-text">FNUPay</span>
-  </a>
+                        {/* FNUPAY */}
+                        <a
+                            href="https://buy.fnupay.com/genz-sweeps/deposit"
+                            className="payment-method-btn"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <div className="payment-logos">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Square_Cash_app_logo.svg" alt="Cash App" />
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/Chime_Bank_logo.png" alt="Chime" />
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" />
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" />
+                            </div>
+                        </a>
 
-  {/* Bitcoin (Paidly) */}
-  <button
-    className="payment-method-btn"
-    onClick={() => {
-      setShowDepositOptions(false);
-      setShowBTCForm(true);
-    }}
-    disabled={loading}
-  >
-    <div className="payment-logos">
-      <img
-        src="https://upload.wikimedia.org/wikipedia/commons/4/46/Bitcoin.svg"
-        alt="Bitcoin"
-        className="bitcoin-logo"
-      />
-    </div>
-    <span className="payment-btn-text">Bitcoin (Paidly)</span>
-  </button>
-</div>
-
+                        {/* Bitcoin (Paidly) */}
+                        <button
+                            className="payment-method-btn"
+                            onClick={() => {
+                                setShowDepositOptions(false);
+                                setShowBTCForm(true);
+                            }}
+                            disabled={loading}
+                        >
+                            <div className="payment-logos">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Bitcoin_logo.svg" alt="Bitcoin" className="bitcoin-logo" />
+                            </div>
+                        </button>
+                    </div>
                     <button className="cancel" onClick={() => setShowDepositOptions(false)}>
                         Cancel
                     </button>
