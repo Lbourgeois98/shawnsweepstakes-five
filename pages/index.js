@@ -547,6 +547,24 @@ return (
   grid-template-columns: repeat(2, 1fr);
   gap: 14px;
 }
+.withdraw-btn {
+  background: linear-gradient(90deg, #ff0000, #cc0000);
+  color: white;
+  font-weight: bold;
+  border: 2px solid gold;
+  border-radius: 8px;
+  padding: 12px 20px;
+  margin-top: 12px;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.withdraw-btn:hover {
+  background: linear-gradient(90deg, #ff3333, #e60000);
+  box-shadow: 0 0 20px red;
+  transform: translateY(-2px);
+}
 
 .payment-method-btn {
   padding: 24px 20px;
@@ -668,6 +686,12 @@ return (
             >
                 Deposit
             </button>
+                  <button
+  className="social-btn withdraw-btn"
+  onClick={() => setShowWithdrawalForm(true)}
+>
+  Withdraw
+</button>
             <a
                 href="https://www.facebook.com/people/Shawn-Sweeps/61581214871852/"
                 className="social-btn"
