@@ -333,9 +333,9 @@ return (
   cursor: pointer;
   transition: all 0.3s;
   font-size: 16px;
-  background: linear-gradient(135deg, rgba(20, 20, 20, 0.95), rgba(30, 30, 30, 0.95));
+  background: linear-gradient(135deg, rgba(20, 20, 20, 0.95), rgba(87, 5, 5, 0.95));
   color: white;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 8px 20px rgba(144, 2, 2, 0.6);
   text-decoration: none;
   display: flex;
   flex-direction: column;
@@ -354,7 +354,7 @@ return (
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(250, 10, 10, 0.1), rgba(250, 10, 10, 0.05));
+  background: linear-gradient(135deg, rgba(250, 10, 10, 0.52), rgba(250, 10, 10, 0.58));
   opacity: 0;
   transition: opacity 0.3s;
 }
@@ -391,16 +391,16 @@ return (
   flex-wrap: wrap;
   max-width: 100%;
   padding: 12px;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(255, 2, 2, 0.3);
   border-radius: 12px;
   min-height: 80px;
 }
 
 .payment-logos img {
-  width: 38px;
-  height: 38px;
+  width: 52px;
+  height: 52px;
   object-fit: contain;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+  filter: drop-shadow(0 2px 4px rgba(255, 0, 0, 0.4));
   transition: transform 0.2s;
 }
 
@@ -409,8 +409,8 @@ return (
 }
 
 .payment-logos img.bitcoin-logo {
-  width: 52px;
-  height: 52px;
+  width: 72px;
+  height: 72px;
 }
 
 .payment-btn-text {
@@ -418,7 +418,7 @@ return (
   color: white;
   font-size: 14px;
   margin-top: 4px;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  text-shadow: 0 2px 4px rgba(255,0,0,0.4);
 }`}</style>
 
         <video
