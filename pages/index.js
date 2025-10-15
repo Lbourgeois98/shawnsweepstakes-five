@@ -71,7 +71,7 @@ export default function Home() {
       { id: "playbdd", name: "BIG DADDY DRAGON", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/fcf9c9dd.jpg?v=0c91e9dc", gameUrl: "https://www.playbdd.com/" },
       { id: "kraken", name: "KRAKEN", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/f6ee4ae8.jpg?v=0c91e9dc", gameUrl: "https://getthekraken.com/" },
       { id: "nova", name: "NOVA", imageUrl: "https://sweepshub.us/IMG_2683.jpeg", gameUrl: "https://novaplay.cc/" },
-{ id: "funstation", name: "FUNSTATION", imageUrl: "https://sweepshub.us/IMG_2663.jpeg", gameUrl: "https://www.funstation.site/" }
+      { id: "funstation", name: "FUNSTATION", imageUrl: "https://sweepshub.us/IMG_2663.jpeg", gameUrl: "https://www.funstation.site/" }
     ];
 
     const gamesEl = document.getElementById("games");
