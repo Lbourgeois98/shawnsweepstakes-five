@@ -13,15 +13,16 @@ export default function Home() {
   const [gameName, setGameName] = useState("");
   const [depositAmount, setDepositAmount] = useState("");
   const [withdrawAmount, setWithdrawAmount] = useState("");
+  const [walletAddress, setWalletAddress] = useState("");
   const [loading, setLoading] = useState(false);
 
+  
   // === Load Games ===
   useEffect(() => {
     const games = [
       { id: "megaspinsweeps", name: "MEGASPIN", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/85307f95.jpg?v=0c91e9dc", gameUrl: "http://www.megaspinsweeps.com/index.html" },
       { id: "vblink777", name: "VBLINK", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/753a32c3.jpg?v=0c91e9dc", gameUrl: "https://www.vblink777.club/" },
-
-{ id: "goldentreasure", name: "GOLDEN TREASURE", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/7c9b03e5.jpg?v=0c91e9dc", gameUrl: "https://www.goldentreasure.mobi/" },
+      { id: "goldentreasure", name: "GOLDEN TREASURE", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/7c9b03e5.jpg?v=0c91e9dc", gameUrl: "https://www.goldentreasure.mobi/" },
       { id: "orionstars", name: "ORION STARS", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/417aedb1.png?v=0c91e9dc", gameUrl: "http://start.orionstars.vip:8580/index.html" },
       { id: "firekirin", name: "FIRE KIRIN", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/189aadee.jpg?v=0c91e9dc", gameUrl: "http://start.firekirin.xyz:8580/index.html" },
       { id: "rivermonster", name: "RIVER MONSTER", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/253c9f08.jpg?v=0c91e9dc", gameUrl: "https://rm777.net/" },
@@ -202,10 +203,10 @@ export default function Home() {
     }
   };
 
-  // === Paidly Withdrawal ===
+  // === Paidly Withdrawal - FIXED ===
   const handlePaidlyWithdraw = async () => {
-    if (!username || !playerName || !withdrawAmount) {
-      alert("Please fill out all fields.");
+    if (!playerName || !username || !gameName || !withdrawAmount || !walletAddress) {
+      alert("Please fill out all fields including wallet address.");
       return;
     }
 
@@ -215,164 +216,89 @@ export default function Home() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          username,
           playerName,
-          amount: parseFloat(withdrawAmount),
-          currency: "USD", // required
+          username,
+          gameName,
+          withdrawAmount: parseFloat(withdrawAmount),
+          walletAddress,
         }),
       });
 
       const data = await res.json();
+      
       if (data.success) {
-        alert("✅ Withdrawal successful!");
+        alert("✅ Withdrawal request submitted successfully!");
+        setShowPaidlyWithdrawForm(false);
+        setPlayerName("");
+        setUsername("");
+        setGameName("");
+        setWithdrawAmount("");
+        setWalletAddress("");
       } else {
         alert("❌ Withdrawal failed: " + (data.message || "Unknown error"));
       }
-
-      setShowPaidlyWithdrawForm(false);
-      setWithdrawAmount("");
     } catch (err) {
-      console.error(err);
-      alert("Paidly withdrawal failed. See console.");
+      console.error("Withdrawal error:", err);
+      alert("Network error. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  return (
+return (
     <>
+      {/* BACKGROUND VIDEO - RESTORED */}
+      <video id="bg-video" autoPlay loop muted playsInline>
+        <source src="https://shawn-sweepstakes.carrd.co/assets/videos/video01.mp4?v=0c91e9dc" type="video/mp4" />
+      </video>
+      <div className="video-overlay"></div>
 
-<style>{`
-            * { margin: 0; padding: 0; box-sizing: border-box; }
-            body, html { width: 100%; min-height: 100vh; overflow-x: hidden; font-family: Arial, sans-serif; color: white; }
-            #bg-video { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; pointer-events: none; }
-            .video-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.35); z-index: -1; pointer-events: none; }
-            header { text-align: center; margin: 30px 0 20px; position: relative; z-index: 10; }
-            header img { width: 220px; filter: drop-shadow(0 0 10px rgba(250,10,10,0.6)); }
-            .social-buttons { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; max-width: 600px; margin: 20px auto 40px; padding: 0 15px; position: relative; z-index: 10; }
-            .social-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 16px 24px; background: rgba(250, 10, 10, 0.9); color: white; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 16px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(250, 10, 10, 0.3); text-align: center; cursor:pointer; border: none; }
-            .social-btn:hover { background: rgba(224, 9, 9, 0.9); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(250, 10, 10, 0.4); }
-            .deposit-btn { grid-column: 1 / -1; background: linear-gradient(90deg, #facc15, #fcd34d); color: black; box-shadow: 0 4px 12px rgba(255, 215, 0, 0.25); padding: 20px 28px; font-size: 18px; }
-            .deposit-btn:hover { background: linear-gradient(90deg, #fde047, #facc15); transform: translateY(-2px); }
+      <style>{`
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body, html { width: 100%; min-height: 100vh; overflow-x: hidden; font-family: Arial, sans-serif; color: white; }
+        #bg-video { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; pointer-events: none; }
+        .video-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.35); z-index: -1; pointer-events: none; }
+        header { text-align: center; margin: 30px 0 20px; position: relative; z-index: 10; }
+        header img { width: 220px; filter: drop-shadow(0 0 10px rgba(250,10,10,0.6)); }
+        .social-buttons { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; max-width: 600px; margin: 20px auto 40px; padding: 0 15px; position: relative; z-index: 10; }
+        .social-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 16px 24px; background: rgba(250, 10, 10, 0.9); color: white; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 16px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(250, 10, 10, 0.3); text-align: center; cursor:pointer; border: none; }
+        .social-btn:hover { background: rgba(224, 9, 9, 0.9); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(250, 10, 10, 0.4); }
+        .deposit-btn { grid-column: 1 / -1; background: linear-gradient(90deg, #facc15, #fcd34d); color: black; box-shadow: 0 4px 12px rgba(255, 215, 0, 0.25); padding: 20px 28px; font-size: 18px; }
+        .deposit-btn:hover { background: linear-gradient(90deg, #fde047, #facc15); transform: translateY(-2px); }
 
-            #games { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; max-width: 1200px; margin: 0 auto 60px; padding: 0 15px; position: relative; z-index: 10; }
-            @media (max-width: 1024px) { #games { grid-template-columns: repeat(3, 1fr); } }
-            @media (max-width: 500px) { #games { grid-template-columns: repeat(2, 1fr); } }
-            .game-card { position: relative; width: 100%; padding-bottom: 100%; border-radius: 50%; overflow: hidden; box-shadow: 0 6px 15px rgba(0,0,0,0.5); transition: all 0.3s; background: #111; }
-            .game-card a { display:block; width:100%; height:100%; }
-            .game-card img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-            .card-label { position:absolute; left:8px; bottom:8px; right:8px; color:#fff; font-size:12px; background:rgba(0,0,0,0.4); padding:6px 8px; border-radius:6px; text-align:center; }
-            .game-card:hover { transform: scale(1.08); box-shadow: 0 0 25px rgba(250,10,10,0.6); }
+        #games { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; max-width: 1200px; margin: 0 auto 60px; padding: 0 15px; position: relative; z-index: 10; }
+        @media (max-width: 1024px) { #games { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 500px) { #games { grid-template-columns: repeat(2, 1fr); } }
+        .game-card { position: relative; width: 100%; padding-bottom: 100%; border-radius: 50%; overflow: hidden; box-shadow: 0 6px 15px rgba(0,0,0,0.5); transition: all 0.3s; background: #111; }
+        .game-card a { display:block; width:100%; height:100%; }
+        .game-card img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .card-label { position:absolute; left:8px; bottom:8px; right:8px; color:#fff; font-size:12px; background:rgba(0,0,0,0.4); padding:6px 8px; border-radius:6px; text-align:center; }
+        .game-card:hover { transform: scale(1.08); box-shadow: 0 0 25px rgba(250,10,10,0.6); }
 
-            .popup { position: fixed; top: 0; left: 0; right: 0; bottom: 0; display:flex; align-items:center; justify-content:center; background: rgba(0,0,0,0.7); z-index: 9999; }
-            .form-box { background: #121212; padding: 22px; border-radius: 12px; width: 92%; max-width: 420px; border: 2px solid rgba(255, 215, 0, 0.18); box-shadow: 0 0 20px rgba(255,215,0,0.06); color: white; text-align: center; }
-            .form-box input { width: 100%; padding: 12px 14px; margin-bottom:10px; border-radius:8px; border: none; font-size:14px; color: black; }
-            .form-box .submit { width:100%; padding:12px; border-radius:8px; border:none; background: linear-gradient(90deg, #facc15, #fcd34d); color: black; font-weight:bold; cursor:pointer; }
-            .form-box .submit[disabled] { opacity: 0.6; cursor: not-allowed; }
-            .form-box .cancel { margin-top:8px; background:transparent; color:#ccc; border:none; cursor:pointer; }
+        .popup { position: fixed; top: 0; left: 0; right: 0; bottom: 0; display:flex; align-items:center; justify-content:center; background: rgba(0,0,0,0.7); z-index: 9999; }
+        .form-box { background: #121212; padding: 22px; border-radius: 12px; width: 92%; max-width: 420px; border: 2px solid rgba(255, 215, 0, 0.18); box-shadow: 0 0 20px rgba(255,215,0,0.06); color: white; text-align: center; max-height: 90vh; overflow-y: auto; }
+        .form-box h3 { margin-bottom: 16px; color: #facc15; }
+        .form-box input { width: 100%; padding: 12px 14px; margin-bottom:10px; border-radius:8px; border: none; font-size:14px; color: black; }
+        .form-box .submit { width:100%; padding:12px; border-radius:8px; border:none; background: linear-gradient(90deg, #facc15, #fcd34d); color: black; font-weight:bold; cursor:pointer; margin-top: 6px; }
+        .form-box .submit:hover { background: linear-gradient(90deg, #fde047, #facc15); }
+        .form-box .submit[disabled] { opacity: 0.6; cursor: not-allowed; }
+        .form-box .cancel { margin-top:8px; background:transparent; color:#ccc; border:none; cursor:pointer; padding: 8px; }
+        .form-box .cancel:hover { color: white; }
 
-.payment-methods {
-  margin-top: 1rem;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
-}
+        .payment-methods { margin-top: 1rem; display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+        .payment-method-btn { padding: 24px 20px; border-radius: 16px; border: 2px solid rgba(250, 10, 10, 0.3); font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 16px; background: linear-gradient(135deg, rgba(20, 20, 20, 0.95), rgba(30, 30, 30, 0.95)); color: white; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6); text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; min-height: 200px; position: relative; overflow: hidden; }
+        .payment-method-btn::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(250, 10, 10, 0.1), rgba(250, 10, 10, 0.05)); opacity: 0; transition: opacity 0.3s; }
+        .payment-method-btn:hover::before { opacity: 1; }
+        .payment-method-btn:hover { border-color: rgba(250, 10, 10, 0.6); box-shadow: 0 12px 30px rgba(250, 10, 10, 0.3); transform: translateY(-4px); }
+        .payment-method-btn[disabled] { opacity: 0.6; cursor: not-allowed; }
+        .payment-option-label { font-size: 11px; font-weight: 600; color: #facc15; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+        .payment-logos { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; max-width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.3); border-radius: 12px; min-height: 80px; }
+        .payment-logos img { width: 38px; height: 38px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4)); transition: transform 0.2s; }
+        .payment-method-btn:hover .payment-logos img { transform: scale(1.1); }
+        .payment-logos img.bitcoin-logo { width: 52px; height: 52px; }
+        .payment-btn-text { font-weight: bold; color: white; font-size: 14px; margin-top: 4px; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+      `}</style>
 
-.payment-method-btn {
-  padding: 24px 20px;
-  border-radius: 16px;
-  border: 2px solid rgba(250, 10, 10, 0.3);
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s;
-  font-size: 16px;
-  background: linear-gradient(135deg, rgba(20, 20, 20, 0.95), rgba(30, 30, 30, 0.95));
-  color: white;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
-  text-decoration: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  min-height: 200px;
-  position: relative;
-  overflow: hidden;
-}
-
-.payment-method-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(250, 10, 10, 0.1), rgba(250, 10, 10, 0.05));
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.payment-method-btn:hover::before {
-  opacity: 1;
-}
-
-.payment-method-btn:hover {
-  border-color: rgba(250, 10, 10, 0.6);
-  box-shadow: 0 12px 30px rgba(250, 10, 10, 0.3);
-  transform: translateY(-4px);
-}
-
-.payment-method-btn[disabled] {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.payment-option-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: #facc15;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 4px;
-}
-
-.payment-logos {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  max-width: 100%;
-  padding: 12px;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 12px;
-  min-height: 80px;
-}
-
-.payment-logos img {
-  width: 38px;
-  height: 38px;
-  object-fit: contain;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
-  transition: transform 0.2s;
-}
-
-.payment-method-btn:hover .payment-logos img {
-  transform: scale(1.1);
-}
-
-.payment-logos img.bitcoin-logo {
-  width: 52px;
-  height: 52px;
-}
-
-.payment-btn-text {
-  font-weight: bold;
-  color: white;
-  font-size: 14px;
-  margin-top: 4px;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-}`}</style>
 
       <header>
         <img src="https://shawn-sweepstakes.carrd.co/assets/images/image03.png?v=0c91e9dc" alt="ShawnSweeps" />
