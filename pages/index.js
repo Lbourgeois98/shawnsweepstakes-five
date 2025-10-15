@@ -188,45 +188,64 @@ export default function Home() {
 
   // === Paidly BTC Deposit Flow ===
 const handlePaidlyBTC = async () => {
+  if (!playerName || !username || !gameName || !depositAmount) {
+    alert("Please fill out all fields.");
+    return;
+  }
+
   setLoading(true);
 
   try {
+    const customerId = `${username}_${Date.now()}`;
+
     const response = await fetch("/api/paidly-checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        storeId: "4EHWNL1uyUdGezbZW9dGBXhKzcwj8e3oY7Jj1mnTCcD8",
-        currency: "BTC",
-        amount: 10, // default amount; change if needed
-        metadata: { info: "Paidly deposit" },
-        redirectUrl: window.location.href,
+        customerId,
+        playerName,
+        username,
+        gameName,
+        depositAmount: parseFloat(depositAmount),
       }),
     });
 
     const data = await response.json();
     console.log("Paidly checkout response:", data);
 
-    if (!data.widgetUrl) {
-      alert("No widget URL returned from Paidly.");
+    if (!data.checkoutLink) {
+      alert("Failed to generate checkout link. " + (data.message || ""));
+      setLoading(false);
       return;
     }
 
-    const script = document.createElement("script");
-    script.src = "https://widget-staging.paidlyinteractive.com/widget.js";
-    script.async = true;
+    try {
+      await fetch("/api/bitcoin/log-deposit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          playerName,
+          username,
+          gameName,
+          depositAmount: parseFloat(depositAmount),
+          bitcoinTx: customerId,
+          bitcoinAddress: "pending",
+        }),
+      });
+      console.log("✅ Bitcoin deposit logged to Supabase");
+    } catch (logError) {
+      console.error("⚠️ Failed to log bitcoin deposit:", logError);
+    }
 
-    script.onload = () => {
-      if (window.PaidlyWidget) {
-        const widget = new window.PaidlyWidget({
-          widgetUrl: data.widgetUrl,
-        });
-        widget.open();
-      } else {
-        alert("Paidly widget failed to load.");
-      }
-    };
+    window.open(data.checkoutLink, "paidly-widget", "width=800,height=900");
 
-    document.body.appendChild(script);
+    setShowBTCForm(false);
+    setShowDepositOptions(false);
+    setPlayerName("");
+    setUsername("");
+    setGameName("");
+    setDepositAmount("");
+
   } catch (error) {
     console.error("Paidly BTC Error:", error);
     alert("An error occurred. Please try again.");
@@ -234,8 +253,61 @@ const handlePaidlyBTC = async () => {
     setLoading(false);
   }
 };
-    return (
-        <><style>{`
+
+  // === TierLock Deposit Flow ===
+  const handleTierLock = async () => {
+    if (!playerName || !username || !gameName || !depositAmount) {
+      alert("Please fill out all fields.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const tierlockId = `tierlock_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const tierlockOrderId = `order_${Date.now()}`;
+
+      // Log to database first
+      await fetch("/api/tierlock/log-deposit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          playerName,
+          username,
+          gameName,
+          depositAmount: parseFloat(depositAmount),
+          tierlockId,
+          tierlockOrderId,
+        }),
+      });
+      console.log("✅ TierLock deposit logged to Supabase");
+
+      // Open TierLock payment page
+      window.open(
+        "https://app.tierlock.com/pay/U2FsdGVkX18Xm9%2FenGSBxX1Gqeq4LupkuIKfuxI3%2F1gQ5fWzWTBGYB8G66oFJSCkc8tNqxell5NlcLrRLhH2lGhudkn2tto9gSS7G2tyJ0%2BfTgZIKuZBb%2BSzkABBUfgm?data=U2FsdGVkX1%2Fsqm2EnXylYdMUgUAiCU1Y888wBYrN3BM%3D",
+        "_blank"
+      );
+
+      // Reset form
+      setShowTierLockForm(false);
+      setShowDepositOptions(false);
+      setPlayerName("");
+      setUsername("");
+      setGameName("");
+      setDepositAmount("");
+    } catch (error) {
+      console.error("TierLock Error:", error);
+      alert("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+
+return (
+    <>
+        <style>{`
             * { margin: 0; padding: 0; box-sizing: border-box; }
             body, html { width: 100%; min-height: 100vh; overflow-x: hidden; font-family: Arial, sans-serif; color: white; }
             #bg-video { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; pointer-events: none; }
@@ -281,7 +353,7 @@ const handlePaidlyBTC = async () => {
   font-size: 16px;
   background: linear-gradient(135deg, rgba(20, 20, 20, 0.95), rgba(30, 30, 30, 0.95));
   color: white;
-  box-shadow: 0 8px 20px rgba(255, 255, 255, 0.6);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
   text-decoration: none;
   display: flex;
   flex-direction: column;
@@ -337,7 +409,7 @@ const handlePaidlyBTC = async () => {
   flex-wrap: wrap;
   max-width: 100%;
   padding: 12px;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.3);
   border-radius: 12px;
   min-height: 80px;
 }
@@ -365,59 +437,68 @@ const handlePaidlyBTC = async () => {
   font-size: 14px;
   margin-top: 4px;
   text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-}`}</style><video
-                id="bg-video"
-                src="https://shawn-sweepstakes.carrd.co/assets/videos/bg.mp4?v=0c91e9dc"
-                autoPlay
-                loop
-                muted
-                playsInline
-            ></video><div className="video-overlay"></div><header>
-                <img
-                    src="https://shawn-sweepstakes.carrd.co/assets/images/image03.png?v=0c91e9dc"
-                    alt="ShawnSweeps" />
-            </header><div className="social-buttons">
-                <button
-                    className="social-btn deposit-btn"
-                    onClick={() => setShowDepositOptions(true)}
-                >
-                    Deposit
-                </button>
-                <a
-                    href="https://www.facebook.com/people/Shawn-Sweeps/61581214871852/"
-                    className="social-btn"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Facebook Page
-                </a>
-                <a
-                    href="https://www.facebook.com/shawn.shawn.927528"
-                    className="social-btn"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Facebook Profile
-                </a>
-                <a
-                    href="https://t.me/shawnsweeps"
-                    className="social-btn"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Telegram
-                </a>
-                <a
-                    href="https://api.whatsapp.com/send/?phone=%2B13463028043&text&type=phone_number&app_absent=0"
-                    className="social-btn"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    WhatsApp
-                </a>
-            </div><section id="games"></section></>
+}`}</style>
 
-        )
+        <video
+            id="bg-video"
+            src="https://shawn-sweepstakes.carrd.co/assets/videos/bg.mp4?v=0c91e9dc"
+            autoPlay
+            loop
+            muted
+            playsInline
+        ></video>
+        <div className="video-overlay"></div>
+
+        <header>
+            <img
+                src="https://shawn-sweepstakes.carrd.co/assets/images/image03.png?v=0c91e9dc"
+                alt="ShawnSweeps"
+            />
+        </header>
+
+        <div className="social-buttons">
+            <button
+                className="social-btn deposit-btn"
+                onClick={() => setShowDepositOptions(true)}
+            >
+                Deposit
+            </button>
+            <a
+                href="https://www.facebook.com/people/Shawn-Sweeps/61581214871852/"
+                className="social-btn"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                Facebook Page
+            </a>
+            <a
+                href="https://www.facebook.com/shawn.shawn.927528"
+                className="social-btn"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                Facebook Profile
+            </a>
+            <a
+                href="https://t.me/shawnsweeps"
+                className="social-btn"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                Telegram
+            </a>
+            <a
+                href="https://api.whatsapp.com/send/?phone=%2B13463028043&text&type=phone_number&app_absent=0"
+                className="social-btn"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                WhatsApp
+            </a>
+        </div>
+
+        <section id="games"></section>
+
         {showDepositOptions && !showWertForm && (
             <div className="popup">
                 <div className="form-box" role="dialog" aria-modal="true">
@@ -435,21 +516,19 @@ const handlePaidlyBTC = async () => {
                         </button>
 
                         {/* TierLock */}
-                           <a
-      href="https://app.tierlock.com/pay/U2FsdGVkX18Xm9%2FenGSBxX1Gqeq4LupkuIKfuxI3%2F1gQ5fWzWTBGYB8G66oFJSCkc8tNqxell5NlcLrRLhH2lGhudkn2tto9gSS7G2tyJ0%2BfTgZIKuZBb%2BSzkABBUfgm?data=U2FsdGVkX1%2Fsqm2EnXylYdMUgUAiCU1Y888wBYrN3BM%3D"
-      className="payment-method-btn"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      <div className="payment-logos">
-        <img
-          src="tierlock-logo.PNG"
-          alt="TierLock"
-          style={{ width: "80px", height: "auto" }}
-        />
-      </div>
-      <span className="payment-btn-text">TierLock</span>
-    </a>
+                        <button
+                            className="payment-method-btn"
+                            onClick={() => {
+                                setShowDepositOptions(false);
+                                setShowTierLockForm(true);
+                            }}
+                            disabled={loading}
+                        >
+                            <div className="payment-logos">
+                                <img src="tierlock-logo.PNG" alt="TierLock" style={{width: '80px', height: 'auto'}} />
+                            </div>
+                            <span className="payment-btn-text">TierLock</span>
+                        </button>
 
                         {/* FNUPAY */}
                         <a
@@ -465,14 +544,14 @@ const handlePaidlyBTC = async () => {
                         </a>
 
                         {/* Bitcoin (Paidly) */}
-                   <button
-  className="payment-method-btn"
-  onClick={() => {
-    setShowDepositOptions(false);
-    handlePaidlyBTC(); // directly open Paidly widget
-  }}
-  disabled={loading}
->
+                        <button
+                            className="payment-method-btn"
+                            onClick={() => {
+                                setShowDepositOptions(false);
+                                setShowBTCForm(true);
+                            }}
+                            disabled={loading}
+                        >
                             <div className="payment-logos">
                                 <img src="btc-logo.PNG" alt="Bitcoin" className="bitcoin-logo" />
                             </div>
@@ -529,6 +608,102 @@ const handlePaidlyBTC = async () => {
                 </div>
             </div>
         )}
+
+        {showBTCForm && (
+            <div className="popup">
+                <div className="form-box" role="dialog" aria-modal="true">
+                    <h3 style={{ marginBottom: 12 }}>Deposit with Bitcoin</h3>
+                    <input
+                        type="text"
+                        placeholder="Player Name"
+                        value={playerName}
+                        onChange={(e) => setPlayerName(e.target.value)}
+                    />
+                    <input
+                        type="text"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
+                    <input
+                        type="text"
+                        placeholder="Game Name"
+                        value={gameName}
+                        onChange={(e) => setGameName(e.target.value)}
+                    />
+                    <input
+                        type="number"
+                        placeholder="Deposit Amount (USD)"
+                        value={depositAmount}
+                        onChange={(e) => setDepositAmount(e.target.value)}
+                    />
+                    <button
+                        className="submit"
+                        onClick={handlePaidlyBTC}
+                        disabled={loading}
+                    >
+                        {loading ? "Processing..." : "Continue with Bitcoin"}
+                    </button>
+                    <button
+                        className="cancel"
+                        onClick={() => {
+                            setShowBTCForm(false);
+                            setShowDepositOptions(true);
+                        }}
+                    >
+                        Back
+                    </button>
+                </div>
+            </div>
+        )}
+
+        {showTierLockForm && (
+            <div className="popup">
+                <div className="form-box" role="dialog" aria-modal="true">
+                    <h3 style={{ marginBottom: 12 }}>Deposit with TierLock</h3>
+                    <input
+                        type="text"
+                        placeholder="Player Name"
+                        value={playerName}
+                        onChange={(e) => setPlayerName(e.target.value)}
+                    />
+                    <input
+                        type="text"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
+                    <input
+                        type="text"
+                        placeholder="Game Name"
+                        value={gameName}
+                        onChange={(e) => setGameName(e.target.value)}
+                    />
+                    <input
+                        type="number"
+                        placeholder="Deposit Amount (USD)"
+                        value={depositAmount}
+                        onChange={(e) => setDepositAmount(e.target.value)}
+                    />
+                    <button
+                        className="submit"
+                        onClick={handleTierLock}
+                        disabled={loading}
+                    >
+                        {loading ? "Processing..." : "Continue with TierLock"}
+                    </button>
+                    <button
+                        className="cancel"
+                        onClick={() => {
+                            setShowTierLockForm(false);
+                            setShowDepositOptions(true);
+                        }}
+                    >
+                        Back
+                    </button>
+                </div>
+            </div>
+        )}
     </>
-  );
+);
 }
