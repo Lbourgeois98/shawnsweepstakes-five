@@ -31,11 +31,11 @@ export default async function handler(req, res) {
       });
     }
 
-    console.log("📤 Creating Paidly withdrawal:", { playerName, username, gameName, withdrawAmount, walletAddress });
+    console.log("📤 Creating Paidly on-chain Bitcoin withdrawal:", { playerName, username, gameName, withdrawAmount, walletAddress });
 
-    // Call Paidly API for withdrawal
+    // Call Paidly API for on-chain Bitcoin withdrawal
     const paidlyRes = await fetch(
-      `https://api-staging.paidlyinteractive.com/api/v1/stores/${storeId}/payouts`,
+      `https://api-staging.paidlyinteractive.com/api/v1/stores/${storeId}/onchain/btc/payouts`,
       {
         method: "POST",
         headers: {
@@ -45,7 +45,7 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           destination: walletAddress,
           amount: parseFloat(withdrawAmount),
-          currency: "BTC",
+          subtractFeeFromAmount: false,
           metadata: {
             playerName,
             username,
@@ -58,19 +58,19 @@ export default async function handler(req, res) {
     const paidlyData = await paidlyRes.json();
 
     if (!paidlyRes.ok) {
-      console.error("❌ Paidly API error:", paidlyData);
+      console.error("❌ Paidly on-chain API error:", paidlyData);
       return res.status(paidlyRes.status).json({
         success: false,
-        message: paidlyData.message || "Paidly withdrawal request failed",
+        message: paidlyData.message || paidlyData.error || "Paidly on-chain withdrawal request failed",
         details: paidlyData,
       });
     }
 
-    console.log("✅ Paidly withdrawal created:", paidlyData);
+    console.log("✅ Paidly on-chain Bitcoin withdrawal created:", paidlyData);
 
-    // Log to Supabase
+    // Log to Supabase bitcoin_withdrawals table
     const { data: withdrawalData, error: dbError } = await supabase
-      .from("withdrawals")
+      .from("bitcoin_withdrawals")
       .insert([
         {
           player_name: playerName,
@@ -79,6 +79,7 @@ export default async function handler(req, res) {
           amount: parseFloat(withdrawAmount),
           wallet_address: walletAddress,
           paidly_payout_id: paidlyData.id || null,
+          bitcoin_tx: paidlyData.transactionId || null,
           status: paidlyData.status || "pending",
           created_at: new Date().toISOString(),
         },
@@ -92,11 +93,12 @@ export default async function handler(req, res) {
     return res.status(200).json({ 
       success: true, 
       data: paidlyData,
-      message: "Withdrawal request submitted successfully"
+      withdrawal: withdrawalData?.[0],
+      message: "On-chain Bitcoin withdrawal request submitted successfully"
     });
 
   } catch (err) {
-    console.error("❌ Paidly Withdraw Error:", err);
+    console.error("❌ Paidly On-chain Withdraw Error:", err);
     return res.status(500).json({ 
       success: false, 
       message: "Server error", 
