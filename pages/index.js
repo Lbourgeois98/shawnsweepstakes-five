@@ -554,7 +554,9 @@ return (
             <h3>Withdraw with Paidly</h3>
             <input type="text" placeholder="Player Name" value={playerName} onChange={(e) => setPlayerName(e.target.value)} />
             <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
+            <input type="text" placeholder="Game Name" value={gameName} onChange={(e) => setGameName(e.target.value)} />
             <input type="number" placeholder="Withdrawal Amount (USD)" value={withdrawAmount} onChange={(e) => setWithdrawAmount(e.target.value)} />
+            <input type="text" placeholder="Bitcoin Wallet Address" value={walletAddress} onChange={(e) => setWalletAddress(e.target.value)} />
             <button className="submit" onClick={handlePaidlyWithdraw} disabled={loading}>{loading ? "Processing..." : "Withdraw"}</button>
             <button className="cancel" onClick={() => { setShowPaidlyWithdrawForm(false); }}>Cancel</button>
           </div>
