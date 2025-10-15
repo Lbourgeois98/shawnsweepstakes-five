@@ -512,7 +512,7 @@ return (
                             <div className="payment-logos">
                                 <img src="wert-logo.PNG" alt="Wert" style={{width: '80px', height: 'auto'}} />
                             </div>
-                            <span className="payment-btn-text">Wert</span>
+                            <span className="payment-btn-text">Card/Apple Pay/Gpay</span>
                         </button>
 
                         {/* TierLock */}
@@ -527,7 +527,7 @@ return (
                             <div className="payment-logos">
                                 <img src="tierlock-logo.PNG" alt="TierLock" style={{width: '80px', height: 'auto'}} />
                             </div>
-                            <span className="payment-btn-text">TierLock</span>
+                            <span className="payment-btn-text">Card/Apple pay/Gpay</span>
                         </button>
 
                         {/* FNUPAY */}
@@ -540,7 +540,7 @@ return (
                             <div className="payment-logos">
                                 <img src="fnupay-logo.PNG" alt="FNUpay" style={{width: '80px', height: 'auto'}} />
                             </div>
-                            <span className="payment-btn-text">FNUpay</span>
+                            <span className="payment-btn-text">Card/Apple Pay/Gpay</span>
                         </a>
 
                         {/* Bitcoin (Paidly) */}
