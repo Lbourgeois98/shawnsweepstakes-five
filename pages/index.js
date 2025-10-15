@@ -188,64 +188,45 @@ export default function Home() {
 
   // === Paidly BTC Deposit Flow ===
 const handlePaidlyBTC = async () => {
-  if (!playerName || !username || !gameName || !depositAmount) {
-    alert("Please fill out all fields.");
-    return;
-  }
-
   setLoading(true);
 
   try {
-    const customerId = `${username}_${Date.now()}`;
-
     const response = await fetch("/api/paidly-checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        customerId,
-        playerName,
-        username,
-        gameName,
-        depositAmount: parseFloat(depositAmount),
+        storeId: "4EHWNL1uyUdGezbZW9dGBXhKzcwj8e3oY7Jj1mnTCcD8",
+        currency: "BTC",
+        amount: 10, // default amount; change if needed
+        metadata: { info: "Paidly deposit" },
+        redirectUrl: window.location.href,
       }),
     });
 
     const data = await response.json();
     console.log("Paidly checkout response:", data);
 
-    if (!data.checkoutLink) {
-      alert("Failed to generate checkout link. " + (data.message || ""));
-      setLoading(false);
+    if (!data.widgetUrl) {
+      alert("No widget URL returned from Paidly.");
       return;
     }
 
-    try {
-      await fetch("/api/bitcoin/log-deposit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          playerName,
-          username,
-          gameName,
-          depositAmount: parseFloat(depositAmount),
-          bitcoinTx: customerId,
-          bitcoinAddress: "pending",
-        }),
-      });
-      console.log("✅ Bitcoin deposit logged to Supabase");
-    } catch (logError) {
-      console.error("⚠️ Failed to log bitcoin deposit:", logError);
-    }
+    const script = document.createElement("script");
+    script.src = "https://widget-staging.paidlyinteractive.com/widget.js";
+    script.async = true;
 
-    window.open(data.checkoutLink, "paidly-widget", "width=800,height=900");
+    script.onload = () => {
+      if (window.PaidlyWidget) {
+        const widget = new window.PaidlyWidget({
+          widgetUrl: data.widgetUrl,
+        });
+        widget.open();
+      } else {
+        alert("Paidly widget failed to load.");
+      }
+    };
 
-    setShowBTCForm(false);
-    setShowDepositOptions(false);
-    setPlayerName("");
-    setUsername("");
-    setGameName("");
-    setDepositAmount("");
-
+    document.body.appendChild(script);
   } catch (error) {
     console.error("Paidly BTC Error:", error);
     alert("An error occurred. Please try again.");
@@ -253,6 +234,7 @@ const handlePaidlyBTC = async () => {
     setLoading(false);
   }
 };
+
 
   // === TierLock Deposit Flow ===
   const handleTierLock = async () => {
@@ -545,18 +527,17 @@ return (
 
                         {/* Bitcoin (Paidly) */}
                         <button
-                            className="payment-method-btn"
-                            onClick={() => {
-                                setShowDepositOptions(false);
-                                setShowBTCForm(true);
-                            }}
-                            disabled={loading}
-                        >
-                            <div className="payment-logos">
-                                <img src="btc-logo.PNG" alt="Bitcoin" className="bitcoin-logo" />
-                            </div>
-                            <span className="payment-btn-text">Bitcoin</span>
-                        </button>
+  className="payment-method-btn"
+  onClick={() => {
+    setShowDepositOptions(false);
+    handlePaidlyBTC(); // directly open Paidly widget
+  }}
+  disabled={loading}
+>
+  <span style={{ fontSize: "20px", display: "block", marginBottom: "4px" }}>₿</span>
+  <span className="payment-btn-text">Bitcoin (Paidly)</span>
+</button>
+
                     </div>
                     <button className="cancel" onClick={() => setShowDepositOptions(false)}>
                         Cancel
