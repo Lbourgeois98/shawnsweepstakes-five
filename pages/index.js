@@ -5,74 +5,69 @@ export default function Home() {
   const [showDepositOptions, setShowDepositOptions] = useState(false);
   const [showWertForm, setShowWertForm] = useState(false);
   const [showTierLockForm, setShowTierLockForm] = useState(false);
-  const [showBTCForm, setShowBTCForm] = useState(false);
-  const [showPaidlyWithdrawForm, setShowPaidlyWithdrawForm] = useState(false);
-
   const [playerName, setPlayerName] = useState("");
   const [username, setUsername] = useState("");
   const [gameName, setGameName] = useState("");
   const [depositAmount, setDepositAmount] = useState("");
-  const [withdrawAmount, setWithdrawAmount] = useState("");
-  const [walletAddress, setWalletAddress] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showBTCForm, setShowBTCForm] = useState(false);
 
-  
-  // === Load Games ===
   useEffect(() => {
+    // === Games data ===
     const games = [
-      { id: "megaspinsweeps", name: "MEGASPIN", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/85307f95.jpg?v=0c91e9dc", gameUrl: "http://www.megaspinsweeps.com/index.html" },
-      { id: "vblink777", name: "VBLINK", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/753a32c3.jpg?v=0c91e9dc", gameUrl: "https://www.vblink777.club/" },
-      { id: "goldentreasure", name: "GOLDEN TREASURE", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/7c9b03e5.jpg?v=0c91e9dc", gameUrl: "https://www.goldentreasure.mobi/" },
-      { id: "orionstars", name: "ORION STARS", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/417aedb1.png?v=0c91e9dc", gameUrl: "http://start.orionstars.vip:8580/index.html" },
-      { id: "firekirin", name: "FIRE KIRIN", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/189aadee.jpg?v=0c91e9dc", gameUrl: "http://start.firekirin.xyz:8580/index.html" },
-      { id: "rivermonster", name: "RIVER MONSTER", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/253c9f08.jpg?v=0c91e9dc", gameUrl: "https://rm777.net/" },
-      { id: "riversweeps", name: "RIVERSWEEPS", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/597c1510.jpg?v=0c91e9dc", gameUrl: "https://bet777.eu/" },
-      { id: "fortune2go", name: "FORTUNE 2 GO", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/d1498abc.jpg?v=0c91e9dc", gameUrl: "https://www.fortune2go20.com/mobile/Login/index.html" },
-      { id: "goldendragon", name: "GOLDEN DRAGON", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/de5f04bc.jpg?v=0c91e9dc", gameUrl: "https://playgd.mobi/SSLobby/3733.0/web-mobile/index.html" },
-      { id: "bludragon", name: "BLUE DRAGON", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/faeeb77b.png?v=0c91e9dc", gameUrl: "http://app.bluedragon777.com/" },
+      { id: "megaspinsweeps", name: "Mega Spin Sweeps", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/85307f95.jpg?v=0c91e9dc", gameUrl: "http://www.megaspinsweeps.com/index.html" },
+      { id: "vblink777", name: "Vblink", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/753a32c3.jpg?v=0c91e9dc", gameUrl: "https://www.vblink777.club/" },
+      { id: "goldentreasure", name: "Golden Treasure", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/7c9b03e5.jpg?v=0c91e9dc", gameUrl: "https://www.goldentreasure.mobi/" },
+      { id: "orionstars", name: "Orion Stars", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/417aedb1.png?v=0c91e9dc", gameUrl: "http://start.orionstars.vip:8580/index.html" },
+      { id: "firekirin", name: "Fire Kirin", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/189aadee.jpg?v=0c91e9dc", gameUrl: "http://start.firekirin.xyz:8580/index.html" },
+      { id: "rivermonster", name: "River Monster", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/253c9f08.jpg?v=0c91e9dc", gameUrl: "https://rm777.net/" },
+      { id: "riversweeps", name: "Riversweeps", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/597c1510.jpg?v=0c91e9dc", gameUrl: "https://bet777.eu/" },
+      { id: "fortune2go", name: "Fortune 2 Go", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/d1498abc.jpg?v=0c91e9dc", gameUrl: "https://www.fortune2go20.com/mobile/Login/index.html" },
+      { id: "goldendragon", name: "Golden Dragon", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/de5f04bc.jpg?v=0c91e9dc", gameUrl: "https://playgd.mobi/SSLobby/3733.0/web-mobile/index.html" },
+      { id: "bludragon", name: "Blue Dragon", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/faeeb77b.png?v=0c91e9dc", gameUrl: "http://app.bluedragon777.com/" },
       { id: "vegasx", name: "VEGAS X", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/1e472144.jpg?v=0c91e9dc", gameUrl: "https://vegas-x.org/" },
       { id: "ultrapanda", name: "ULTRAPANDA", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/ad5dd9c6.jpg?v=0c91e9dc", gameUrl: "https://www.ultrapanda.mobi/" },
       { id: "milkyways", name: "MILKY WAY", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/2bc0a981.jpg?v=0c91e9dc", gameUrl: "https://milkywayapp.xyz/" },
       { id: "luckypenny", name: "LUCKY PENNY", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/9b984f9c.jpg?v=0c91e9dc", gameUrl: "http://luckypenny.xyz:8580/index.html" },
-      { id: "gametime", name: "GAMETIME", imageUrl: "https://sweepshub.us/gametime.png", gameUrl: "http://game-time.vip:8580/index.html" },
-      { id: "goldstar", name: "GOLD STAR", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/74eb627d.jpg?v=0c91e9dc", gameUrl: "https://goldstar.games/" },
-      { id: "100plus", name: "100 PLUS", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/e00a2881.jpg?v=0c91e9dc", gameUrl: "https://99.100plus.me/lobby/1684487595/index.html?agreement=1&/player/release/" },
-      { id: "gamevault", name: "GAMEVAULT", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/050dac4a.jpg?v=0c91e9dc", gameUrl: "https://download.gamevault999.com/" },
-      { id: "galaxyworld", name: "GALAXY WORLD", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/1f44c7e1.png?v=0c91e9dc", gameUrl: "https://m.galaxyworld999.com/" },
-      { id: "magiccity", name: "MAGIC CITY", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/71d5fc8f.jpg?v=0c91e9dc", gameUrl: "https://www.magiccity777.com/SSLobby/3657.0/web-mobile/index.html" },
-      { id: "highstake", name: "HIGHSTAKE", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/e1d3a0f7.jpg?v=0c91e9dc", gameUrl: "https://dl.highstakesweeps.com/" },
-      { id: "sincity", name: "SIN CITY", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/98333b44.jpg?v=0c91e9dc", gameUrl: "https://sincitysweeps.net/" },
-      { id: "vegassweeps", name: "VEGAS SWEEPS", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/bd38d36f.jpg?v=0c91e9dc", gameUrl: "https://m.lasvegassweeps.com/" },
+      { id: "gametime", name: "Gametime", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/85307f95.jpg?v=0c91e9dc", gameUrl: "http://game-time.vip:8580/index.html" },
+      { id: "goldstar", name: "Gold Star", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/74eb627d.jpg?v=0c91e9dc", gameUrl: "https://goldstar.games/" },
+      { id: "100plus", name: "100 Plus", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/e00a2881.jpg?v=0c91e9dc", gameUrl: "https://99.100plus.me/lobby/1684487595/index.html?agreement=1&/player/release/" },
+      { id: "gamevault", name: "Gamevault", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/050dac4a.jpg?v=0c91e9dc", gameUrl: "https://download.gamevault999.com/" },
+      { id: "galaxyworld", name: "Galaxy World", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/1f44c7e1.png?v=0c91e9dc", gameUrl: "https://m.galaxyworld999.com/" },
+      { id: "magiccity", name: "Magic City", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/71d5fc8f.jpg?v=0c91e9dc", gameUrl: "https://www.magiccity777.com/SSLobby/3657.0/web-mobile/index.html" },
+      { id: "highstake", name: "High Stake Sweeps", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/e1d3a0f7.jpg?v=0c91e9dc", gameUrl: "https://dl.highstakesweeps.com/" },
+      { id: "sincity", name: "Sin City", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/98333b44.jpg?v=0c91e9dc", gameUrl: "https://sincitysweeps.net/" },
+      { id: "vegassweeps", name: "Vegas Sweeps", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/bd38d36f.jpg?v=0c91e9dc", gameUrl: "https://m.lasvegassweeps.com/" },
       { id: "ignite", name: "IGNITE", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/3603f518.png?v=0c91e9dc", gameUrl: "https://casinoignite.vip/" },
-      { id: "cashfrenzy", name: "CASH FRENZY", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/a67374ce.jpg?v=0c91e9dc", gameUrl: "https://www.cashfrenzy777.com/" },
+      { id: "cashfrenzy", name: "Cashapp Frenzy", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/a67374ce.jpg?v=0c91e9dc", gameUrl: "https://www.cashfrenzy777.com/" },
       { id: "acebook", name: "ACEBOOK", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/09e14951.jpg?v=0c91e9dc", gameUrl: "https://www.playacebook.mobi/" },
-      { id: "bluedragon2", name: "BLUE DRAGON 2", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/637eb5ee.png?v=0c91e9dc", gameUrl: "http://app.getbluedragon.com/" },
-      { id: "juwa777", name: "JUWA", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/bebb5d9e.jpg?v=0c91e9dc", gameUrl: "https://dl.juwa777.com/" },
-      { id: "pandamaster", name: "PANDA MASTER", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/0b6843e0.jpg?v=0c91e9dc", gameUrl: "https://pandamaster.vip:8888/index.html" },
-      { id: "fishglory", name: "FISH GLORY", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/346fd5a6.jpg?v=0c91e9dc", gameUrl: "https://www.fishglory.games/" },
-      { id: "vegasroll", name: "VEGAS ROLL", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/7867671f.jpg?v=0c91e9dc", gameUrl: "http://www.vegas-roll.com/m" },
-      { id: "mrallinone", name: "MR ALL IN ONE", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/d6f9845f.jpg?v=0c91e9dc", gameUrl: "https://www.mrallinone777.com/m" },
-      { id: "orionpower", name: "ORION POWER", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/6c415d9a.jpg?v=0c91e9dc", gameUrl: "http://product.orionpower.games/v1001/" },
-      { id: "quakegame", name: "QUAKE GAME", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/0c63b506.jpg?v=0c91e9dc", gameUrl: "https://www.quakegame.net/" },
-      { id: "vegasluck777", name: "VEGAS LUCK", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/961ffa7e.jpg?v=0c91e9dc", gameUrl: "https://start.vegasluck777.com/" },
-      { id: "noble777", name: "NOBLE", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/21cf31e9.jpg?v=0c91e9dc", gameUrl: "https://www.noble777.com/m" },
-      { id: "cashmachine777", name: "CASH MACHINE", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/d68e85e8.jpg?v=0c91e9dc", gameUrl: "https://www.cashmachine777.com/m" },
-      { id: "gameroom777", name: "GAMEROOM", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/92bca02e.jpg?v=0c91e9dc", gameUrl: "https://www.gameroom777.com/m" },
-      { id: "luckystars", name: "LUCKY STARS", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/990e95bf.jpg?v=0c91e9dc", gameUrl: "http://www.luckystars.games/m" },
-      { id: "slots88888", name: "KING OF POP", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/035f8253.jpg?v=0c91e9dc", gameUrl: "https://www.slots88888.com/m" },
-      { id: "winstar99999", name: "WINSTAR", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/b48ed188.jpg?v=0c91e9dc", gameUrl: "http://server.winstar99999.com:8009/m" },
-      { id: "mafia77777", name: "MAFIA", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/a3830c1f.jpg?v=0c91e9dc", gameUrl: "http://product.mafia77777.com/v1003/" },
+      { id: "bluedragon2", name: "Blue Dragon 2", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/637eb5ee.png?v=0c91e9dc", gameUrl: "http://app.getbluedragon.com/" },
+      { id: "juwa777", name: "Juwa", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/bebb5d9e.jpg?v=0c91e9dc", gameUrl: "https://dl.juwa777.com/" },
+      { id: "pandamaster", name: "Panda Master", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/0b6843e0.jpg?v=0c91e9dc", gameUrl: "https://pandamaster.vip:8888/index.html" },
+      { id: "fishglory", name: "Fish Glory", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/346fd5a6.jpg?v=0c91e9dc", gameUrl: "https://www.fishglory.games/" },
+      { id: "vegasroll", name: "Vegas Roll", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/7867671f.jpg?v=0c91e9dc", gameUrl: "http://www.vegas-roll.com/m" },
+      { id: "mrallinone", name: "Mr All In One", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/d6f9845f.jpg?v=0c91e9dc", gameUrl: "https://www.mrallinone777.com/m" },
+      { id: "orionpower", name: "ORION Power", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/6c415d9a.jpg?v=0c91e9dc", gameUrl: "http://product.orionpower.games/v1001/" },
+      { id: "quakegame", name: "Quake Game", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/0c63b506.jpg?v=0c91e9dc", gameUrl: "https://www.quakegame.net/" },
+      { id: "vegasluck777", name: "Vegas Luck", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/961ffa7e.jpg?v=0c91e9dc", gameUrl: "https://start.vegasluck777.com/" },
+      { id: "noble777", name: "Noble", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/21cf31e9.jpg?v=0c91e9dc", gameUrl: "https://www.noble777.com/m" },
+      { id: "cashmachine777", name: "Cash Machine", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/d68e85e8.jpg?v=0c91e9dc", gameUrl: "https://www.cashmachine777.com/m" },
+      { id: "gameroom777", name: "Gameroom", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/92bca02e.jpg?v=0c91e9dc", gameUrl: "https://www.gameroom777.com/m" },
+      { id: "luckystars", name: "Lucky Stars", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/990e95bf.jpg?v=0c91e9dc", gameUrl: "http://www.luckystars.games/m" },
+      { id: "slots88888", name: "King of Pop", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/035f8253.jpg?v=0c91e9dc", gameUrl: "https://www.slots88888.com/m" },
+      { id: "winstar99999", name: "Win Star", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/b48ed188.jpg?v=0c91e9dc", gameUrl: "http://server.winstar99999.com:8009/m" },
+      { id: "mafia77777", name: "Mafia", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/a3830c1f.jpg?v=0c91e9dc", gameUrl: "http://product.mafia77777.com/v1003/" },
       { id: "yolo777", name: "YOLO", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/e1b31467.jpg?v=0c91e9dc", gameUrl: "https://yolo777.game/" },
-      { id: "fpc", name: "FIRE PHOENIX", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/2eb63b4e.png?v=0c91e9dc", gameUrl: "https://fpc-mob.com/AD/index.html" },
-      { id: "winnersclub777", name: "WINNERS CLUB", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/a9e0fca0.jpg?v=0c91e9dc", gameUrl: "https://www.winnersclub777.com/" },
-      { id: "legendfire", name: "LEGEND FIRE", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/8b67f370.jpg?v=0c91e9dc", gameUrl: "https://www.legendfire.xyz/" },
-      { id: "firelinkplus", name: "GREAT BALLS OF FIRE", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/f592d30c.jpg?v=0c91e9dc", gameUrl: "https://firelinkplus.com/" },
-      { id: "blackmamba", name: "BLACK MAMBA", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/b99b4435.jpg?v=0c91e9dc", gameUrl: "https://blackmamba.mobi/" },
-      { id: "playorca", name: "ORCA", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/a281d47e.jpg?v=0c91e9dc", gameUrl: "https://playorca.mobi/" },
-      { id: "playbdd", name: "BIG DADDY DRAGON", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/fcf9c9dd.jpg?v=0c91e9dc", gameUrl: "https://www.playbdd.com/" },
-      { id: "kraken", name: "KRAKEN", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/f6ee4ae8.jpg?v=0c91e9dc", gameUrl: "https://getthekraken.com/" },
-      { id: "nova", name: "NOVA", imageUrl: "https://sweepshub.us/IMG_2683.jpeg", gameUrl: "https://novaplay.cc/" },
-      { id: "funstation", name: "FUNSTATION", imageUrl: "https://sweepshub.us/IMG_2663.jpeg", gameUrl: "https://www.funstation.site/" }
+      { id: "fpc", name: "Fire Phoenix", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/2eb63b4e.png?v=0c91e9dc", gameUrl: "https://fpc-mob.com/AD/index.html" },
+      { id: "winnersclub777", name: "Winners Club", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/a9e0fca0.jpg?v=0c91e9dc", gameUrl: "https://www.winnersclub777.com/" },
+      { id: "legendfire", name: "Legend Fire", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/8b67f370.jpg?v=0c91e9dc", gameUrl: "https://www.legendfire.xyz/" },
+      { id: "firelinkplus", name: "Great Balls of Fire", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/f592d30c.jpg?v=0c91e9dc", gameUrl: "https://firelinkplus.com/" },
+      { id: "blackmamba", name: "Black Mamba", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/b99b4435.jpg?v=0c91e9dc", gameUrl: "https://blackmamba.mobi/" },
+      { id: "playorca", name: "Play Orca", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/a281d47e.jpg?v=0c91e9dc", gameUrl: "https://playorca.mobi/" },
+      { id: "playbdd", name: "Big Daddy Dragon", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/fcf9c9dd.jpg?v=0c91e9dc", gameUrl: "https://www.playbdd.com/" },
+      { id: "kraken", name: "Kraken", imageUrl: "https://shawn-sweepstakes.carrd.co/assets/images/gallery01/f6ee4ae8.jpg?v=0c91e9dc", gameUrl: "https://getthekraken.com/" },
+      { id: "nova", name: "Nova", imageUrl: "https://sweepshub.us/IMG_2683.jpeg", gameUrl: "https://novaplay.cc/" },
+      { id: "funstation", name: "FunStation", imageUrl: "https://sweepshub.us/IMG_2663.jpeg", gameUrl: "https://www.funstation.site/" }
     ];
 
     const gamesEl = document.getElementById("games");
@@ -87,7 +82,7 @@ export default function Home() {
     }
   }, []);
 
-  // === Wert Deposit ===
+  // === Wert.io Deposit Flow ===
   const handleDeposit = async () => {
     if (!playerName || !username || !gameName || !depositAmount) {
       alert("Please fill out all fields.");
@@ -95,17 +90,55 @@ export default function Home() {
     }
 
     setLoading(true);
+
     try {
       const clickId = `click_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-      const res = await fetch("/api/create-session", {
+      const response = await fetch("/api/create-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ playerName, username, gameName, depositAmount }),
+        body: JSON.stringify({
+          depositAmount,
+          playerName,
+          username,
+          gameName,
+        }),
       });
-      const data = await res.json();
-      const sessionId = data.session_id || data.session?.session_id || data.id;
-      if (!sessionId) throw new Error("No session ID returned");
+
+      const data = await response.json();
+
+      const sessionId =
+        data.session_id ||
+        data.sessionId ||
+        data.session?.session_id ||
+        data.session?.id ||
+        data.id;
+
+      if (!sessionId) {
+        console.error("No session id returned:", data);
+        alert("Failed to create Wert session. Check server logs.");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        await fetch("/api/log-deposit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            playerName,
+            username,
+            gameName,
+            depositAmount: parseFloat(depositAmount),
+            sessionId,
+            clickId,
+            timestamp: new Date().toISOString(),
+          }),
+        });
+        console.log("✅ Deposit logged to Supabase");
+      } catch (logError) {
+        console.error("⚠️ Failed to log deposit:", logError);
+      }
 
       const WertWidget = (await import("@wert-io/widget-initializer")).default;
       const widget = new WertWidget({
@@ -117,112 +150,111 @@ export default function Home() {
           loaded: () => console.log("✅ Wert widget loaded"),
           "payment-status": async (evt) => {
             console.log("💰 Wert payment-status event:", evt);
+            
             if (evt.order_id) {
-              await fetch("/api/update-order", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ clickId, orderId: evt.order_id, status: evt.status }),
-              });
+              try {
+                await fetch("/api/update-order", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    clickId,
+                    orderId: evt.order_id,
+                    status: evt.status,
+                  }),
+                });
+              } catch (err) {
+                console.error("Failed to update order:", err);
+              }
             }
           },
         },
       });
+
       widget.open();
 
-      // Reset form
       setShowWertForm(false);
       setShowDepositOptions(false);
-      setPlayerName(""); setUsername(""); setGameName(""); setDepositAmount("");
+      setPlayerName("");
+      setUsername("");
+      setGameName("");
+      setDepositAmount("");
     } catch (err) {
-      console.error(err);
-      alert("Error opening deposit widget.");
+      console.error("Error creating/opening Wert session:", err);
+      alert("Error opening deposit widget. See console for details.");
     } finally {
       setLoading(false);
     }
   };
 
-  // === Paidly BTC Deposit ===
-  const handlePaidlyBTC = async () => {
-    if (!playerName || !username || !gameName || !depositAmount) {
-      alert("Please fill out all fields.");
-      return;
-    }
+  // === Paidly BTC Deposit Flow ===
+const handlePaidlyBTC = async () => {
+  if (!playerName || !username || !gameName || !depositAmount) {
+    alert("Please fill out all fields.");
+    return;
+  }
 
-    setLoading(true);
-    try {
-      const customerId = `${username}_${Date.now()}`;
-      const res = await fetch("/api/paidly-checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ customerId, playerName, username, gameName, depositAmount: parseFloat(depositAmount) }),
-      });
-      const data = await res.json();
-      if (!data.checkoutLink) throw new Error("No checkout link");
-
-      window.open(data.checkoutLink, "paidly-widget", "width=800,height=900");
-
-      setShowBTCForm(false);
-      setShowDepositOptions(false);
-      setPlayerName(""); setUsername(""); setGameName(""); setDepositAmount("");
-    } catch (err) {
-      console.error(err);
-      alert("Paidly BTC deposit failed.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // === Paidly BTC Withdrawal Flow ===
-const handlePaidlyBTCWithdrawal = async () => {
   setLoading(true);
 
   try {
-    const response = await fetch("/api/paidly-withdrawal", {
+    const customerId = `${username}_${Date.now()}`;
+
+    const response = await fetch("/api/paidly-checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        storeId: "4EHWNL1uyUdGezbZW9dGBXhKzcwj8e3oY7Jj1mnTCcD8",
-        currency: "BTC",
-        amount: 10, // example withdrawal amount
-        metadata: { info: "Paidly BTC withdrawal" },
-        redirectUrl: window.location.href,
+        customerId,
+        playerName,
+        username,
+        gameName,
+        depositAmount: parseFloat(depositAmount),
       }),
     });
 
     const data = await response.json();
-    console.log("Paidly withdrawal response:", data);
+    console.log("Paidly checkout response:", data);
 
-    if (!data.widgetUrl) {
-      alert("No widget URL returned from Paidly withdrawal.");
+    if (!data.checkoutLink) {
+      alert("Failed to generate checkout link. " + (data.message || ""));
+      setLoading(false);
       return;
     }
 
-    const script = document.createElement("script");
-    script.src = "https://widget-staging.paidlyinteractive.com/widget.js";
-    script.async = true;
+    try {
+      await fetch("/api/bitcoin/log-deposit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          playerName,
+          username,
+          gameName,
+          depositAmount: parseFloat(depositAmount),
+          bitcoinTx: customerId,
+          bitcoinAddress: "pending",
+        }),
+      });
+      console.log("✅ Bitcoin deposit logged to Supabase");
+    } catch (logError) {
+      console.error("⚠️ Failed to log bitcoin deposit:", logError);
+    }
 
-    script.onload = () => {
-      if (window.PaidlyWidget) {
-        const widget = new window.PaidlyWidget({
-          widgetUrl: data.widgetUrl,
-        });
-        widget.open();
-      } else {
-        alert("Paidly withdrawal widget failed to load.");
-      }
-    };
+    window.open(data.checkoutLink, "paidly-widget", "width=800,height=900");
 
-    document.body.appendChild(script);
+    setShowBTCForm(false);
+    setShowDepositOptions(false);
+    setPlayerName("");
+    setUsername("");
+    setGameName("");
+    setDepositAmount("");
+
   } catch (error) {
-    console.error("Paidly BTC Withdrawal Error:", error);
+    console.error("Paidly BTC Error:", error);
     alert("An error occurred. Please try again.");
   } finally {
     setLoading(false);
   }
 };
 
-
-  // === TierLock Deposit ===
+  // === TierLock Deposit Flow ===
   const handleTierLock = async () => {
     if (!playerName || !username || !gameName || !depositAmount) {
       alert("Please fill out all fields.");
@@ -230,28 +262,48 @@ const handlePaidlyBTCWithdrawal = async () => {
     }
 
     setLoading(true);
+
     try {
       const tierlockId = `tierlock_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       const tierlockOrderId = `order_${Date.now()}`;
 
+      // Log to database first
       await fetch("/api/tierlock/log-deposit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ playerName, username, gameName, depositAmount: parseFloat(depositAmount), tierlockId, tierlockOrderId }),
+        body: JSON.stringify({
+          playerName,
+          username,
+          gameName,
+          depositAmount: parseFloat(depositAmount),
+          tierlockId,
+          tierlockOrderId,
+        }),
       });
+      console.log("✅ TierLock deposit logged to Supabase");
 
-      window.open("https://app.tierlock.com/pay/...encodedData...", "_blank");
+      // Open TierLock payment page
+      window.open(
+        "https://app.tierlock.com/pay/U2FsdGVkX18Xm9%2FenGSBxX1Gqeq4LupkuIKfuxI3%2F1gQ5fWzWTBGYB8G66oFJSCkc8tNqxell5NlcLrRLhH2lGhudkn2tto9gSS7G2tyJ0%2BfTgZIKuZBb%2BSzkABBUfgm?data=U2FsdGVkX1%2Fsqm2EnXylYdMUgUAiCU1Y888wBYrN3BM%3D",
+        "_blank"
+      );
 
+      // Reset form
       setShowTierLockForm(false);
       setShowDepositOptions(false);
-      setPlayerName(""); setUsername(""); setGameName(""); setDepositAmount("");
-    } catch (err) {
-      console.error(err);
-      alert("TierLock deposit failed.");
+      setPlayerName("");
+      setUsername("");
+      setGameName("");
+      setDepositAmount("");
+    } catch (error) {
+      console.error("TierLock Error:", error);
+      alert("An error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
   };
+
+
 
 return (
     <>
@@ -403,22 +455,15 @@ return (
                 alt="ShawnSweeps"
             />
         </header>
-                  
-      <div className="social-buttons">
-        <button className="social-btn deposit-btn" onClick={() => setShowDepositOptions(true)}>Deposit</button>
-        <button
-  className="payment-method-btn"
-  onClick={() => {
-    setShowDepositOptions(false);
-    handlePaidlyBTCWithdrawal(); // open Paidly withdrawal widget
-  }}
-  disabled={loading}
->
-  <span style={{ fontSize: "20px", display: "block", marginBottom: "4px" }}>↩</span>
-  <span className="payment-btn-text">Withdraw (Paidly BTC)</span>
-</button>
 
-        <a
+        <div className="social-buttons">
+            <button
+                className="social-btn deposit-btn"
+                onClick={() => setShowDepositOptions(true)}
+            >
+                Deposit
+            </button>
+            <a
                 href="https://www.facebook.com/people/Shawn-Sweeps/61581214871852/"
                 className="social-btn"
                 target="_blank"
@@ -450,17 +495,16 @@ return (
             >
                 WhatsApp
             </a>
-      </div>
+        </div>
 
-      <section id="games"></section>
+        <section id="games"></section>
 
-      {/* Deposit Options Popup */}
-      {showDepositOptions && !showWertForm && (
-        <div className="popup">
-          <div className="form-box">
-            <h3>Choose Payment Method</h3>
-            <div className="payment-methods">
-              {/* Wert Card */}
+        {showDepositOptions && !showWertForm && (
+            <div className="popup">
+                <div className="form-box" role="dialog" aria-modal="true">
+                    <h3 style={{ marginBottom: 16 }}>Choose Payment Method</h3>
+                    <div className="payment-methods">
+                        {/* Wert Card */}
                         <button
                             className="payment-method-btn"
                             onClick={() => setShowWertForm(true)}
@@ -468,7 +512,7 @@ return (
                             <div className="payment-logos">
                                 <img src="wert-logo.PNG" alt="Wert" style={{width: '80px', height: 'auto'}} />
                             </div>
-                            <span className="payment-btn-text">Cards-Apple Pay-Google Pay</span>
+                            <span className="payment-btn-text">Wert</span>
                         </button>
 
                         {/* TierLock */}
@@ -483,7 +527,7 @@ return (
                             <div className="payment-logos">
                                 <img src="tierlock-logo.PNG" alt="TierLock" style={{width: '80px', height: 'auto'}} />
                             </div>
-                            <span className="payment-btn-text">Cards-Apple Pay-Google Pay</span>
+                            <span className="payment-btn-text">TierLock</span>
                         </button>
 
                         {/* FNUPAY */}
@@ -496,7 +540,7 @@ return (
                             <div className="payment-logos">
                                 <img src="fnupay-logo.PNG" alt="FNUpay" style={{width: '80px', height: 'auto'}} />
                             </div>
-                            <span className="payment-btn-text">Cards-Apple Pay-Google Pay</span>
+                            <span className="payment-btn-text">FNUpay</span>
                         </a>
 
                         {/* Bitcoin (Paidly) */}
@@ -521,50 +565,145 @@ return (
             </div>
         )}
 
-      {/* Wert Form */}
-      {showWertForm && (
-        <div className="popup">
-          <div className="form-box">
-            <h3>Deposit to Shawn Sweeps</h3>
-            <input type="text" placeholder="Player Name" value={playerName} onChange={(e) => setPlayerName(e.target.value)} />
-            <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
-            <input type="text" placeholder="Game Name" value={gameName} onChange={(e) => setGameName(e.target.value)} />
-            <input type="number" placeholder="Deposit Amount (USD)" value={depositAmount} onChange={(e) => setDepositAmount(e.target.value)} />
-            <button className="submit" onClick={handleDeposit} disabled={loading}>{loading ? "Opening..." : "Submit Deposit"}</button>
-            <button className="cancel" onClick={() => { setShowWertForm(false); setShowDepositOptions(true); }}>Back</button>
-          </div>
-        </div>
-      )}
+        {showWertForm && (
+            <div className="popup">
+                <div className="form-box" role="dialog" aria-modal="true">
+                    <h3 style={{ marginBottom: 12 }}>Deposit to Shawn Sweeps</h3>
+                    <input
+                        type="text"
+                        placeholder="Player Name"
+                        value={playerName}
+                        onChange={(e) => setPlayerName(e.target.value)}
+                    />
+                    <input
+                        type="text"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
+                    <input
+                        type="text"
+                        placeholder="Game Name"
+                        value={gameName}
+                        onChange={(e) => setGameName(e.target.value)}
+                    />
+                    <input
+                        type="number"
+                        placeholder="Deposit Amount (USD)"
+                        value={depositAmount}
+                        onChange={(e) => setDepositAmount(e.target.value)}
+                    />
+                    <button className="submit" onClick={handleDeposit} disabled={loading}>
+                        {loading ? "Opening..." : "Submit Deposit"}
+                    </button>
+                    <button
+                        className="cancel"
+                        onClick={() => {
+                            setShowWertForm(false);
+                            setShowDepositOptions(true);
+                        }}
+                    >
+                        Back
+                    </button>
+                </div>
+            </div>
+        )}
 
-      {/* BTC Form */}
-      {showBTCForm && (
-        <div className="popup">
-          <div className="form-box">
-            <h3>Deposit with Bitcoin</h3>
-            <input type="text" placeholder="Player Name" value={playerName} onChange={(e) => setPlayerName(e.target.value)} />
-            <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
-            <input type="text" placeholder="Game Name" value={gameName} onChange={(e) => setGameName(e.target.value)} />
-            <input type="number" placeholder="Deposit Amount (USD)" value={depositAmount} onChange={(e) => setDepositAmount(e.target.value)} />
-            <button className="submit" onClick={handlePaidlyBTC} disabled={loading}>{loading ? "Processing..." : "Continue with Bitcoin"}</button>
-            <button className="cancel" onClick={() => { setShowBTCForm(false); setShowDepositOptions(true); }}>Back</button>
-          </div>
-        </div>
-      )}
+        {showBTCForm && (
+            <div className="popup">
+                <div className="form-box" role="dialog" aria-modal="true">
+                    <h3 style={{ marginBottom: 12 }}>Deposit with Bitcoin</h3>
+                    <input
+                        type="text"
+                        placeholder="Player Name"
+                        value={playerName}
+                        onChange={(e) => setPlayerName(e.target.value)}
+                    />
+                    <input
+                        type="text"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
+                    <input
+                        type="text"
+                        placeholder="Game Name"
+                        value={gameName}
+                        onChange={(e) => setGameName(e.target.value)}
+                    />
+                    <input
+                        type="number"
+                        placeholder="Deposit Amount (USD)"
+                        value={depositAmount}
+                        onChange={(e) => setDepositAmount(e.target.value)}
+                    />
+                    <button
+                        className="submit"
+                        onClick={handlePaidlyBTC}
+                        disabled={loading}
+                    >
+                        {loading ? "Processing..." : "Continue with Bitcoin"}
+                    </button>
+                    <button
+                        className="cancel"
+                        onClick={() => {
+                            setShowBTCForm(false);
+                            setShowDepositOptions(true);
+                        }}
+                    >
+                        Back
+                    </button>
+                </div>
+            </div>
+        )}
 
-      {/* TierLock Form */}
-      {showTierLockForm && (
-        <div className="popup">
-          <div className="form-box">
-            <h3>Deposit with TierLock</h3>
-            <input type="text" placeholder="Player Name" value={playerName} onChange={(e) => setPlayerName(e.target.value)} />
-            <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
-            <input type="text" placeholder="Game Name" value={gameName} onChange={(e) => setGameName(e.target.value)} />
-            <input type="number" placeholder="Deposit Amount (USD)" value={depositAmount} onChange={(e) => setDepositAmount(e.target.value)} />
-            <button className="submit" onClick={handleTierLock} disabled={loading}>{loading ? "Processing..." : "Continue with TierLock"}</button>
-            <button className="cancel" onClick={() => { setShowTierLockForm(false); setShowDepositOptions(true); }}>Back</button>
-          </div>
-        </div>
-      )}
+        {showTierLockForm && (
+            <div className="popup">
+                <div className="form-box" role="dialog" aria-modal="true">
+                    <h3 style={{ marginBottom: 12 }}>Deposit with TierLock</h3>
+                    <input
+                        type="text"
+                        placeholder="Player Name"
+                        value={playerName}
+                        onChange={(e) => setPlayerName(e.target.value)}
+                    />
+                    <input
+                        type="text"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
+                    <input
+                        type="text"
+                        placeholder="Game Name"
+                        value={gameName}
+                        onChange={(e) => setGameName(e.target.value)}
+                    />
+                    <input
+                        type="number"
+                        placeholder="Deposit Amount (USD)"
+                        value={depositAmount}
+                        onChange={(e) => setDepositAmount(e.target.value)}
+                    />
+                    <button
+                        className="submit"
+                        onClick={handleTierLock}
+                        disabled={loading}
+                    >
+                        {loading ? "Processing..." : "Continue with TierLock"}
+                    </button>
+                    <button
+                        className="cancel"
+                        onClick={() => {
+                            setShowTierLockForm(false);
+                            setShowDepositOptions(true);
+                        }}
+                    >
+                        Back
+                    </button>
+                </div>
+            </div>
+        )}
     </>
-  );
+);
 }
