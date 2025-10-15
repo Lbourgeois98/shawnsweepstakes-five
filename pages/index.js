@@ -431,7 +431,6 @@ return (
             >
                 WhatsApp
             </a>
-        </div>
       </div>
 
       <section id="games"></section>
