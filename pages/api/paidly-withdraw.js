@@ -7,17 +7,16 @@ const supabase = createClient(
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({ message: "Method not allowed" });
+    return res.status(405).json({ success: false, message: "Method not allowed" });
   }
 
   try {
     const { playerName, username, gameName, withdrawAmount, walletAddress } = req.body;
 
-    // Validate required fields
     if (!playerName || !username || !gameName || !withdrawAmount || !walletAddress) {
       return res.status(400).json({ 
         success: false, 
-        message: "Missing required fields (playerName, username, gameName, withdrawAmount, walletAddress)" 
+        message: "Missing required fields" 
       });
     }
 
@@ -28,13 +27,15 @@ export default async function handler(req, res) {
       console.error("❌ Missing Paidly credentials");
       return res.status(500).json({
         success: false,
-        message: "Server configuration error",
+        message: "Server configuration error - Missing Paidly credentials",
       });
     }
 
-    // Call Paidly withdrawal API
+    console.log("📤 Creating Paidly withdrawal:", { playerName, username, gameName, withdrawAmount, walletAddress });
+
+    // Call Paidly API for withdrawal
     const paidlyRes = await fetch(
-      `https://api-staging.paidlyinteractive.com/api/v1/stores/${storeId}/withdrawals`,
+      `https://api-staging.paidlyinteractive.com/api/v1/stores/${storeId}/payouts`,
       {
         method: "POST",
         headers: {
@@ -42,10 +43,14 @@ export default async function handler(req, res) {
           Authorization: `Token ${apiToken}`,
         },
         body: JSON.stringify({
+          destination: walletAddress,
           amount: parseFloat(withdrawAmount),
-          address: walletAddress,
           currency: "BTC",
-          reference: `${username}_${Date.now()}`,
+          metadata: {
+            playerName,
+            username,
+            gameName,
+          },
         }),
       }
     );
@@ -56,14 +61,14 @@ export default async function handler(req, res) {
       console.error("❌ Paidly API error:", paidlyData);
       return res.status(paidlyRes.status).json({
         success: false,
-        message: paidlyData.message || "Paidly withdrawal failed",
+        message: paidlyData.message || "Paidly withdrawal request failed",
         details: paidlyData,
       });
     }
 
     console.log("✅ Paidly withdrawal created:", paidlyData);
 
-    // Log withdrawal to Supabase
+    // Log to Supabase
     const { data: withdrawalData, error: dbError } = await supabase
       .from("withdrawals")
       .insert([
@@ -73,7 +78,7 @@ export default async function handler(req, res) {
           game_name: gameName,
           amount: parseFloat(withdrawAmount),
           wallet_address: walletAddress,
-          transaction_id: paidlyData.id || null,
+          paidly_payout_id: paidlyData.id || null,
           status: paidlyData.status || "pending",
           created_at: new Date().toISOString(),
         },
@@ -82,7 +87,6 @@ export default async function handler(req, res) {
 
     if (dbError) {
       console.error("⚠️ Database logging error:", dbError);
-      // Still return success since Paidly succeeded
     }
 
     return res.status(200).json({ 
@@ -92,7 +96,7 @@ export default async function handler(req, res) {
     });
 
   } catch (err) {
-    console.error("Paidly Withdraw API Error:", err);
+    console.error("❌ Paidly Withdraw Error:", err);
     return res.status(500).json({ 
       success: false, 
       message: "Server error", 
