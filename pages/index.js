@@ -295,7 +295,7 @@ return (
             #bg-video { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; pointer-events: none; }
             .video-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.35); z-index: -1; pointer-events: none; }
             header { text-align: center; margin: 30px 0 20px; position: relative; z-index: 10; }
-            header img { width: 220px; filter: drop-shadow(0 0 10px rgba(250,10,10,0.6)); }
+            header img { width: 350px; filter: drop-shadow(0 0 10px rgba(250,10,10,0.6)); }
             .social-buttons { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; max-width: 600px; margin: 20px auto 40px; padding: 0 15px; position: relative; z-index: 10; }
             .social-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 16px 24px; background: rgba(250, 10, 10, 0.9); color: white; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 16px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(250, 10, 10, 0.3); text-align: center; cursor:pointer; border: none; }
             .social-btn:hover { background: rgba(224, 9, 9, 0.9); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(250, 10, 10, 0.4); }
@@ -308,11 +308,11 @@ return (
             .game-card { position: relative; width: 100%; padding-bottom: 100%; border-radius: 50%; overflow: hidden; box-shadow: 0 6px 15px rgba(0,0,0,0.5); transition: all 0.3s; background: #111; }
             .game-card a { display:block; width:100%; height:100%; }
             .game-card img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-            .card-label { position:absolute; left:8px; bottom:8px; right:8px; color:#fff; font-size:12px; background:rgba(0,0,0,0.4); padding:6px 8px; border-radius:6px; text-align:center; }
+            .card-label { position:absolute; left:8px; bottom:8px; right:8px; color:#fff; font-size:12px; background:rgba(255, 255, 255, 0.4); padding:6px 8px; border-radius:6px; text-align:center; }
             .game-card:hover { transform: scale(1.08); box-shadow: 0 0 25px rgba(250,10,10,0.6); }
 
-            .popup { position: fixed; top: 0; left: 0; right: 0; bottom: 0; display:flex; align-items:center; justify-content:center; background: rgba(0,0,0,0.7); z-index: 9999; }
-            .form-box { background: #121212; padding: 22px; border-radius: 12px; width: 92%; max-width: 420px; border: 2px solid rgba(255, 215, 0, 0.18); box-shadow: 0 0 20px rgba(255,215,0,0.06); color: white; text-align: center; }
+            .popup { position: fixed; top: 0; left: 0; right: 0; bottom: 0; display:flex; align-items:center; justify-content:center; background: rgba(198, 31, 31, 0.7); z-index: 9999; }
+            .form-box { background: #ffffffff; padding: 22px; border-radius: 12px; width: 92%; max-width: 420px; border: 2px solid rgba(255, 215, 0, 0.18); box-shadow: 0 0 20px rgba(255,215,0,0.06); color: white; text-align: center; }
             .form-box input { width: 100%; padding: 12px 14px; margin-bottom:10px; border-radius:8px; border: none; font-size:14px; color: black; }
             .form-box .submit { width:100%; padding:12px; border-radius:8px; border:none; background: linear-gradient(90deg, #facc15, #fcd34d); color: black; font-weight:bold; cursor:pointer; }
             .form-box .submit[disabled] { opacity: 0.6; cursor: not-allowed; }
@@ -333,7 +333,7 @@ return (
   cursor: pointer;
   transition: all 0.3s;
   font-size: 16px;
-  background: linear-gradient(135deg, rgba(20, 20, 20, 0.95), rgba(87, 5, 5, 0.95));
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(249, 16, 16, 0.53));
   color: white;
   box-shadow: 0 8px 20px rgba(144, 2, 2, 0.6);
   text-decoration: none;
@@ -492,7 +492,7 @@ return (
                             onClick={() => setShowWertForm(true)}
                         >
                             <div className="payment-logos">
-                                <img src="wert-logo.PNG" alt="Wert" style={{width: '80px', height: 'auto'}} />
+                                <img src="https://static.wixstatic.com/media/7fb4e7_4fc518a6d15b45e6af5b1a436f72f39d~mv2.png" alt="Wert" style={{width: '80px', height: 'auto'}} />
                             </div>
                             <span className="payment-btn-text">Wert</span>
                         </button>
@@ -500,14 +500,10 @@ return (
                         {/* TierLock */}
                         <button
                             className="payment-method-btn"
-                            onClick={() => {
-                                setShowDepositOptions(false);
-                                setShowTierLockForm(true);
-                            }}
-                            disabled={loading}
+                            onClick={handleTierLock}
                         >
                             <div className="payment-logos">
-                                <img src="tierlock-logo.PNG" alt="TierLock" style={{width: '80px', height: 'auto'}} />
+                                <img src="https://app.tierlock.com/assets/logo.png" alt="TierLock" style={{width: '80px', height: 'auto'}} />
                             </div>
                             <span className="payment-btn-text">TierLock</span>
                         </button>
@@ -520,30 +516,32 @@ return (
                             rel="noopener noreferrer"
                         >
                             <div className="payment-logos">
-                                <img src="fnupay-logo.PNG" alt="FNUpay" style={{width: '80px', height: 'auto'}} />
+                                <img src="https://fnupay.com/logo.png" alt="FNUpay" style={{width: '80px', height: 'auto'}} />
                             </div>
                             <span className="payment-btn-text">FNUpay</span>
                         </a>
 
                         {/* Bitcoin (Paidly) */}
                         <button
-  className="payment-method-btn"
-  onClick={() => {
-    setShowDepositOptions(false);
-    handlePaidlyBTC(); // directly open Paidly widget
-  }}
-  disabled={loading}
->
-  <span style={{ fontSize: "20px", display: "block", marginBottom: "4px" }}>₿</span>
-  <span className="payment-btn-text">Bitcoin (Paidly)</span>
-</button>
+                            className="payment-method-btn"
+                            onClick={() => {
+                                setShowDepositOptions(false);
+                                setShowBTCForm(true);
+                            }}
+                            disabled={loading}
+                        >
+                            <div className="payment-logos">
+                                <img src="/btc-logo.PNG" alt="Bitcoin" className="bitcoin-logo" />
+                            </div>
+                            <span className="payment-btn-text">Bitcoin</span>
+                        </button>
+                    </div>
 
                     </div>
                     <button className="cancel" onClick={() => setShowDepositOptions(false)}>
                         Cancel
                     </button>
                 </div>
-            </div>
         )}
 
         {showWertForm && (
