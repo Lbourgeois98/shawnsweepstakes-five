@@ -254,6 +254,49 @@ const handlePaidlyBTC = async () => {
   }
 };
 
+  const handlePaidlyWithdrawal = async () => {
+  if (!playerName || !username || !gameName || !withdrawAmount || !walletAddress) {
+    alert("Please fill out all fields.");
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const response = await fetch("/api/paidly-withdraw", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        playerName,
+        username,
+        gameName,
+        withdrawAmount: parseFloat(withdrawAmount),
+        walletAddress,
+      }),
+    });
+
+    const data = await response.json();
+    console.log("Paidly withdraw response:", data);
+
+    if (data.success) {
+      alert("✅ Withdrawal request submitted successfully!");
+      setShowWithdrawalForm(false);
+      setPlayerName("");
+      setUsername("");
+      setGameName("");
+      setWithdrawAmount("");
+      setWalletAddress("");
+    } else {
+      alert("❌ Withdrawal failed: " + (data.message || "Unknown error"));
+    }
+  } catch (error) {
+    console.error("Paidly withdrawal error:", error);
+    alert("An error occurred while processing your withdrawal.");
+  } finally {
+    setLoading(false);
+  }
+};
+
   // === TierLock Deposit Flow ===
   const handleTierLock = async () => {
     if (!playerName || !username || !gameName || !depositAmount) {
@@ -302,7 +345,63 @@ const handlePaidlyBTC = async () => {
       setLoading(false);
     }
   };
+  
+  {showWithdrawalForm && (
+  <div className="popup-overlay">
+    <div className="popup-box">
+      <h2 className="popup-title">💸 Paidly Withdrawal</h2>
 
+      <div className="popup-inputs">
+        <input
+          type="text"
+          placeholder="Player Name"
+          value={playerName}
+          onChange={(e) => setPlayerName(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Game Name"
+          value={gameName}
+          onChange={(e) => setGameName(e.target.value)}
+        />
+        <input
+          type="number"
+          placeholder="Withdrawal Amount"
+          value={withdrawAmount}
+          onChange={(e) => setWithdrawAmount(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Wallet Address"
+          value={walletAddress}
+          onChange={(e) => setWalletAddress(e.target.value)}
+        />
+      </div>
+
+      <div className="popup-actions">
+        <button
+          className="btn submit"
+          onClick={handlePaidlyWithdrawal}
+          disabled={loading}
+        >
+          {loading ? "Processing..." : "Submit Withdrawal"}
+        </button>
+        <button
+          className="btn cancel"
+          onClick={() => setShowWithdrawalForm(false)}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
 
 return (
@@ -335,6 +434,112 @@ return (
             .form-box .submit { width:100%; padding:12px; border-radius:8px; border:none; background: linear-gradient(90deg, #facc15, #fcd34d); color: black; font-weight:bold; cursor:pointer; }
             .form-box .submit[disabled] { opacity: 0.6; cursor: not-allowed; }
             .form-box .cancel { margin-top:8px; background:transparent; color:#ccc; border:none; cursor:pointer; }
+            /* Overlay */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+/* Main Box */
+.popup-box {
+  background: linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 100%);
+  border: 2px solid gold;
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  padding: 25px;
+  text-align: center;
+  animation: popupFadeIn 0.3s ease;
+}
+
+/* Title */
+.popup-title {
+  color: gold;
+  font-size: 1.4rem;
+  font-weight: bold;
+  text-shadow: 0 0 10px gold;
+  margin-bottom: 20px;
+}
+
+/* Inputs */
+.popup-inputs input {
+  width: 100%;
+  background: black;
+  color: white;
+  border: 1px solid #ff0000;
+  border-radius: 6px;
+  padding: 10px;
+  margin-bottom: 10px;
+  outline: none;
+  font-size: 0.95rem;
+  transition: 0.2s;
+}
+
+.popup-inputs input:focus {
+  border-color: gold;
+  box-shadow: 0 0 8px gold;
+}
+
+/* Buttons */
+.popup-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.btn {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn.submit {
+  background: linear-gradient(90deg, #ff0000, #cc0000);
+  color: white;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.6);
+}
+
+.btn.submit:hover {
+  background: linear-gradient(90deg, #ff3333, #e60000);
+  box-shadow: 0 0 15px red;
+}
+
+.btn.cancel {
+  background: transparent;
+  color: gold;
+  border: 1px solid gold;
+}
+
+.btn.cancel:hover {
+  background: gold;
+  color: black;
+  box-shadow: 0 0 10px gold;
+}
+
+/* Animation */
+@keyframes popupFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 
 .payment-methods {
   margin-top: 1rem;
