@@ -1,84 +1,53 @@
-// pages/api/paidly-withdraw.js
-import fetch from "node-fetch";
-
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    res.status(405).json({ message: "Method Not Allowed" });
-    return;
-  }
+  if (req.method !== "POST") return res.status(405).json({ message: "Method not allowed" });
 
-  const { orderId, username, amount, currency, paymentRequest } = req.body || {};
+  const { playerName, username, gameName, withdrawAmount, walletAddress } = req.body;
 
-  if (!orderId || !username || !amount || !currency) {
-    res.status(400).json({ message: "Missing required fields" });
-    return;
-  }
-
-  const PAIDLY_API_BASE = process.env.PAIDLY_API_BASE || "https://api.paidlyinteractive.com";
-  const STORE_ID = process.env.PAIDLY_STORE_ID;
-  const API_TOKEN = process.env.PAIDLY_API_TOKEN;
-
-  if (!STORE_ID || !API_TOKEN) {
-    res.status(500).json({ message: "Paidly config missing on server (PAIDLY_STORE_ID / PAIDLY_API_TOKEN)" });
-    return;
+  if (!playerName || !username || !gameName || !withdrawAmount || !walletAddress) {
+    return res.status(400).json({ success: false, message: "Missing required fields" });
   }
 
   try {
-    const metadata = {
-      OrderId: orderId,
-      CustomerId: username,
-    };
-
-    let endpoint = "";
-    let payload = {};
-
-    // If bolt11 invoice provided => direct invoice-withdrawal (attempt immediate payout)
-    if (paymentRequest) {
-      endpoint = `/api/v1/stores/${STORE_ID}/invoice-withdrawal`;
-      payload = {
-        amount: amount.toString(),
-        currency: "BTC",
-        metadata,
-        payment_request: paymentRequest, // Bolt11 invoice
-      };
-    } else {
-      // No invoice provided => create a withdrawal request (widget / LNURL). Paidly will return checkoutLink.
-      endpoint = `/api/v1/stores/${STORE_ID}/withdrawal/request`;
-      payload = {
-        amount: amount.toString(),
-        currency: "BTC",
-        metadata,
-      };
-    }
-
-    const apiUrl = `${PAIDLY_API_BASE}${endpoint}`;
-
-    const resp = await fetch(apiUrl, {
+    // Example Paidly withdrawal API call (replace with real endpoint)
+    const paidlyRes = await fetch("https://api.paidly.io/withdrawals", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Token ${API_TOKEN}`,
+        Authorization: `Bearer ${process.env.PAIDLY_API_KEY}`,
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        amount: withdrawAmount,
+        wallet_address: walletAddress,
+        currency: "BTC",
+        reference: `${username}_${Date.now()}`,
+      }),
     });
 
-    const data = await resp.json();
+    const paidlyData = await paidlyRes.json();
 
-    if (!resp.ok) {
-      console.error("Paidly withdraw API error:", resp.status, data);
-      return res.status(resp.status).json({
-        message: data.error || data.message || "Paidly API error",
-        data,
-      });
-    }
-
-    // Return Paidly response to frontend (includes checkoutLink for widget flow)
-    return res.status(200).json({
-      success: true,
-      ...data,
+    // Log withdrawal (to Supabase or your DB)
+    await fetch(`${process.env.SUPABASE_URL}/rest/v1/withdrawals`, {
+      method: "POST",
+      headers: {
+        "apikey": process.env.SUPABASE_KEY,
+        "Content-Type": "application/json",
+        "Prefer": "return=minimal",
+      },
+      body: JSON.stringify({
+        player_name: playerName,
+        username,
+        game_name: gameName,
+        amount: withdrawAmount,
+        wallet_address: walletAddress,
+        transaction_id: paidlyData.id || null,
+        status: paidlyData.status || "pending",
+        created_at: new Date().toISOString(),
+      }),
     });
+
+    res.status(200).json({ success: true, data: paidlyData });
   } catch (err) {
-    console.error("paidly-withdraw exception:", err);
-    return res.status(500).json({ message: "Internal server error", error: String(err) });
+    console.error("Paidly Withdraw API Error:", err);
+    res.status(500).json({ success: false, message: "Server error", error: err.message });
   }
 }
