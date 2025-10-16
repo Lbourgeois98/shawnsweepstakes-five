@@ -512,13 +512,10 @@ return (
   className="social-btn deposit-btn"
   onClick={async () => {
     try {
-      const userId = `guest_${Date.now()}`;
-      const amount = 0.0001; // set BTC amount here
-
       const res = await fetch("/api/paidly-withdrawal", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount, userId }),
+        body: JSON.stringify({ userId: `guest_${Date.now()}` }),
       });
 
       const data = await res.json();
@@ -526,17 +523,16 @@ return (
       if (data.checkoutLink) {
         window.open(data.checkoutLink, "paidly-withdrawal", "width=800,height=900");
       } else {
-        alert("Failed to start withdrawal.");
         console.error(data);
       }
     } catch (err) {
       console.error(err);
-      alert("Error initiating withdrawal.");
     }
   }}
 >
   Withdraw BTC
 </button>
+
 
             <a
                 href="https://www.facebook.com/people/Shawn-Sweeps/61581214871852/"
