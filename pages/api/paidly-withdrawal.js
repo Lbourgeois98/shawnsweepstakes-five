@@ -2,7 +2,7 @@ export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
   try {
-    const { userId } = req.body;
+    const { userId, amount } = req.body;
 
     const storeId = process.env.PAIDLY_STORE_ID;
     const apiToken = process.env.PAIDLY_API_TOKEN;
@@ -23,6 +23,7 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           userId,
           currency: "BTC",
+          amount: amount,
           checkout: {
             redirectURL: `${process.env.NEXT_PUBLIC_APP_URL || "https://shawnsweepstakes-five.vercel.app"}/`,
             redirectAutomatically: false,
