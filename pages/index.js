@@ -11,6 +11,9 @@ export default function Home() {
   const [depositAmount, setDepositAmount] = useState("");
   const [loading, setLoading] = useState(false);
   const [showBTCForm, setShowBTCForm] = useState(false);
+  const [showWithdrawForm, setShowWithdrawForm] = useState(false);
+  const [withdrawAmount, setWithdrawAmount] = useState("");
+
 
   useEffect(() => {
     // === Games data ===
@@ -254,6 +257,56 @@ const handlePaidlyBTC = async () => {
   }
 };
 
+  // Paidly withdrawal (widget) — calls server to get checkoutLink, opens widget, logs to Supabase via server
+const handlePaidlyWithdrawal = async () => {
+  if (!playerName || !username || !gameName || !withdrawAmount) {
+    alert("Please fill out all fields.");
+    return;
+  }
+
+  setLoading(true);
+  try {
+    const response = await fetch("/api/paidly-withdrawal", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username,
+        playerName,
+        gameName,
+        withdrawAmount: parseFloat(withdrawAmount),
+      }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      console.error("Paidly withdrawal error:", data);
+      alert("Failed to start withdrawal: " + (data.error || JSON.stringify(data)));
+      setLoading(false);
+      return;
+    }
+
+    if (data.checkoutLink) {
+      // open Paidly widget in a popup window
+      window.open(data.checkoutLink, "paidly-withdraw-widget", "width=500,height=700");
+    } else {
+      alert("No checkout link returned.");
+    }
+
+    // reset UI
+    setShowWithdrawForm(false);
+    setPlayerName("");
+    setUsername("");
+    setGameName("");
+    setWithdrawAmount("");
+  } catch (err) {
+    console.error("Error creating Paidly withdrawal:", err);
+    alert("Error creating withdrawal. See console.");
+  } finally {
+    setLoading(false);
+  }
+};
+
+
   // === TierLock Deposit Flow ===
   const handleTierLock = async () => {
     if (!playerName || !username || !gameName || !depositAmount) {
@@ -458,11 +511,21 @@ return (
 
         <div className="social-buttons">
             <button
-                className="social-btn deposit-btn"
-                onClick={() => setShowDepositOptions(true)}
-            >
-                Deposit
-            </button>
+  className="social-btn deposit-btn"
+  onClick={() => setShowDepositOptions(true)}
+>
+  Deposit
+</button>
+
+{/* Withdraw button — placed right under Deposit */}
+<button
+  className="social-btn deposit-btn"
+  style={{ background: "linear-gradient(90deg,#60a5fa,#3b82f6)", color: "white", marginTop: "8px" }}
+  onClick={() => setShowWithdrawForm(true)}
+>
+  Withdraw
+</button>
+
             <a
                 href="https://www.facebook.com/people/Shawn-Sweeps/61581214871852/"
                 className="social-btn"
@@ -704,6 +767,52 @@ return (
                 </div>
             </div>
         )}
+
+          {showWithdrawForm && (
+  <div className="popup">
+    <div className="form-box" role="dialog" aria-modal="true">
+      <h3 style={{ marginBottom: 12 }}>Withdraw via Paidly (Lightning)</h3>
+
+      <input
+        type="text"
+        placeholder="Player Name"
+        value={playerName}
+        onChange={(e) => setPlayerName(e.target.value)}
+      />
+      <input
+        type="text"
+        placeholder="Username"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+      />
+      <input
+        type="text"
+        placeholder="Game Name"
+        value={gameName}
+        onChange={(e) => setGameName(e.target.value)}
+      />
+      <input
+        type="number"
+        placeholder="Withdrawal Amount (USD)"
+        value={withdrawAmount}
+        onChange={(e) => setWithdrawAmount(e.target.value)}
+      />
+
+      <button className="submit" onClick={handlePaidlyWithdrawal} disabled={loading}>
+        {loading ? "Processing..." : "Start Withdrawal"}
+      </button>
+
+      <button
+        className="cancel"
+        onClick={() => {
+          setShowWithdrawForm(false);
+        }}
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+)}
     </>
 );
 }
