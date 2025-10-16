@@ -18,8 +18,10 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Call Paidly API to create a Lightning withdrawal
-    const paidlyRes = await fetch(`${process.env.PAIDLY_API_BASE || "https://api.paidly.io"}/v1/withdrawals`, {
+    const storeId = process.env.PAIDLY_STORE_ID;
+    const apiUrl = `https://api.paidly.io/api/v1/stores/${storeId}/withdrawal/request`;
+
+    const response = await fetch(apiUrl, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${process.env.PAIDLY_API_KEY}`,
@@ -28,7 +30,6 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         amount: withdrawAmount,
         currency: "USD",
-        method: "lightning",
         metadata: {
           username,
           playerName,
@@ -37,14 +38,14 @@ export default async function handler(req, res) {
       }),
     });
 
-    const paidlyData = await paidlyRes.json();
+    const data = await response.json();
 
-    if (!paidlyRes.ok) {
-      console.error("Paidly error creating withdrawal:", paidlyData);
-      return res.status(400).json({ error: paidlyData.message || "Paidly API error", details: paidlyData });
+    if (!response.ok) {
+      console.error("❌ Paidly withdrawal error:", data);
+      return res.status(400).json({ error: data.message || "Paidly API error" });
     }
 
-    // Log withdrawal in Supabase
+    // Log pending withdrawal in Supabase
     const { error: insertError } = await supabase.from("bitcoin_withdrawals").insert([
       {
         username,
@@ -52,20 +53,18 @@ export default async function handler(req, res) {
         game_name: gameName,
         amount: withdrawAmount,
         status: "pending",
-        paidly_withdrawal_id: paidlyData?.id || null,
+        checkout_link: data.checkoutLink,
         created_at: new Date().toISOString(),
       },
     ]);
 
     if (insertError) {
-      console.error("Supabase insert error for withdrawal:", insertError);
-      // still return success because Paidly created it — but mark it in response
-      return res.status(201).json({ success: true, withdrawal: paidlyData, warning: "Failed to log in Supabase", supabaseError: insertError });
+      console.error("⚠️ Supabase insert error:", insertError);
     }
 
-    return res.status(200).json({ success: true, withdrawal: paidlyData });
+    return res.status(200).json({ success: true, checkoutLink: data.checkoutLink });
   } catch (err) {
-    console.error("paidly-withdrawal handler error:", err);
-    return res.status(500).json({ error: "Internal server error", details: err.message });
+    console.error("Server error:", err);
+    return res.status(500).json({ error: "Internal server error" });
   }
 }
