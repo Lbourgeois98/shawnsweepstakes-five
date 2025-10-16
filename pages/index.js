@@ -754,7 +754,6 @@ return (
                 </div>
             </div>
         )}
-          )}
 
         {showPaidlyWithdrawalForm && (
             <div className="popup">
