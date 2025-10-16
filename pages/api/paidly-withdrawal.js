@@ -1,25 +1,27 @@
 export default async function handler(req, res) {
-  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
-
-  const { userId, amount, redirectURL } = req.body;
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
 
   try {
+    const { amount, userId } = req.body;
+
     const response = await fetch(
-      `https://api.paidly.com/api/v1/stores/${process.env.PAIDLY_STORE_ID}/withdrawal/request`,
+      `https://api-staging.paidlyinteractive.com/api/v1/stores/${process.env.PAIDLY_STORE_ID}/withdrawal/request`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.PAIDLY_API_TOKEN}`,
+          Authorization: `Token ${process.env.PAIDLY_API_TOKEN}`,
         },
         body: JSON.stringify({
-          amount,
-          currency: "sats",
+          amount: amount.toString(), // BTC amount as string
+          currency: "BTC",
+          metadata: { CustomerId: userId },
           checkout: {
-            redirectURL,
+            redirectURL: "https://shawnsweepstakes-five.vercel.app/withdrawal-complete",
             redirectAutomatically: true,
           },
-          metadata: { userId },
         }),
       }
     );
