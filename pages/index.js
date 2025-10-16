@@ -11,8 +11,8 @@ export default function Home() {
   const [depositAmount, setDepositAmount] = useState("");
   const [loading, setLoading] = useState(false);
   const [showBTCForm, setShowBTCForm] = useState(false);
-  const [showWithdrawForm, setShowWithdrawForm] = useState(false);
   const [withdrawAmount, setWithdrawAmount] = useState("");
+
 
 
   useEffect(() => {
@@ -257,50 +257,25 @@ const handlePaidlyBTC = async () => {
   }
 };
 
-  // Paidly withdrawal (widget) — calls server to get checkoutLink, opens widget, logs to Supabase via server
-const handlePaidlyWithdrawal = async () => {
-  if (!playerName || !username || !gameName || !withdrawAmount) {
-    alert("Please fill out all fields.");
-    return;
-  }
-
+  const handleWithdraw = async () => {
+  if (!withdrawAmount) return alert("Enter amount");
   setLoading(true);
+
   try {
-    const response = await fetch("/api/paidly-withdrawal", {
+    const res = await fetch("/api/paidly-withdrawal", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        username,
-        playerName,
-        gameName,
-        withdrawAmount: parseFloat(withdrawAmount),
-      }),
+      body: JSON.stringify({ withdrawAmount: parseFloat(withdrawAmount) }),
     });
 
-    const data = await response.json();
-    if (!response.ok) {
-      console.error("Paidly withdrawal error:", data);
-      alert("Failed to start withdrawal: " + (data.error || JSON.stringify(data)));
-      setLoading(false);
-      return;
-    }
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Error");
 
-    if (data.checkoutLink) {
-      // open Paidly widget in a popup window
-      window.open(data.checkoutLink, "paidly-withdraw-widget", "width=500,height=700");
-    } else {
-      alert("No checkout link returned.");
-    }
-
-    // reset UI
-    setShowWithdrawForm(false);
-    setPlayerName("");
-    setUsername("");
-    setGameName("");
-    setWithdrawAmount("");
-  } catch (err) {
-    console.error("Error creating Paidly withdrawal:", err);
-    alert("Error creating withdrawal. See console.");
+    // Opens Paidly withdrawal widget
+    window.open(data.checkoutLink, "_blank", "width=500,height=700");
+  } catch (e) {
+    alert("Error starting withdrawal");
+    console.error(e);
   } finally {
     setLoading(false);
   }
@@ -509,56 +484,76 @@ return (
             />
         </header>
 
-        <div className="social-buttons">
-            <button
-  className="social-btn deposit-btn"
-  onClick={() => setShowDepositOptions(true)}
->
-  Deposit
-</button>
+                  <div className="social-buttons">
 
-{/* Withdraw button — placed right under Deposit */}
-<button
-  className="social-btn deposit-btn"
-  style={{ background: "linear-gradient(90deg,#60a5fa,#3b82f6)", color: "white", marginTop: "8px" }}
-  onClick={() => setShowWithdrawForm(true)}
->
-  Withdraw
-</button>
+  {/* Deposit Button */}
+  <button
+    className="social-btn deposit-btn"
+    onClick={() => setShowDepositOptions(true)}
+  >
+    Deposit
+  </button>
 
-            <a
-                href="https://www.facebook.com/people/Shawn-Sweeps/61581214871852/"
-                className="social-btn"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                Facebook Page
-            </a>
-            <a
-                href="https://www.facebook.com/shawn.shawn.927528"
-                className="social-btn"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                Facebook Profile
-            </a>
-            <a
-                href="https://t.me/shawnsweeps"
-                className="social-btn"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                Telegram
-            </a>
-            <a
-                href="https://api.whatsapp.com/send/?phone=%2B13463028043&text&type=phone_number&app_absent=0"
-                className="social-btn"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                WhatsApp
-            </a>
-        </div>
+  {/* Withdrawal Input + Button */}
+  <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: "8px" }}>
+    <input
+      type="number"
+      placeholder="Withdrawal Amount (USD)"
+      value={withdrawAmount}
+      onChange={(e) => setWithdrawAmount(e.target.value)}
+      style={{
+        padding: "12px 14px",
+        borderRadius: "8px",
+        border: "none",
+        fontSize: "14px",
+        width: "100%",
+      }}
+    />
+    <button
+      className="social-btn"
+      onClick={handleWithdraw}
+      disabled={loading}
+      style={{ background: "#facc15", color: "black" }}
+    >
+      {loading ? "Processing..." : "Withdraw"}
+    </button>
+  </div>
+
+  {/* Other social links */}
+  <a
+    href="https://www.facebook.com/people/Shawn-Sweeps/61581214871852/"
+    className="social-btn"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    Facebook Page
+  </a>
+  <a
+    href="https://www.facebook.com/shawn.shawn.927528"
+    className="social-btn"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    Facebook Profile
+  </a>
+  <a
+    href="https://t.me/shawnsweeps"
+    className="social-btn"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    Telegram
+  </a>
+  <a
+    href="https://api.whatsapp.com/send/?phone=%2B13463028043&text&type=phone_number&app_absent=0"
+    className="social-btn"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    WhatsApp
+  </a>
+</div>
+
 
         <section id="games"></section>
 
@@ -767,52 +762,6 @@ return (
                 </div>
             </div>
         )}
-
-          {showWithdrawForm && (
-  <div className="popup">
-    <div className="form-box" role="dialog" aria-modal="true">
-      <h3 style={{ marginBottom: 12 }}>Withdraw via Paidly (Lightning)</h3>
-
-      <input
-        type="text"
-        placeholder="Player Name"
-        value={playerName}
-        onChange={(e) => setPlayerName(e.target.value)}
-      />
-      <input
-        type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <input
-        type="text"
-        placeholder="Game Name"
-        value={gameName}
-        onChange={(e) => setGameName(e.target.value)}
-      />
-      <input
-        type="number"
-        placeholder="Withdrawal Amount (USD)"
-        value={withdrawAmount}
-        onChange={(e) => setWithdrawAmount(e.target.value)}
-      />
-
-      <button className="submit" onClick={handlePaidlyWithdrawal} disabled={loading}>
-        {loading ? "Processing..." : "Start Withdrawal"}
-      </button>
-
-      <button
-        className="cancel"
-        onClick={() => {
-          setShowWithdrawForm(false);
-        }}
-      >
-        Cancel
-      </button>
-    </div>
-  </div>
-)}
     </>
 );
 }
