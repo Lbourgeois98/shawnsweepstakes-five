@@ -12,7 +12,6 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [showBTCForm, setShowBTCForm] = useState(false);
   const [showPaidlyWithdrawalForm, setShowPaidlyWithdrawalForm] = useState(false);
-  const [withdrawAmount, setWithdrawAmount] = useState("");
 
 
   useEffect(() => {
@@ -258,8 +257,8 @@ const handlePaidlyBTC = async () => {
 };
 
 const handlePaidlyWithdrawal = async () => {
-  if (!username || !withdrawAmount) {
-    alert("Please enter your username and withdrawal amount.");
+  if (!username) {
+    alert("Please enter your username.");
     return;
   }
 
@@ -273,8 +272,6 @@ const handlePaidlyWithdrawal = async () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         userId: customerId,
-        amount: parseFloat(withdrawAmount),
-        redirectURL: "https://yourwebsite.com/withdrawal-complete",
       }),
     });
 
@@ -288,9 +285,8 @@ const handlePaidlyWithdrawal = async () => {
 
     window.open(data.checkoutLink, "paidly-withdrawal-widget", "width=800,height=900");
 
-    // Reset form
     setShowPaidlyWithdrawalForm(false);
-    setWithdrawAmount("");
+    setUsername("");
   } catch (err) {
     console.error("Paidly Withdrawal Error:", err);
     alert("An error occurred. Please try again.");
@@ -298,7 +294,7 @@ const handlePaidlyWithdrawal = async () => {
     setLoading(false);
   }
 };
-
+  
   // === TierLock Deposit Flow ===
   const handleTierLock = async () => {
     if (!playerName || !username || !gameName || !depositAmount) {
@@ -509,29 +505,11 @@ return (
                 Deposit
             </button>
             <button
-  className="social-btn deposit-btn"
-  onClick={async () => {
-    try {
-      const res = await fetch("/api/paidly-withdrawal", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: `guest_${Date.now()}` }),
-      });
-
-      const data = await res.json();
-
-      if (data.checkoutLink) {
-        window.open(data.checkoutLink, "paidly-withdrawal", "width=800,height=900");
-      } else {
-        console.error("Paidly response:", data);
-      }
-    } catch (err) {
-      console.error("Error opening Paidly widget:", err);
-    }
-  }}
->
-  Withdraw BTC
-</button>
+                className="social-btn deposit-btn"
+                onClick={() => setShowPaidlyWithdrawalForm(true)}
+            >
+                Withdraw BTC
+            </button>
 
 
 
@@ -776,6 +754,37 @@ return (
                 </div>
             </div>
         )}
+          )}
+
+        {showPaidlyWithdrawalForm && (
+            <div className="popup">
+                <div className="form-box" role="dialog" aria-modal="true">
+                    <h3 style={{ marginBottom: 12 }}>Withdraw Bitcoin</h3>
+                    <input
+                        type="text"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
+                    <button
+                        className="submit"
+                        onClick={handlePaidlyWithdrawal}
+                        disabled={loading}
+                    >
+                        {loading ? "Processing..." : "Continue to Withdrawal"}
+                    </button>
+                    <button
+                        className="cancel"
+                        onClick={() => setShowPaidlyWithdrawalForm(false)}
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        )}
+    </>
+);
+}
     </>
 );
 }
