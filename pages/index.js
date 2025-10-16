@@ -509,36 +509,33 @@ return (
                 Deposit
             </button>
             <button
-    className="social-btn deposit-btn"
-    onClick={async () => {
-        setLoading(true);
-        try {
-            const response = await fetch("/api/paidly-withdrawal", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    userId: username || `guest_${Date.now()}`, // optional fallback
-                    amount: 0, // or default amount if needed
-                    redirectURL: "https://shawnsweepstakes-five.vercel.app/withdrawal-complete"
-                }),
-            });
-            const data = await response.json();
-            if (data.checkoutLink) {
-                window.open(data.checkoutLink, "paidly-widget", "width=800,height=900");
-            } else {
-                alert("Failed to generate withdrawal link.");
-                console.error(data);
-            }
-        } catch (err) {
-            console.error("Paidly Withdrawal Error:", err);
-            alert("Error opening Paidly withdrawal.");
-        } finally {
-            setLoading(false);
-        }
-    }}
-    disabled={loading}
+  className="social-btn deposit-btn"
+  onClick={async () => {
+    try {
+      const userId = `guest_${Date.now()}`;
+      const amount = 0.0001; // set BTC amount here
+
+      const res = await fetch("/api/paidly-withdrawal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount, userId }),
+      });
+
+      const data = await res.json();
+
+      if (data.checkoutLink) {
+        window.open(data.checkoutLink, "paidly-withdrawal", "width=800,height=900");
+      } else {
+        alert("Failed to start withdrawal.");
+        console.error(data);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error initiating withdrawal.");
+    }
+  }}
 >
-    Withdraw
+  Withdraw BTC
 </button>
 
             <a
