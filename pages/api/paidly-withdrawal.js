@@ -4,28 +4,46 @@ export default async function handler(req, res) {
   try {
     const { userId } = req.body;
 
+    const storeId = process.env.PAIDLY_STORE_ID;
+    const apiToken = process.env.PAIDLY_API_TOKEN;
+
+    if (!storeId || !apiToken) {
+      console.error("❌ Missing Paidly credentials");
+      return res.status(500).json({ error: "Server configuration error" });
+    }
+
     const response = await fetch(
-      `https://api.paidlyinteractive.com/api/v1/stores/${process.env.PAIDLY_STORE_ID}/withdrawal/request`,
+      `https://api-staging.paidlyinteractive.com/api/v1/stores/${storeId}/withdrawal/request`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Token ${process.env.PAIDLY_API_TOKEN}`,
+          Authorization: `Token ${apiToken}`,
         },
         body: JSON.stringify({
           userId,
           checkout: {
-            redirectURL: "https://shawnsweepstakes-five.vercel.app/withdrawal-complete",
-            redirectAutomatically: true,
+            redirectURL: `${process.env.NEXT_PUBLIC_APP_URL || "https://shawnsweepstakes-five.vercel.app"}/`,
+            redirectAutomatically: false,
           },
         }),
       }
     );
 
     const data = await response.json();
+
+    if (!response.ok) {
+      console.error("❌ Paidly API error:", data);
+      return res.status(response.status).json({
+        error: "Paidly request failed",
+        details: data,
+      });
+    }
+
+    console.log("✅ Paidly withdrawal request created:", data);
     res.status(200).json(data);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Paidly withdrawal error:", err);
+    res.status(500).json({ error: "Internal server error", details: err.message });
   }
 }
