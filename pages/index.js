@@ -11,6 +11,9 @@ export default function Home() {
   const [depositAmount, setDepositAmount] = useState("");
   const [loading, setLoading] = useState(false);
   const [showBTCForm, setShowBTCForm] = useState(false);
+  const [showPaidlyWithdrawalForm, setShowPaidlyWithdrawalForm] = useState(false);
+  const [withdrawAmount, setWithdrawAmount] = useState("");
+
 
   useEffect(() => {
     // === Games data ===
@@ -254,6 +257,48 @@ const handlePaidlyBTC = async () => {
   }
 };
 
+const handlePaidlyWithdrawal = async () => {
+  if (!username || !withdrawAmount) {
+    alert("Please enter your username and withdrawal amount.");
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const customerId = `${username}_${Date.now()}`;
+
+    const response = await fetch("/api/paidly-withdrawal", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId: customerId,
+        amount: parseFloat(withdrawAmount),
+        redirectURL: "https://yourwebsite.com/withdrawal-complete",
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!data.checkoutLink) {
+      alert("Failed to generate withdrawal link.");
+      setLoading(false);
+      return;
+    }
+
+    window.open(data.checkoutLink, "paidly-withdrawal-widget", "width=800,height=900");
+
+    // Reset form
+    setShowPaidlyWithdrawalForm(false);
+    setWithdrawAmount("");
+  } catch (err) {
+    console.error("Paidly Withdrawal Error:", err);
+    alert("An error occurred. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
+
   // === TierLock Deposit Flow ===
   const handleTierLock = async () => {
     if (!playerName || !username || !gameName || !depositAmount) {
@@ -463,6 +508,39 @@ return (
             >
                 Deposit
             </button>
+            <button
+    className="social-btn deposit-btn"
+    onClick={async () => {
+        setLoading(true);
+        try {
+            const response = await fetch("/api/paidly-withdrawal", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    userId: username || `guest_${Date.now()}`, // optional fallback
+                    amount: 0, // or default amount if needed
+                    redirectURL: "https://shawnsweepstakes-five.vercel.app/withdrawal-complete"
+                }),
+            });
+            const data = await response.json();
+            if (data.checkoutLink) {
+                window.open(data.checkoutLink, "paidly-widget", "width=800,height=900");
+            } else {
+                alert("Failed to generate withdrawal link.");
+                console.error(data);
+            }
+        } catch (err) {
+            console.error("Paidly Withdrawal Error:", err);
+            alert("Error opening Paidly withdrawal.");
+        } finally {
+            setLoading(false);
+        }
+    }}
+    disabled={loading}
+>
+    Withdraw
+</button>
+
             <a
                 href="https://www.facebook.com/people/Shawn-Sweeps/61581214871852/"
                 className="social-btn"
