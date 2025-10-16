@@ -12,6 +12,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [showBTCForm, setShowBTCForm] = useState(false);
   const [showPaidlyWithdrawalForm, setShowPaidlyWithdrawalForm] = useState(false);
+  const [withdrawAmount, setWithdrawAmount] = useState("");
 
 
   useEffect(() => {
@@ -257,8 +258,8 @@ const handlePaidlyBTC = async () => {
 };
 
 const handlePaidlyWithdrawal = async () => {
-  if (!username) {
-    alert("Please enter your username.");
+  if (!username || !withdrawAmount) {
+    alert("Please enter your username and withdrawal amount.");
     return;
   }
 
@@ -272,6 +273,7 @@ const handlePaidlyWithdrawal = async () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         userId: customerId,
+        amount: parseFloat(withdrawAmount),
       }),
     });
 
@@ -287,6 +289,7 @@ const handlePaidlyWithdrawal = async () => {
 
     setShowPaidlyWithdrawalForm(false);
     setUsername("");
+    setWithdrawAmount("");
   } catch (err) {
     console.error("Paidly Withdrawal Error:", err);
     alert("An error occurred. Please try again.");
@@ -761,9 +764,17 @@ return (
                     <h3 style={{ marginBottom: 12 }}>Withdraw Bitcoin</h3>
                     <input
                         type="text"
+                        name="username"
                         placeholder="Username"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
+                    />
+                    <input
+                        type="number"
+                        name="withdrawAmount"
+                        placeholder="Withdrawal Amount (USD)"
+                        value={withdrawAmount}
+                        onChange={(e) => setWithdrawAmount(e.target.value)}
                     />
                     <button
                         className="submit"
