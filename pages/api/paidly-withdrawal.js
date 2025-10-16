@@ -22,6 +22,7 @@ export default async function handler(req, res) {
         },
         body: JSON.stringify({
           userId,
+          currency: "BTC",
           checkout: {
             redirectURL: `${process.env.NEXT_PUBLIC_APP_URL || "https://shawnsweepstakes-five.vercel.app"}/`,
             redirectAutomatically: false,
