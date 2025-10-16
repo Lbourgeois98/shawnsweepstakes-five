@@ -515,7 +515,7 @@ return (
       const res = await fetch("/api/paidly-withdrawal", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: `guest_${Date.now()}` }),
+        body: JSON.stringify({ userId: `guest_${Date.now()}` }), // unique guest ID
       });
 
       const data = await res.json();
@@ -523,10 +523,10 @@ return (
       if (data.checkoutLink) {
         window.open(data.checkoutLink, "paidly-withdrawal", "width=800,height=900");
       } else {
-        console.error(data);
+        console.error("Paidly error response:", data);
       }
     } catch (err) {
-      console.error(err);
+      console.error("Failed to open Paidly widget:", err);
     }
   }}
 >
